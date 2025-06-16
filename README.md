@@ -1,11 +1,4 @@
-# VMS
-
-## Akun
-```
-http://inaproc.lkpp.go.id/isb
-XWk0bPQDo1
-requester-lampung
-```
+# REPORTING SYSTEM
 
 ## LIST API
 ## SIRUP
