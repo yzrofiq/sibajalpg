@@ -101,12 +101,7 @@ https://isb.lkpp.go.id/isb-2/api/f9a6ed98-0cee-4d6b-8057-bf8461461dcb/json/9624/
 
 
 ## TO DO
-1. BeLA - Menu di Admin untuk update BeLA (nominal) secara manual - done
-2. Show Tender menggunakan Admin LTE - done
-3. Show Non Tender menggunakan Admin LTE - done
-4. Ada input untuk Edit Manual: Database Vendor, 10 Paket Strategis, Summary Report
-5. Ada Notifikasi pas cron job ke sibajamonitoring@gmail.com
-6. Tender Selesai ada di field `tgl_penetapan_pemenang` dari data Tender
-7. Email, Pak Windu windups21@gmail.com
-8. Username: adminbaja | Password: sibaja@PBJ2022 | dijadikan user biasa
-9. Menu Manajemen User - done
+1. RUP
+   - Total Anggaran RUP
+     - get from API "Struktur Anggaran PD"
+   - Total Anggaran RUP Per OPD
