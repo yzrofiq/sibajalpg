@@ -15,26 +15,37 @@
 @section('navbar-extra')
 <li class="nav-item d-flex align-items-center">
   <form id="filterForm" action="{{ route('report.rup') }}" method="GET" class="form-inline">
-    <select class="form-control form-control-sm mr-2" disabled>
-      <option selected>Provinsi Lampung</option>
-    </select>
-    <select name="tahun" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
-      @foreach(collect($tahunTersedia)->sortDesc() as $t)
-        <option value="{{ $t }}" {{ request('tahun') == $t ? 'selected' : '' }}>{{ $t }}</option>
-      @endforeach
-    </select>
-    <select name="opd" class="form-control" onchange="document.getElementById('filterForm').submit()">
-  <option value="">Semua Satuan Kerja</option>
-  @foreach($daftarSatker as $opd)
-    <option value="{{ $opd }}" {{ request('opd') == $opd ? 'selected' : '' }}>
-      {{ $opd }}
-    </option>
-  @endforeach
-</select>
+
+    {{-- Provinsi --}}
+    <div class="form-group mr-2 mb-0">
+      <select class="form-control form-control-sm" disabled>
+        <option selected>Provinsi Lampung</option>
+      </select>
+    </div>
+
+    {{-- Tahun --}}
+    <div class="form-group mr-2 mb-0">
+      <select name="tahun" class="form-control form-control-sm" onchange="this.form.submit()">
+        @foreach(collect($tahunTersedia)->sortDesc() as $t)
+          <option value="{{ $t }}" {{ request('tahun') == $t ? 'selected' : '' }}>{{ $t }}</option>
+        @endforeach
+      </select>
+    </div>
+
+    {{-- OPD --}}
+    <div class="form-group mb-0">
+      <select name="opd" class="form-control form-control-sm" onchange="this.form.submit()">
+        <option value="">Semua Satuan Kerja</option>
+        @foreach($daftarSatker as $satker)
+          <option value="{{ $satker }}" {{ request('opd') == $satker ? 'selected' : '' }}>{{ $satker }}</option>
+        @endforeach
+      </select>
+    </div>
 
   </form>
 </li>
 @endsection
+
 
 
 @section('content')
