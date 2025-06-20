@@ -184,83 +184,97 @@ class SatkerController extends Controller
         $html2pdf->output();
     }
 
-public function rup(Request $request)
-{
-    $tahun = $request->input('tahun', date('Y'));
-    $opd = $request->input('opd');
-
-    $struktur = StrukturAnggaran::where('tahun_anggaran', $tahun)
-        ->where('kd_klpd', 'D264')
-        ->where('nama_klpd', 'Provinsi Lampung');
-    $swakelola = Swakelola::where('tahun_anggaran', $tahun)
-        ->where('kd_klpd', 'D264')
-        ->where('nama_klpd', 'Provinsi Lampung')
-        ->where('status_aktif_rup', true);
-    $penyedia = Penyedia::where('tahun_anggaran', $tahun)
-        ->where('kd_klpd', 'D264')
-        ->where('nama_klpd', 'Provinsi Lampung')
-        ->where('status_aktif_rup', true);
-
-    if ($opd) {
-        $struktur = $struktur->where('nama_satker', $opd);
-        $swakelola = $swakelola->where('nama_satker', $opd);
-        $penyedia = $penyedia->where('nama_satker', $opd);
-    }
-
-    $struktur = $struktur->get();
-    $swakelola = $swakelola->get();
-    $penyedia = $penyedia->get();
-
-    $daftarSatker = collect($struktur)->pluck('nama_satker')
-        ->merge($swakelola->pluck('nama_satker'))
-        ->merge($penyedia->pluck('nama_satker'))
-        ->filter()
-        ->unique()
-        ->sort()
-        ->values();
-
-    $data = [];
-
-    foreach ($daftarSatker as $satker) {
-        $penyediaSatker = $penyedia->where('nama_satker', $satker);
-        $swakelolaSatker = $swakelola->where('nama_satker', $satker);
-
-        $paketPenyedia = $penyediaSatker->count();
-        $paguPenyedia = $penyediaSatker->sum('pagu');
-
-        $paketSwakelola = $swakelolaSatker->count();
-        $paguSwakelola = $swakelolaSatker->sum('pagu');
-
-        $paketPenyediaDalamSwakelola = 0; // Placeholder
-        $paguPenyediaDalamSwakelola = 0;
-
-        $totalDalamPaket = $paketPenyedia + $paketSwakelola + $paketPenyediaDalamSwakelola;
-        $totalPagu = $paguPenyedia + $paguSwakelola + $paguPenyediaDalamSwakelola;
-
-        $data[] = [
-            'name' => $satker,
-            'data' => [
-                2 => $paketPenyedia,
-                3 => $paguPenyedia,
-                4 => $paketSwakelola,
-                5 => $paguSwakelola,
-                6 => $paketPenyediaDalamSwakelola,
-                7 => $paguPenyediaDalamSwakelola,
-                8 => $totalDalamPaket,
-                9 => $totalPagu,
-            ],
+    public function rup(Request $request)
+    {
+        $tahun = $request->input('tahun', date('Y'));
+        $opd = $request->input('opd');
+    
+        $struktur = StrukturAnggaran::where('tahun_anggaran', $tahun)
+            ->where('kd_klpd', 'D264')
+            ->where('nama_klpd', 'Provinsi Lampung');
+        $swakelola = Swakelola::where('tahun_anggaran', $tahun)
+            ->where('kd_klpd', 'D264')
+            ->where('nama_klpd', 'Provinsi Lampung')
+            ->where('status_aktif_rup', true);
+        $penyedia = Penyedia::where('tahun_anggaran', $tahun)
+            ->where('kd_klpd', 'D264')
+            ->where('nama_klpd', 'Provinsi Lampung')
+            ->where('status_aktif_rup', true);
+    
+        // Query dulu (tanpa filter OPD) untuk daftarSatker
+        $daftarSatker = StrukturAnggaran::where('tahun_anggaran', $tahun)
+            ->where('kd_klpd', 'D264')
+            ->where('nama_klpd', 'Provinsi Lampung')
+            ->pluck('nama_satker')
+            ->merge(Swakelola::where('tahun_anggaran', $tahun)
+                ->where('kd_klpd', 'D264')
+                ->where('nama_klpd', 'Provinsi Lampung')
+                ->pluck('nama_satker'))
+            ->merge(Penyedia::where('tahun_anggaran', $tahun)
+                ->where('kd_klpd', 'D264')
+                ->where('nama_klpd', 'Provinsi Lampung')
+                ->pluck('nama_satker'))
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+    
+        // Baru apply filter OPD ke data utama
+        if ($opd) {
+            $struktur = $struktur->where('nama_satker', $opd);
+            $swakelola = $swakelola->where('nama_satker', $opd);
+            $penyedia = $penyedia->where('nama_satker', $opd);
+        }
+    
+        $struktur = $struktur->get();
+        $swakelola = $swakelola->get();
+        $penyedia = $penyedia->get();
+    
+        $data = [];
+    
+        foreach ($daftarSatker as $satker) {
+            if ($opd && $opd !== $satker) continue; // Tampilkan hanya yang dipilih
+    
+            $penyediaSatker = $penyedia->where('nama_satker', $satker);
+            $swakelolaSatker = $swakelola->where('nama_satker', $satker);
+    
+            $paketPenyedia = $penyediaSatker->count();
+            $paguPenyedia = $penyediaSatker->sum('pagu');
+    
+            $paketSwakelola = $swakelolaSatker->count();
+            $paguSwakelola = $swakelolaSatker->sum('pagu');
+    
+            $paketPenyediaDalamSwakelola = 0; // Placeholder
+            $paguPenyediaDalamSwakelola = 0;
+    
+            $totalDalamPaket = $paketPenyedia + $paketSwakelola + $paketPenyediaDalamSwakelola;
+            $totalPagu = $paguPenyedia + $paguSwakelola + $paguPenyediaDalamSwakelola;
+    
+            $data[] = [
+                'name' => $satker,
+                'data' => [
+                    2 => $paketPenyedia,
+                    3 => $paguPenyedia,
+                    4 => $paketSwakelola,
+                    5 => $paguSwakelola,
+                    6 => $paketPenyediaDalamSwakelola,
+                    7 => $paguPenyediaDalamSwakelola,
+                    8 => $totalDalamPaket,
+                    9 => $totalPagu,
+                ],
+            ];
+        }
+    
+        $grandTotal = [
+            'paket_total' => collect($data)->sum(fn($item) => $item['data'][8]),
+            'pagu_total' => collect($data)->sum(fn($item) => $item['data'][9]),
         ];
+    
+        $tahunTersedia = collect([2024, 2025])->sortDesc()->values();
+    
+        return view('satker.rup', compact('data', 'grandTotal', 'tahun', 'opd', 'daftarSatker', 'tahunTersedia'));
     }
-
-    $grandTotal = [
-        'paket_total' => collect($data)->sum(fn($item) => $item['data'][8]),
-        'pagu_total' => collect($data)->sum(fn($item) => $item['data'][9]),
-    ];
-
-    $tahunTersedia = collect([2024, 2025])->sortDesc()->values();
-
-    return view('satker.rup', compact('data', 'grandTotal', 'tahun', 'opd', 'daftarSatker', 'tahunTersedia'));
-}
+    
 
 public function exportpdf()
 {
