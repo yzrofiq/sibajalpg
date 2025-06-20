@@ -1,61 +1,146 @@
+@extends('layouts.adminlte')
+
+@section('title', 'RUP Provinsi Lampung')
+
+@push('style')
+<link rel="stylesheet" href="{{ url('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet" href="{{ url('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
 <style>
-    td {
-      border: 1px solid #000000; 
-      padding: 5px; 
-    }
-  </style>
-  <page>
-    <div style="text-align: center; font-size: 14px">
-      <p style="margin: 0;"><b>DATA RENCANA UMUM PENGADAAN (RUP)</b></p>
-      <p style="margin: 0;"><b>PEMERINTAH PROVINSI LAMPUNG</b></p>
-      <p style="margin: 0;"><b>PER TANGGAL {{ date("d") }} {{ strtoupper(getMonthName(date("m"))) }} {{ date("Y") }}</b></p>
+  .swakelola-col {
+    min-width: 80px;
+  }
+</style>
+@endpush
+
+@section('navbar-extra')
+<li class="nav-item d-flex align-items-center">
+  <form id="filterForm" action="{{ route('report.rup') }}" method="GET" class="form-inline">
+    <select class="form-control form-control-sm mr-2" disabled>
+      <option selected>Provinsi Lampung</option>
+    </select>
+    <select name="tahun" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+      @foreach(collect($tahunTersedia)->sortDesc() as $t)
+        <option value="{{ $t }}" {{ request('tahun') == $t ? 'selected' : '' }}>{{ $t }}</option>
+      @endforeach
+    </select>
+    <select name="opd" class="form-control" onchange="document.getElementById('filterForm').submit()">
+  <option value="">Semua Satuan Kerja</option>
+  @foreach($daftarSatker as $opd)
+    <option value="{{ $opd }}" {{ request('opd') == $opd ? 'selected' : '' }}>
+      {{ $opd }}
+    </option>
+  @endforeach
+</select>
+
+  </form>
+</li>
+@endsection
+
+
+@section('content')
+
+<section class="content">
+  <div class="container-fluid">
+
+  {{-- Summary --}}
+<div class="row">
+  <div class="col-md-6 mb-3">
+    <div class="card bg-info text-white shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <div class="flex-grow-1">
+          <div class="text-uppercase small font-weight-bold">Total Paket</div>
+          <div class="h3 mb-0">{{ number_format($grandTotal['paket_total'], 0, ',', '.') }}</div>
+        </div>
+        <div class="text-end">
+          <i class="fas fa-box fa-2x ms-3"></i>
+        </div>
+      </div>
     </div>
-  
-    <br/>
-  
-    <div>
-      <table style="width: 100%; border-collapse: collapse; max-width: 100%; display: block; border: 1px solid #000000">
-        <tr style="text-align: center;">
-          <td rowspan="2" style="text-align: center; vertical-align: middle;">No.</td>
-          <td rowspan="2" style="text-align: center; vertical-align: middle;">SATUAN KERJA</td>
-          <td colspan="2" style="width: 13%; text-align: center;">PENYEDIA</td>
-          <td colspan="2" style="width: 13%; text-align: center;">SWAKELOLA</td>
-          <td colspan="3" style="width: 22%; text-align: center;">PENYEDIA DALAM SWAKELOLA</td>
-          <td>TOTAL</td>
-        </tr>
-        <tr>
-          <td style="vertical-align: middle; text-align: center;">PAKET</td>
-          <td style="vertical-align: middle; text-align: center;">PAGU</td>
-          <td style="vertical-align: middle; text-align: center;">PAKET</td>
-          <td style="vertical-align: middle; text-align: center;">PAGU</td>
-          <td style="vertical-align: middle; text-align: center;">PAKET</td>
-          <td style="vertical-align: middle; text-align: center;">PAGU</td>
-          <td style="text-align: center; font-size: 10px;">TOTAL<br/>DALAM PAKET</td>
-          <td>TOTAL PAGU</td>
-        </tr>
-        @foreach ($data as $item)
-        <tr>
-          <td style="text-align: center;">{{ $loop->iteration }}</td>
-          <td>{{ $item['name'] }}</td>
-          @for ($i = 2; $i <= 9; $i++)
-          <td>{{ moneyFormat($item['data'][$i]) }}</td>
-          @endfor
-        </tr>
-        @endforeach
-      </table>
-      <br/><br/><br/><br/>
-      <table style="width: 90%;">
-        <tr>
-          <td style="width: 80%; border: 0;"></td>
-          <td style="width: 29.5%; text-align: center; font-weight: bold; border: 0;">
-            <p style="margin: 0;">KEPALA BIRO PENGADAAN</p>
-            <p style="margin: 0;">BARANG DAN JASA,</p>
-            <br/><br/><br/><br/><br/><br/><br/><br/>
-            <p style="margin: 0;">SLAMET RIADI, S.Sos</p>
-            <p style="margin: 0;">PEMBINA UTAMA MUDA</p>
-            <p style="margin: 0;">NIP. 19670828 199903 1 005</p>
-          </td>
-        </tr>
-      </table>
+  </div>
+  <div class="col-md-6 mb-3">
+    <div class="card bg-success text-white shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <div class="flex-grow-1">
+          <div class="text-uppercase small font-weight-bold">Total Pagu</div>
+          <div class="h3 mb-0">Rp {{ number_format($grandTotal['pagu_total'], 0, ',', '.') }}</div>
+        </div>
+        <div class="text-end">
+          <i class="fas fa-money-bill-wave fa-2x ms-3"></i>
+        </div>
+      </div>
     </div>
-  </page>
+  </div>
+</div>
+
+
+
+    {{-- Table --}}
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">Rekapitulasi RUP</h3>
+        <div class="ml-auto">
+  <a href="{{ route('report.rup.pdf', request()->all()) }}" class="btn btn-success btn-sm">Export PDF</a>
+</div>
+
+      </div>
+      <div class="card-body table-responsive">
+        <table id="rupTable" class="table table-bordered table-hover text-nowrap w-100">
+          <thead class="thead-light">
+            <tr>
+              <th rowspan="2">No</th>
+              <th rowspan="2">Satker</th>
+              <th colspan="2">Penyedia</th>
+              <th colspan="2">Swakelola</th>
+              <th colspan="2" class="text-center">Penyedia Dalam Swakelola</th>
+              <th colspan="2">Total</th>
+            </tr>
+            <tr>
+              <th>Paket</th><th>Pagu</th>
+              <th>Paket</th><th>Pagu</th>
+              <th class="swakelola-col">Paket</th><th class="swakelola-col">Pagu</th>
+              <th>Paket</th><th>Pagu</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach($data as $index => $item)
+              <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $item['name'] }}</td>
+                @for ($i = 2; $i <= 9; $i++)
+                  <td class="{{ in_array($i, [6,7]) ? 'swakelola-col' : '' }}">
+                    {{ number_format($item['data'][$i], 0, ',', '.') }}
+                  </td>
+                @endfor
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+@endsection
+
+@push('script')
+<script src="{{ url('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ url('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>
+  $(function () {
+    $('#rupTable').DataTable({
+      scrollX: true,
+      autoWidth: false,
+      language: {
+        search: "Cari:",
+        lengthMenu: "Tampilkan _MENU_ entri",
+        zeroRecords: "Tidak ditemukan",
+        info: "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
+        infoEmpty: "Tidak ada entri",
+        paginate: { previous: "Sebelumnya", next: "Berikutnya" }
+      }
+    });
+  });
+</script>
+@endpush

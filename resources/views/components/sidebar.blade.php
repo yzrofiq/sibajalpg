@@ -1,33 +1,24 @@
 <!-- Sidebar -->
 <div class="sidebar">
-
   <!-- Sidebar Menu -->
   <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-      <!-- Add icons to the links using the .nav-icon class
-           with font-awesome or any other icon font library -->
       <li class="nav-item">
         <a href="{{ route('tender.list') }}" class="nav-link">
           <i class="nav-icon fa fa-list-ol"></i>
-          <p>
-            Tender
-          </p>
+          <p>Tender</p>
         </a>
       </li>
       <li class="nav-item">
         <a href="{{ route('non-tender.list') }}" class="nav-link">
           <i class="nav-icon fa fa-list-ul"></i>
-          <p>
-            Non Tender
-          </p>
+          <p>Non Tender</p>
         </a>
       </li>
       <li class="nav-item">
         <a href="#" class="nav-link">
           <i class="nav-icon fas fa-newspaper"></i>
-          <p>
-            E-Katalog
-          </p>
+          <p>E-Katalog</p>
         </a>
       </li>
       <li class="nav-item">
@@ -85,6 +76,11 @@
             </a>
           </li>
           <li class="nav-item">
+            <a target="_blank" href="{{ url('/struktur-anggaran') }}" class="nav-link">
+              <p>Struktur Anggaran</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ route('vendor.list') }}" class="nav-link">
               <p>Data Vendor</p>
             </a>
@@ -99,22 +95,17 @@
       <li class="nav-item">
         <a target="_blank" href="{{ route('report') }}" class="nav-link">
           <i class="nav-icon fa fa-chart-pie"></i>
-          <p>
-            Grafik Report
-          </p>
+          <p>Grafik Report</p>
         </a>
       </li>
       @if ( Auth::user()->role_id == 1 )
       <li class="nav-item">
         <a href="{{ route('user.list') }}" class="nav-link">
           <i class="nav-icon fa fa-users"></i>
-          <p>
-            Manajemen User
-          </p>
+          <p>Manajemen User</p>
         </a>
       </li>
       @endif
-      
     </ul>
   </nav>
   <!-- /.sidebar-menu -->

@@ -11,6 +11,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
 use App\Services\NonTenderService;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StrukturAnggaranController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -75,9 +77,16 @@ Route::group([
 ], function() {
     Route::get('/categorize', [SatkerController::class, 'categorizeReport'])->name('categorize');
     Route::get('/rup', [SatkerController::class, 'rup'])->name('rup');
+    Route::get('/rup/pdf', [SatkerController::class, 'exportPdf'])->name('rup.pdf');
+    Route::get('/rup/excel', [SatkerController::class, 'exportExcel'])->name('rup.excel');
     Route::get('/all', [SatkerController::class, 'all'])->name('all');
     Route::get('/review', [SatkerController::class, 'review'])->name('review');
 });
+
+
+
+Route::get('/struktur-anggaran', [StrukturAnggaranController::class, 'index'])->name('struktur-anggaran.index');
+
 
 
 Route::group([

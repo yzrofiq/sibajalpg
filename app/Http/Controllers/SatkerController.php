@@ -6,10 +6,15 @@ use App\Models\NonTender;
 use App\Models\Satker;
 use App\Models\Tender;
 use App\Models\TenderSchedule;
+use App\Models\StrukturAnggaran;
+use App\Models\Swakelola;
+use App\Models\Penyedia;
 use App\Services\RupService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Spipu\Html2Pdf\Html2Pdf;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Collection;
 
 class SatkerController extends Controller
 {
@@ -179,32 +184,171 @@ class SatkerController extends Controller
         $html2pdf->output();
     }
 
-    public function rup()
-    {
-        $now        = Carbon::now();
-        $satker     = Satker::orderBy('nama_satker', 'ASC')->get();
-        $data       = [];
-        $total      = [];
-        $codes      = [];
+public function rup(Request $request)
+{
+    $tahun = $request->input('tahun', date('Y'));
+    $opd = $request->input('opd');
 
-        $rup    = RupService::get();
+    $struktur = StrukturAnggaran::where('tahun_anggaran', $tahun)
+        ->where('kd_klpd', 'D264')
+        ->where('nama_klpd', 'Provinsi Lampung');
+    $swakelola = Swakelola::where('tahun_anggaran', $tahun)
+        ->where('kd_klpd', 'D264')
+        ->where('nama_klpd', 'Provinsi Lampung')
+        ->where('status_aktif_rup', true);
+    $penyedia = Penyedia::where('tahun_anggaran', $tahun)
+        ->where('kd_klpd', 'D264')
+        ->where('nama_klpd', 'Provinsi Lampung')
+        ->where('status_aktif_rup', true);
 
-        if( property_exists($rup, 'aaData') ) {
-            $external   = $rup->aaData;
-            foreach ($external as $value) {
-                array_push($data, [
-                    'name' => $value[1],
-                    'data' => $value,
-                ]);
-            }
-        }
-        
-        $html2pdf   = new Html2Pdf('L', 'F4', 'en', true, 'UTF-8', [9, 15, 9, 15]);
-        $render     = view('satker.rup', compact('data', 'total'));
-        $html2pdf->writeHTML($render);
-
-        $html2pdf->output();
+    if ($opd) {
+        $struktur = $struktur->where('nama_satker', $opd);
+        $swakelola = $swakelola->where('nama_satker', $opd);
+        $penyedia = $penyedia->where('nama_satker', $opd);
     }
+
+    $struktur = $struktur->get();
+    $swakelola = $swakelola->get();
+    $penyedia = $penyedia->get();
+
+    $daftarSatker = collect($struktur)->pluck('nama_satker')
+        ->merge($swakelola->pluck('nama_satker'))
+        ->merge($penyedia->pluck('nama_satker'))
+        ->filter()
+        ->unique()
+        ->sort()
+        ->values();
+
+    $data = [];
+
+    foreach ($daftarSatker as $satker) {
+        $penyediaSatker = $penyedia->where('nama_satker', $satker);
+        $swakelolaSatker = $swakelola->where('nama_satker', $satker);
+
+        $paketPenyedia = $penyediaSatker->count();
+        $paguPenyedia = $penyediaSatker->sum('pagu');
+
+        $paketSwakelola = $swakelolaSatker->count();
+        $paguSwakelola = $swakelolaSatker->sum('pagu');
+
+        $paketPenyediaDalamSwakelola = 0; // Placeholder
+        $paguPenyediaDalamSwakelola = 0;
+
+        $totalDalamPaket = $paketPenyedia + $paketSwakelola + $paketPenyediaDalamSwakelola;
+        $totalPagu = $paguPenyedia + $paguSwakelola + $paguPenyediaDalamSwakelola;
+
+        $data[] = [
+            'name' => $satker,
+            'data' => [
+                2 => $paketPenyedia,
+                3 => $paguPenyedia,
+                4 => $paketSwakelola,
+                5 => $paguSwakelola,
+                6 => $paketPenyediaDalamSwakelola,
+                7 => $paguPenyediaDalamSwakelola,
+                8 => $totalDalamPaket,
+                9 => $totalPagu,
+            ],
+        ];
+    }
+
+    $grandTotal = [
+        'paket_total' => collect($data)->sum(fn($item) => $item['data'][8]),
+        'pagu_total' => collect($data)->sum(fn($item) => $item['data'][9]),
+    ];
+
+    $tahunTersedia = collect([2024, 2025])->sortDesc()->values();
+
+    return view('satker.rup', compact('data', 'grandTotal', 'tahun', 'opd', 'daftarSatker', 'tahunTersedia'));
+}
+
+public function exportpdf()
+{
+    $tahun = $this->request->get('tahun', date('Y'));
+
+    $struktur = StrukturAnggaran::where('tahun_anggaran', $tahun)
+        ->where('kd_klpd', 'D264')
+        ->where('nama_klpd', 'Provinsi Lampung')
+        ->get();
+
+    $swakelola = Swakelola::where('tahun_anggaran', $tahun)
+        ->where('kd_klpd', 'D264')
+        ->where('nama_klpd', 'Provinsi Lampung')
+        ->where('status_aktif_rup', true)
+        ->get();
+
+    $penyedia = Penyedia::where('tahun_anggaran', $tahun)
+        ->where('kd_klpd', 'D264')
+        ->where('nama_klpd', 'Provinsi Lampung')
+        ->where('status_aktif_rup', true)
+        ->get();
+
+    $satkers = collect($struktur)->pluck('nama_satker')
+        ->merge($swakelola->pluck('nama_satker'))
+        ->merge($penyedia->pluck('nama_satker'))
+        ->filter()
+        ->unique()
+        ->sort()
+        ->values();
+
+    $data = [];
+
+    foreach ($satkers as $satker) {
+        $penyediaSatker = $penyedia->where('nama_satker', $satker);
+        $swakelolaSatker = $swakelola->where('nama_satker', $satker);
+
+        $paketPenyedia = $penyediaSatker->count();
+        $paguPenyedia = $penyediaSatker->sum('pagu');
+
+        $paketSwakelola = $swakelolaSatker->count();
+        $paguSwakelola = $swakelolaSatker->sum('pagu');
+
+        $paketPenyediaDalamSwakelola = 0; // Placeholder
+        $paguPenyediaDalamSwakelola = 0;
+
+        $totalDalamPaket = $paketPenyedia + $paketSwakelola + $paketPenyediaDalamSwakelola;
+        $totalPagu = $paguPenyedia + $paguSwakelola + $paguPenyediaDalamSwakelola;
+
+        $data[] = [
+            'name' => $satker,
+            'data' => [
+                2 => $paketPenyedia,
+                3 => $paguPenyedia,
+                4 => $paketSwakelola,
+                5 => $paguSwakelola,
+                6 => $paketPenyediaDalamSwakelola,
+                7 => $paguPenyediaDalamSwakelola,
+                8 => $totalDalamPaket,
+                9 => $totalPagu,
+            ],
+        ];
+    }
+
+    $grandTotal = [
+        'paket_penyedia' => collect($data)->sum(fn($item) => $item['data'][2]),
+        'pagu_penyedia' => collect($data)->sum(fn($item) => $item['data'][3]),
+        'paket_swakelola' => collect($data)->sum(fn($item) => $item['data'][4]),
+        'pagu_swakelola' => collect($data)->sum(fn($item) => $item['data'][5]),
+        'paket_dalam' => collect($data)->sum(fn($item) => $item['data'][6]),
+        'pagu_dalam' => collect($data)->sum(fn($item) => $item['data'][7]),
+        'paket_total' => collect($data)->sum(fn($item) => $item['data'][8]),
+        'pagu_total' => collect($data)->sum(fn($item) => $item['data'][9]),
+    ];
+
+    $html2pdf = new \Spipu\Html2Pdf\Html2Pdf('L', 'F4', 'en', true, 'UTF-8', [5, 5, 5, 5]);
+
+    $render = view('satker.ruppdf', compact('data', 'grandTotal', 'tahun'))->render();
+
+    // Tambahkan CSS
+    $render = '<style>
+        body { font-size: 11px; }
+        table { font-size: 10px; }
+        td, th { padding: 4px !important; word-wrap: break-word; }
+    </style>' . $render;
+
+    $html2pdf->writeHTML($render);
+    return $html2pdf->output("laporan-rup-$tahun.pdf", 'I');
+}
 
     public function all()
     {
