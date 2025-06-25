@@ -17,11 +17,10 @@
   <form id="filterForm" action="{{ route('report.rup') }}" method="GET" class="form-inline">
 
     {{-- Provinsi --}}
-    <div class="form-group mr-2 mb-0">
-      <select class="form-control form-control-sm" disabled>
-        <option selected>Provinsi Lampung</option>
-      </select>
-    </div>
+<div class="form-group mr-2 mb-0">
+  <input type="text" class="form-control form-control-sm" value="Provinsi Lampung" readonly>
+</div>
+
 
     {{-- Tahun --}}
     <div class="form-group mr-2 mb-0">
@@ -52,6 +51,15 @@
 
 <section class="content">
   <div class="container-fluid">
+
+  {{-- Header Box --}}
+<div class="card mb-3 mt-3">
+  <div class="card-body bg-light border rounded">
+    <strong>Rencana Umum Pengadaan (RUP)</strong>
+  </div>
+</div>
+
+
 
   {{-- Summary --}}
 <div class="row">
@@ -133,11 +141,25 @@
 </section>
 @endsection
 
+@push('style')
+<link rel="stylesheet" href="{{ url('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet" href="{{ url('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  div.dataTables_wrapper div.dataTables_info {
+    margin-top: 15px !important;
+  }
+
+  div.dataTables_wrapper div.dataTables_paginate {
+    margin-top: 15px !important;
+  }
+</style>
+@endpush
+
 @push('script')
 <script src="{{ url('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ url('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ url('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script>
   $(function () {
     $('#rupTable').DataTable({

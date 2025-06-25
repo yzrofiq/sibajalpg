@@ -9,9 +9,11 @@ use App\Http\Controllers\SatkerController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\EkatalogReportController;
 use App\Services\NonTenderService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StrukturAnggaranController;
+
 
 
 /*
@@ -55,6 +57,17 @@ Route::group([
     Route::get('/realization', [TenderController::class, 'realization'])->name('realization');
     Route::get('/fund-source', [SatkerController::class, 'sourceReport'])->name('fund.source');
     Route::post('/update/{code}', [TenderController::class, 'update'])->name('update');
+});
+
+
+Route::group([
+    'prefix' => 'report',
+    'as' => 'report.',
+    'middleware' => 'auth',
+], function () {
+    Route::get('/ekatalog', [EkatalogReportController::class, 'index'])->name('ekatalog');
+    Route::get('/ekatalog/show/{version}/{code}', [EkatalogReportController::class, 'show'])->name('ekatalog.show'); // opsional jika kamu tambahkan nanti
+    Route::get('/ekatalog/export-pdf', [EkatalogReportController::class, 'exportPdf'])->name('ekatalog.exportpdf');
 });
 
 Route::group([

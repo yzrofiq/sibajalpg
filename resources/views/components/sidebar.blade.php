@@ -15,12 +15,31 @@
           <p>Non Tender</p>
         </a>
       </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link">
-          <i class="nav-icon fas fa-newspaper"></i>
-          <p>E-Katalog</p>
-        </a>
-      </li>
+      <li class="nav-item has-treeview">
+  <a href="#" class="nav-link">
+    <i class="nav-icon fas fa-shopping-cart"></i>
+    <p>
+      E-Purchasing
+      <i class="right fas fa-angle-left"></i>
+    </p>
+  </a>
+  <ul class="nav nav-treeview">
+    <li class="nav-item">
+      <a href="{{ route('report.ekatalog') }}" class="nav-link">
+        <p>E-Katalog</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a target="_blank" href="{{ route('tender.fund.source') }}" class="nav-link">
+        <p>Toko Daring</p>
+      </a>
+    </li>
+  </ul>
+</li>
+
+</li>
+
+
       <li class="nav-item">
         <a href="#" class="nav-link">
           <i class="nav-icon fas fa-download"></i>
@@ -73,11 +92,6 @@
           <li class="nav-item">
             <a target="_blank" href="{{ route('report.rup') }}" class="nav-link">
               <p>Data RUP</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a target="_blank" href="{{ url('/struktur-anggaran') }}" class="nav-link">
-              <p>Struktur Anggaran</p>
             </a>
           </li>
           <li class="nav-item">
