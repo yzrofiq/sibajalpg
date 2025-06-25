@@ -49,8 +49,6 @@
         <i class="fas fa-bars"></i>
       </a>
     </li>
-
-    {{-- Tambahan filter khusus halaman tertentu --}}
     @yield('navbar-extra')
   </ul>
 
@@ -64,17 +62,6 @@
   </ul>
 </nav>
 
-
-    <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item dropdown">
-        <a class="nav-link text-danger" href="{{ route('logout') }}">
-          <i class="fas fa-sign-out-alt"></i>
-        </a>
-      </li>
-    </ul>
-  </nav>
-  <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">

@@ -4,6 +4,7 @@
     padding: 5px; 
   }
 </style>
+
 <page>
   <div style="text-align: center; font-size: 14px">
     <p style="margin: 0;"><b>REALISASI PAKET NON TENDER</b></p>
@@ -43,7 +44,7 @@
         <td style="text-align: center;">{{ $item['services'] }}</td>
         <td style="text-align: right;">{{ moneyFormat($item['pagu']) }}</td>
         <td style="text-align: right;">{{ moneyFormat($item['hps']) }}</td>
-        <td style="text-align: right;"></td>
+        <td style="text-align: right;">{{ moneyFormat($item['nilai_terkontrak']) }}</td>
         <td style="text-align: right;">{{ moneyFormat($item['efficiency']) }}</td>
       </tr>
       @endforeach
@@ -56,11 +57,13 @@
         <td style="text-align: center;">{{ $total['services'] }}</td>
         <td style="text-align: right;">{{ moneyFormat($total['pagu']) }}</td>
         <td style="text-align: right;">{{ moneyFormat($total['hps']) }}</td>
-        <td style="text-align: right;"></td>
+        <td style="text-align: right;">{{ moneyFormat($total['nilai_terkontrak']) }}</td>
         <td style="text-align: right;">{{ moneyFormat($total['efficiency']) }}</td>
       </tr>
     </table>
+
     <br/><br/><br/><br/>
+
     <table style="width: 90%;">
       <tr>
         <td style="width: 80%; border: 0;"></td>
