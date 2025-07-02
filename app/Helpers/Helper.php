@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\NonTender;
+use App\Models\NonTenderPengumuman;
 use App\Models\Setting;
 use App\Models\Tender;
 use App\Services\HelperService;
@@ -44,9 +44,13 @@ function getCurrentDateTime() {
     return Carbon::now()->addHours(7)->format("Y-m-d H:i:s");
 }
 
+
 function getNonTenderCount() {
-    return NonTender::where('kd_klpd', '=', 'D264')->where('nama_status_nontender', '=', 'aktif')->count();
+    return NonTenderPengumuman::where('kd_klpd', 'D264')
+        ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
+        ->count();
 }
+
 
 function getTenderCount() {
     return Tender::where('kd_klpd', '=', 'D264')->where('nama_status_tender', '=', 'aktif')->whereNotNull('nama_paket')->count();
@@ -74,10 +78,25 @@ function getCategory($category) {
     return null;
 }
 
-function getBela() {
-    $setting    = Setting::where('setting_code', '=', 'bela')->first();
-    if( !$setting ) {
-        $setting    = Setting::create(['setting_code' => 'bela', 'setting_value' => '0']);
+function getBela($tahun = null) {
+    $tahun = $tahun ?? date('Y');
+
+    $total = \App\Models\TokoDaring::where('tahun', $tahun)->sum('valuasi');
+
+    if ($total > 0) {
+        return $total;
     }
-    return $setting->setting_value;
+
+    // fallback jika belum ada data
+    $setting = \App\Models\Setting::where('setting_code', 'bela')->first();
+    return $setting ? $setting->setting_value : 0;
 }
+
+
+function getEkatalogCount() {
+    $v5 = \App\Models\EkatalogV5Paket::whereIn('tahun_anggaran', [2024, 2025])->count();
+    $v6 = \App\Models\EkatalogV6Paket::whereIn('tahun_anggaran', [2024, 2025])->count();
+    return $v5 + $v6;
+}
+
+

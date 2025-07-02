@@ -30,10 +30,11 @@
       </a>
     </li>
     <li class="nav-item">
-      <a target="_blank" href="{{ route('tender.fund.source') }}" class="nav-link">
-        <p>Toko Daring</p>
-      </a>
-    </li>
+  <a href="{{ route('report.tokodaring') }}" class="nav-link">
+    <p>Toko Daring</p>
+  </a>
+</li>
+
   </ul>
 </li>
 

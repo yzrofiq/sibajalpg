@@ -10,9 +10,11 @@ use App\Http\Controllers\TenderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\EkatalogReportController;
+use App\Http\Controllers\TokoDaringReportController;
 use App\Services\NonTenderService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StrukturAnggaranController;
+use App\Http\Controllers\HomeController;
 
 
 
@@ -31,6 +33,9 @@ Route::get('/', [FrontController::class, 'index'])->middleware('guest')->name('f
 Route::post('/', [AuthController::class, 'login'])->middleware('guest')->name('login');
 Route::get('/graph-report', [FrontController::class, 'report'])->name('report');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/home', [HomeController::class, 'index'])->middleware('auth')->name('home');
+
 
 Route::group([
     'prefix' => 'non-tender',
@@ -66,9 +71,14 @@ Route::group([
     'middleware' => 'auth',
 ], function () {
     Route::get('/ekatalog', [EkatalogReportController::class, 'index'])->name('ekatalog');
-    Route::get('/ekatalog/show/{version}/{code}', [EkatalogReportController::class, 'show'])->name('ekatalog.show'); // opsional jika kamu tambahkan nanti
+    Route::get('/ekatalog/show/{version}/{code}', [EkatalogReportController::class, 'show'])->name('ekatalog.show');
     Route::get('/ekatalog/export-pdf', [EkatalogReportController::class, 'exportPdf'])->name('ekatalog.exportpdf');
+
+    // ✅ Tambahkan ini
+    Route::get('/tokodaring', [TokoDaringReportController::class, 'index'])->name('tokodaring');
+    Route::get('/tokodaring/export-pdf', [TokoDaringReportController::class, 'exportPdf'])->name('tokodaring.exportpdf');
 });
+
 
 Route::group([
     'prefix' => 'vendor',
