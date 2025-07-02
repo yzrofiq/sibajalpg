@@ -16,29 +16,37 @@ class AuthController extends Controller
     }
 
     public function login()
-    {
-        $this->validate($this->request, [
-            'username' => ['required'],
-            'password' => ['required'],
-        ], [
-            'username.required' => 'Username harus diisi',
-            'password.required' => 'Password harus diisi',
-        ]);
+{
+    $this->validate($this->request, [
+        'username' => ['required'],
+        'password' => ['required'],
+    ], [
+        'username.required' => 'Username harus diisi',
+        'password.required' => 'Password harus diisi',
+    ]);
 
-        $request    = $this->request->only(['username', 'password']);
+    $request = $this->request->only(['username', 'password']);
 
-        $user   = User::where('username', '=', trim($request['username']))->first();
-        if( !$user ) {
-            return redirect( route('front') )->withErrors(['Username tidak ditemukan']);
-        }
-
-        $attempt    = Auth::attempt($request);
-        if( $attempt ) {
-            return redirect( route('non-tender.list') );
-        }
-
-        return redirect( route('front') )->withErrors(['Username dan password salah']);
+    $user = User::where('username', '=', trim($request['username']))->first();
+    if (!$user) {
+        return redirect(route('front'))->withErrors(['Username tidak ditemukan']);
     }
+
+    if (Auth::attempt($request)) {
+        $user = Auth::user();
+
+        if ($user->role_id == 1) {
+            return redirect()->route('non-tender.list'); // admin
+        } else {
+            return redirect()->route('home'); // user biasa ke halaman SIBaJA
+        }
+    }
+
+    return redirect(route('front'))->withErrors(['Username dan password salah']);
+}
+
+    
+
 
     public function logout()
     {

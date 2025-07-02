@@ -73,7 +73,19 @@ class EkatalogReportController extends Controller
         $totalPaket = $data->count();
         $totalNilai = $data->sum('nilai_kontrak');
 
-        $satkerList = $data->pluck('nama_satker')->unique()->sort()->values();
+// Replace ini (yang salah)
+$satkerList = $data->pluck('nama_satker')->unique()->sort()->values();
+
+// Dengan ini:
+$satkerList = $versi === 'V5'
+    ? Penyedia::where('tahun_anggaran', $tahun)
+        ->where('kd_klpd', 'D264')
+        ->pluck('nama_satker')
+    : EkatalogV6Paket::where('tahun_anggaran', $tahun)
+        ->whereNotNull('nama_satker')
+        ->pluck('nama_satker');
+
+$satkerList = $satkerList->filter()->unique()->sort()->values();
         $tahunTersedia = collect([2024, 2025]);
 
         return view('E-purchasing.ekatalog', compact(
