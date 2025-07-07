@@ -24,6 +24,13 @@ function getMonthName($monthNumber) {
     return $months[$monthIndex];
 }
 
+function getMonthNameUpper($monthNumber) {
+    $name = getMonthName($monthNumber);
+    return strtoupper($name);
+}
+
+
+
 function getIndonesianDate($date) {
     $exploded   = explode("-", $date);
     if( count($exploded) != 3 ) {
@@ -78,10 +85,9 @@ function getCategory($category) {
     return null;
 }
 
-function getBela($tahun = null) {
-    $tahun = $tahun ?? date('Y');
+function getBelaCount() {
 
-    $total = \App\Models\TokoDaring::where('tahun', $tahun)->sum('valuasi');
+    $total = \App\Models\TokoDaring::whereIn('tahun', [2024, 2025])->count();
 
     if ($total > 0) {
         return $total;

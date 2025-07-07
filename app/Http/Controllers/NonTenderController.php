@@ -114,11 +114,16 @@ class NonTenderController extends Controller
         $url = url()->full();
         if (!str_contains($url, "?")) $url .= "?";
 
-        return view('non-tender.index-lte', compact(
-            'satkers', 'years', 'data', 'total', 'totalFull',
-            'code', 'name', 'year', 'satkerCode',
-            'categories', 'categoriesCount', 'url', 'categoryParam'
-        ));
+        $view = auth()->user()->role_id == 1
+        ? 'non-tender.index-lte'
+        : 'users.non-tender.index-lte';
+    
+    return view($view, compact(
+        'satkers', 'years', 'data', 'total', 'totalFull',
+        'code', 'name', 'year', 'satkerCode',
+        'categories', 'categoriesCount', 'url', 'categoryParam'
+    ));
+    
     }
 
     public function show($code)
@@ -132,8 +137,12 @@ class NonTenderController extends Controller
 
         $data->pagu = HelperService::moneyFormat($data->pagu);
 
-        return view('non-tender.show-lte', compact('data', 'url'));
-    }
+        $view = auth()->user()->role_id == 1
+        ? 'non-tender.show-lte'
+        : 'users.non-tender.show-lte';
+    
+    return view($view, compact('data', 'url'));
+        }
 
     public function realization()
     {
@@ -210,11 +219,17 @@ class NonTenderController extends Controller
         $finalData = array_values($data);
 
         $html2pdf = new Html2Pdf('L', 'A3', 'en', true, 'UTF-8', [10, 10, 10, 10]);
-        $render = view('non-tender.realization', [
-            'data' => $finalData,
-            'total' => $total
-        ]);
+        $view = auth()->user()->role_id == 1
+        ? 'non-tender.realization'
+        : 'users.non-tender.realization';
+    
+    $render = view($view, [
+        'data' => $finalData,
+        'total' => $total
+    ]);
+    
         $html2pdf->writeHTML($render);
         $html2pdf->output();
     }
+    
 }

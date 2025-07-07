@@ -53,6 +53,9 @@ class EkatalogV5Paket extends Model
 
     public static function uniqueKeys($data)
     {
-        return ['kd_paket' => $data['kd_paket'] ?? null];
+        return [
+            'kd_paket' => $data['kd_paket'] ?? null,
+            'kd_produk' => $data['kd_produk'] ?? null,
+        ];
     }
 }

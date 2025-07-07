@@ -8,6 +8,7 @@ use App\Models\NonTenderPengumuman;
 use App\Models\NonTenderSelesai;
 use App\Models\PencatatanNonTender;
 use App\Models\RealisasiNonTender;
+use App\Models\NonTenderBapbast;
 use App\Models\NonTenderSpmk;
 use App\Models\NonTenderSchedule;
 use App\Models\NonTenderKontrak;
@@ -33,6 +34,7 @@ class NonTenderUpdate extends Command
             $this->fetchAndStore("https://isb.lkpp.go.id/isb-2/api/7907570a-6182-415c-a779-57e0bf9dd723/json/9611/SPSE-NonTenderEkontrak-SPMKSPP/tipe/4:4/parameter/{$year}:{$this->lpse}", NonTenderSpmk::class);
             $this->fetchAndStore("https://isb.lkpp.go.id/isb-2/api/f4cf80ec-5515-406c-9723-7f7a50fce60c/json/9635/SPSE-JadwalTahapanNonTender/tipe/4:4/parameter/{$year}:{$this->lpse}", NonTenderSchedule::class);
             $this->fetchAndStore("https://isb.lkpp.go.id/isb-2/api/1e794c40-0463-408c-b780-6d0af864dadc/json/9601/SPSE-NonTenderEkontrak-Kontrak/tipe/4:4/parameter/{$year}:{$this->lpse}", NonTenderKontrak::class);
+            $this->fetchAndStore("https://isb.lkpp.go.id/isb-2/api/452b1be7-ab09-456b-bb7a-e5e6cbfab7fa/json/9612/SPSE-NonTenderEkontrak-BAPBAST/tipe/4:4/parameter/{$year}:{$this->lpse}",NonTenderBapbast::class);
         }
 
         $this->info('✔ Semua data Non Tender berhasil diperbarui.');

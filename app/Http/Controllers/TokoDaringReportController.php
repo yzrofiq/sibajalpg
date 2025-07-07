@@ -49,6 +49,12 @@ $totalTransaksi = $rekap->sum('total_transaksi');
 $totalNilai = $rekap->sum('nilai_transaksi');
 $tahunTersedia = collect([2024, 2025]);
 
+if (auth()->user()->role_id == 2) {
+    return view('users.E-purchasing.tokodaring', compact(
+        'rekap', 'tahun', 'satker', 'totalTransaksi', 'totalNilai', 'tahunTersedia', 'satkerList'
+    ));
+}
+
 return view('E-purchasing.tokodaring', compact(
     'rekap', 'tahun', 'satker', 'totalTransaksi', 'totalNilai', 'tahunTersedia', 'satkerList'
 ));

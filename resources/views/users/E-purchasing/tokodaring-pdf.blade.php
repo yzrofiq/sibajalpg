@@ -1,10 +1,4 @@
-@php
-  $judulVersi = $versi === 'V5' ? 'LAPORAN E-KATALOG VERSI 5 (V5)' : 'LAPORAN E-KATALOG VERSI 6 (V6)';
-  $totalTransaksi = 0;
-  $totalNilai = 0;
-@endphp
-
-<h3 style="text-align: center;">{{ $judulVersi }}<br>{{ $tanggal }}</h3>
+<h3 style="text-align: center;">LAPORAN TOKO DARING (BELA PENGADAAN)<br>{{ $tanggal }}</h3>
 
 <style>
   body {
@@ -22,34 +16,19 @@
   th, td {
     border: 1px solid #000;
     padding: 5px;
+    text-align: center;
     vertical-align: middle;
     word-wrap: break-word;
   }
 
   th {
     background-color: #f0f0f0;
-    text-align: center;
   }
 
-  td:nth-child(1) {
-    width: 5%;
-    text-align: center;
-  }
-
-  td:nth-child(2) {
-    width: 50%;
-    text-align: left;
-  }
-
-  td:nth-child(3) {
-    width: 20%;
-    text-align: center;
-  }
-
-  td:nth-child(4) {
-    width: 25%;
-    text-align: right;
-  }
+  th:nth-child(1), td:nth-child(1) { width: 5%; }
+  th:nth-child(2), td:nth-child(2) { width: 50%; text-align: left; }
+  th:nth-child(3), td:nth-child(3) { width: 20%; }
+  th:nth-child(4), td:nth-child(4) { width: 25%; text-align: right; }
 
   .ttd-table {
     width: 100%;
@@ -65,6 +44,11 @@
   .ttd-table p {
     margin: 0;
   }
+
+  .summary-row td {
+    font-weight: bold;
+    background-color: #f9f9f9;
+  }
 </style>
 
 <table>
@@ -77,28 +61,31 @@
     </tr>
   </thead>
   <tbody>
-    @php $i = 1; @endphp
-    @foreach($data as $nama_satker => $rekap)
+    @php 
+      $i = 1;
+      $totalPaket = 0;
+      $totalNilai = 0;
+    @endphp
+
+    @foreach($rekap as $namaSatker => $rekapData)
       <tr>
         <td>{{ $i++ }}</td>
-        <td>{{ $nama_satker }}</td>
-        <td>{{ $rekap['total_transaksi'] }}</td>
-        <td>Rp{{ number_format($rekap['nilai_transaksi'], 0, ',', '.') }}</td>
+        <td style="text-align: left;">{{ $namaSatker }}</td>
+        <td>{{ $rekapData['total_transaksi'] }}</td>
+        <td style="text-align: right;">Rp{{ number_format($rekapData['nilai_transaksi'], 0, ',', '.') }}</td>
       </tr>
       @php
-        $totalTransaksi += $rekap['total_transaksi'];
-        $totalNilai += $rekap['nilai_transaksi'];
+        $totalPaket += $rekapData['total_transaksi'];
+        $totalNilai += $rekapData['nilai_transaksi'];
       @endphp
     @endforeach
 
-    {{-- Baris total --}}
-    <tr>
-      <td colspan="2" style="text-align: center; font-weight: bold;">TOTAL</td>
-      <td style="font-weight: bold;">{{ $totalTransaksi }}</td>
-      <td style="text-align: right; font-weight: bold;">
-        Rp{{ number_format($totalNilai, 0, ',', '.') }}
-      </td>
-    </tr>
+    <tr class="summary-row">
+  <td colspan="2">TOTAL</td>
+  <td>{{ number_format($totalPaket, 0, ',', '.') }}</td>
+  <td style="text-align: right;">Rp{{ number_format($totalNilai, 0, ',', '.') }}</td>
+</tr>
+
   </tbody>
 </table>
 

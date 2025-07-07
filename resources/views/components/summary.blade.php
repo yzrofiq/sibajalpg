@@ -45,7 +45,7 @@
 <div class="col-lg-3 col-md-6">
   <div class="small-box bg-danger">
     <div class="inner">
-      <h3>{{ moneyFormat(getBela()) }}</h3>
+    <h3>{{ number_format(getBelaCount(), 0, ',', '.') }}</h3>
       <p>Toko Daring</p>
     </div>
     <div class="icon">
