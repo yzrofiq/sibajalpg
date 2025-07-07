@@ -23,7 +23,7 @@ class CreateEkatalogV6PaketsTable extends Migration
         $table->string('kd_satker_str');
         $table->string('kd_paket');
         $table->bigInteger('kd_rup')->nullable();
-        $table->string('rup_nama_pkt')->nullable();
+        $table->text('rup_nama_pkt')->nullable();
         $table->string('sumber_dana')->nullable();
         $table->text('mak')->nullable();
         $table->bigInteger('kd_penyedia_ppn')->nullable();

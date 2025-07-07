@@ -29,12 +29,13 @@
     {{-- Satuan Kerja --}}
 <div class="form-group mr-2 mb-0">
   <select name="satker" class="form-control form-control-sm" onchange="this.form.submit()">
-    <option value="">Semua Satuan Kerja</option>
+    <option value="Semua" {{ request('satker') == 'Semua' ? 'selected' : '' }}>Semua Satuan Kerja</option>
     @foreach($satkerList as $s)
       <option value="{{ $s }}" {{ request('satker') == $s ? 'selected' : '' }}>{{ $s }}</option>
     @endforeach
   </select>
 </div>
+
 
 
     {{-- Versi --}}

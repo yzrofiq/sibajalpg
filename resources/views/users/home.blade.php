@@ -16,8 +16,7 @@
       <div class="col-md-6 hero-text">
         <h1>Selamat Datang di Website<br>Sistem Informasi Barang<br>dan Jasa Provinsi Lampung</h1>
         <p class="mt-3">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...
-        </p>
+        Selamat datang di portal resmi Sistem Informasi Barang dan Jasa Provinsi Lampung, sebuah platform digital yang dirancang untuk mendukung transparansi, akuntabilitas, dan kemudahan akses informasi terkait pengadaan barang dan jasa di lingkungan Pemerintah Provinsi Lampung. Melalui website ini, masyarakat, pelaku usaha, serta instansi terkait dapat memantau berbagai proses, data, dan perkembangan pengadaan secara terbuka dan terintegrasi, sehingga diharapkan dapat mewujudkan tata kelola pemerintahan yang lebih baik, bersih, dan berorientasi pada pelayanan publik yang prima.        </p>
         <a href="#tentang" class="hero-btn mt-3">
   Selengkapnya
   <i class="bi bi-arrow-down ms-2"></i>
@@ -30,71 +29,92 @@
   </div>
 </div>
 
-
 <!-- SECTION: Summary Report -->
-<div class="py-4" style="background-color: white;">
-<div class="container-fluid px-4 py-4 d-flex justify-content-center">
-  <div class="bg-white p-4 rounded w-100" style="max-width: 1140px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+<div class="py-4" style="background-color: #F5F8FD;">
+  <div class="container-fluid px-4 py-4 d-flex justify-content-center">
+    <div class="bg-white p-4 rounded w-100" style="max-width: 1140px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
 
-      <h3 class="fw-bold mb-0">Summary Report</h3>
-      <p class="fs-5 text-muted mb-1">Statistik Umum Pengadaan</p>
+      <h3 class="fw-bold mb-0 text-primary">Statistik Umum Pengadaan</h3>
       <p class="text-muted">Menampilkan data ringkas mengenai jumlah paket pengadaan dan instansi aktif yang terlibat dalam sistem.</p>
 
       <div class="row row-cols-1 row-cols-md-2 g-3 mt-4">
         <div class="col">
           <div class="d-flex justify-content-between align-items-center border rounded p-3 bg-white shadow-sm">
             <div class="d-flex align-items-center">
-              <div class="bg-danger bg-opacity-10 p-2 rounded me-3">
-                <i class="fas fa-chart-line text-danger fs-4"></i>
+              <div class="p-2 rounded me-3" style="background-color: #DDEEFF;">
+                <i class="fas fa-chart-line fs-4" style="color: #3366CC;"></i>
               </div>
               <div>
                 <div class="fw-bold fs-4">716</div>
                 <div class="text-muted">Non Tender</div>
               </div>
             </div>
-            <button class="btn btn-danger">Lihat</button>
+            <button class="btn"
+  style="background-color: #1d3c77; color: white; transition: background-color 0.2s;"
+  onmouseover="this.style.backgroundColor='#2181EF'"
+  onmouseout="this.style.backgroundColor='#1d3c77'">
+  Lihat
+</button>
           </div>
         </div>
+
         <div class="col">
           <div class="d-flex justify-content-between align-items-center border rounded p-3 bg-white shadow-sm">
             <div class="d-flex align-items-center">
-              <div class="bg-danger bg-opacity-10 p-2 rounded me-3">
-                <i class="fas fa-store text-danger fs-4"></i>
+              <div class="p-2 rounded me-3" style="background-color: #DDEEFF;">
+                <i class="fas fa-store fs-4" style="color: #3366CC;"></i>
               </div>
               <div>
                 <div class="fw-bold fs-4">0</div>
-                <div class="text-muted">Total eKatalog</div>
+                <div class="text-muted">Total E-Katalog</div>
               </div>
             </div>
-            <button class="btn btn-danger">Lihat</button>
+            <button class="btn"
+  style="background-color: #1d3c77; color: white; transition: background-color 0.2s;"
+  onmouseover="this.style.backgroundColor='#2181EF'"
+  onmouseout="this.style.backgroundColor='#1d3c77'">
+  Lihat
+</button>
           </div>
         </div>
+
         <div class="col">
           <div class="d-flex justify-content-between align-items-center border rounded p-3 bg-white shadow-sm">
             <div class="d-flex align-items-center">
-              <div class="bg-danger bg-opacity-10 p-2 rounded me-3">
-                <i class="fas fa-chart-bar text-danger fs-4"></i>
+              <div class="p-2 rounded me-3" style="background-color: #DDEEFF;">
+                <i class="fas fa-chart-bar fs-4" style="color: #3366CC;"></i>
               </div>
               <div>
                 <div class="fw-bold fs-4">0</div>
                 <div class="text-muted">Tender</div>
               </div>
             </div>
-            <button class="btn btn-danger">Lihat</button>
+            <button class="btn"
+  style="background-color: #1d3c77; color: white; transition: background-color 0.2s;"
+  onmouseover="this.style.backgroundColor='#2181EF'"
+  onmouseout="this.style.backgroundColor='#1d3c77'">
+  Lihat
+</button>
           </div>
         </div>
+
         <div class="col">
           <div class="d-flex justify-content-between align-items-center border rounded p-3 bg-white shadow-sm">
             <div class="d-flex align-items-center">
-              <div class="bg-danger bg-opacity-10 p-2 rounded me-3">
-                <i class="fas fa-building text-danger fs-4"></i>
+              <div class="p-2 rounded me-3" style="background-color: #DDEEFF;">
+              <i class="fas fa-shopping-cart fs-4" style="color: #3366CC;"></i>
               </div>
               <div>
                 <div class="fw-bold fs-4">48</div>
-                <div class="text-muted">SatKer</div>
+                <div class="text-muted">Total Toko Daring</div>
               </div>
             </div>
-            <button class="btn btn-danger">Lihat</button>
+            <button class="btn"
+  style="background-color: #1d3c77; color: white; transition: background-color 0.2s;"
+  onmouseover="this.style.backgroundColor='#2181EF'"
+  onmouseout="this.style.backgroundColor='#1d3c77'">
+  Lihat
+</button>
           </div>
         </div>
       </div>
@@ -106,9 +126,11 @@
               Distribusi Pengadaan
               <select class="form-select form-select-sm w-auto">
                 <option>2024</option>
+                <option>2025</option>
+
               </select>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="background-color: white;">
               <canvas id="chart1" height="220"></canvas>
             </div>
           </div>
@@ -118,7 +140,7 @@
             <div class="card-header fw-bold">
               Pengelompokan Jenis Barang dan Jasa
             </div>
-            <div class="card-body">
+            <div class="card-body" style="background-color: white;">
               <canvas id="chart2" height="220"></canvas>
             </div>
           </div>
@@ -128,6 +150,8 @@
     </div>
   </div>
 </div>
+
+
 
 <!-- SECTION: Transparency Report -->
 <section id="reports" style="position: relative; z-index: 1;">
@@ -238,7 +262,7 @@
   </div>
 
   <!-- Bagian bawah abu muda -->
-  <div style="background-color: #f5f5f5; padding: 25px 0;">
+  <div style="background-color: #F5F8FD; padding: 25px 0;">
     <div class="container">
       <!-- Kosongkan atau isi konten pelengkap jika dibutuhkan -->
     </div>
@@ -271,13 +295,28 @@
 
       <div class="tentang-box animate-up shadow">
         <h6 class="text-primary fw-semibold mb-1">Tentang Kami</h6>
-        <h4 class="fw-bold mb-3">LPSE Biro Pengadaan Barang dan Jasa</h4>
-        <p class="mb-0">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.<br>
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.<br>
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.<br>
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
+        <h4 class="fw-bold mb-5">LPSE - Biro Pengadaan Barang dan Jasa Provinsi Lampung</h4>
+        <div class="mb-0">
+  <h6 class="fw-bold mb-4">VISI DAN MISI</h6>
+  <div class="mb-3">
+    <strong>VISI</strong><br>
+    <em>"Terwujudnya Layanan Pengadaan Barang / Jasa Kualitas Prima Dan Berkesinambungan"</em>
+  </div>
+
+  <div>
+    <strong>MISI</strong>
+    <ol class="mt-2 mb-0 ps-3">
+      <li>
+        Memberikan Layanan kepada Pengguna Sistem Pengadaan Secara Elektronik (SPSE)
+        yang sederhana, Cepat, Tepat, Berkesinambungan dan Akuntabel Tanpa Dipungut Biaya.
+      </li>
+      <li>
+        Mengedepankan Pelayanan Yang Tertib Administrasi, Tertib Hukum dan Tertib Pelaksanaan.
+      </li>
+    </ol>
+  </div>
+</div>
+
         <!-- Tambahkan spacer DIV setelah teks -->
 <div style="height: 3rem;"></div>
       </div>
@@ -403,11 +442,26 @@
 
 @push('styles')
 <style>
-  .bg-pink-light {
-    background-color: #FDEDED;
+  .btn-primary-custom {
+    background-color: #3366CC;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-primary-custom:hover {
+    background-color: #254a99;
+    color: white;
+  }
+
+  /* Optional: fokus/active */
+  .btn-primary-custom:focus, .btn-primary-custom:active {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(51, 102, 204, 0.25);
   }
 </style>
 @endpush
+
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -418,14 +472,14 @@
       labels: ['Tender', 'Non Tender'],
       datasets: [{
         data: [30, 70],
-        backgroundColor: ['#F28B82', '#EF5350']
+        backgroundColor: ['#3366CC', '#66B2FF']
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { usePointStyle: true } }
+        legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle' } }
       }
     }
   });
@@ -436,18 +490,19 @@
       labels: ['Barang', 'Jasa', 'Lainnya', 'Konstruksi'],
       datasets: [{
         data: [35, 25, 15, 25],
-        backgroundColor: ['#F28B82', '#EF5350', '#E57373', '#BDBDBD']
+        backgroundColor: ['#66B2FF', '#3366CC', '#A7C5EB', '#4A90E2']
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { usePointStyle: true } }
+        legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle' } }
       }
     }
   });
 </script>
+
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {

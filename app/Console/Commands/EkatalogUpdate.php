@@ -41,10 +41,8 @@ class EkatalogUpdate extends Command
         if ($response->successful()) {
             $data = $response->json();
             foreach ($data as $item) {
-                $model::updateOrCreate(
-                    $model::uniqueKeys($item),
-                    $item
-                );
+                $model::create($item);
+
             }
             $this->info("✔ Data disimpan untuk model: {$model}");
         } else {

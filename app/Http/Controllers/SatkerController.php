@@ -271,7 +271,13 @@ class SatkerController extends Controller
         ];
     
         $tahunTersedia = collect([2024, 2025])->sortDesc()->values();
-    
+
+        if (auth()->user()->role_id == 2) {
+            return view('users.Satker.rup', compact(
+                'data', 'grandTotal', 'tahun', 'opd', 'daftarSatker', 'tahunTersedia'
+            ));
+        }
+
         return view('satker.rup', compact('data', 'grandTotal', 'tahun', 'opd', 'daftarSatker', 'tahunTersedia'));
     }
     

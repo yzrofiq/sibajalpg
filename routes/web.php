@@ -33,9 +33,12 @@ Route::get('/', [FrontController::class, 'index'])->middleware('guest')->name('f
 Route::post('/', [AuthController::class, 'login'])->middleware('guest')->name('login');
 Route::get('/graph-report', [FrontController::class, 'report'])->name('report');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
 Route::get('/home', [HomeController::class, 'index'])->middleware('auth')->name('home');
+// Route untuk generate PDF berdasarkan filter
+Route::get('/generate-pdf', [NonTenderController::class, 'generateFilteredPdf'])->name('generate-pdf');
 
+// Route untuk melihat PDF berdasarkan filter
+Route::get('/view-pdf', [NonTenderController::class, 'viewFilteredPdf'])->name('view-pdf');
 
 Route::group([
     'prefix' => 'non-tender',
