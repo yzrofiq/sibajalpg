@@ -38,6 +38,7 @@
       <p class="text-muted">Menampilkan data ringkas mengenai jumlah paket pengadaan dan instansi aktif yang terlibat dalam sistem.</p>
 
       <div class="row row-cols-1 row-cols-md-2 g-3 mt-4">
+        {{-- Non Tender --}}
         <div class="col">
           <div class="d-flex justify-content-between align-items-center border rounded p-3 bg-white shadow-sm">
             <div class="d-flex align-items-center">
@@ -45,19 +46,20 @@
                 <i class="fas fa-chart-line fs-4" style="color: #3366CC;"></i>
               </div>
               <div>
-                <div class="fw-bold fs-4">716</div>
+                <div class="fw-bold fs-4">{{ number_format($nonTenderCount, 0, ',', '.') }}</div>
                 <div class="text-muted">Non Tender</div>
               </div>
             </div>
-            <button class="btn"
-  style="background-color: #1d3c77; color: white; transition: background-color 0.2s;"
-  onmouseover="this.style.backgroundColor='#2181EF'"
-  onmouseout="this.style.backgroundColor='#1d3c77'">
-  Lihat
-</button>
+            <a href="{{ route('non-tender.list') }}" class="btn"
+               style="background-color: #1d3c77; color: white;"
+               onmouseover="this.style.backgroundColor='#2181EF'"
+               onmouseout="this.style.backgroundColor='#1d3c77'">
+               Lihat
+            </a>
           </div>
         </div>
 
+        {{-- E-Katalog --}}
         <div class="col">
           <div class="d-flex justify-content-between align-items-center border rounded p-3 bg-white shadow-sm">
             <div class="d-flex align-items-center">
@@ -65,19 +67,20 @@
                 <i class="fas fa-store fs-4" style="color: #3366CC;"></i>
               </div>
               <div>
-                <div class="fw-bold fs-4">0</div>
+                <div class="fw-bold fs-4">{{ number_format($ekatalogCount, 0, ',', '.') }}</div>
                 <div class="text-muted">Total E-Katalog</div>
               </div>
             </div>
-            <button class="btn"
-  style="background-color: #1d3c77; color: white; transition: background-color 0.2s;"
-  onmouseover="this.style.backgroundColor='#2181EF'"
-  onmouseout="this.style.backgroundColor='#1d3c77'">
-  Lihat
-</button>
+            <a href="{{ route('report.ekatalog') }}" class="btn"
+               style="background-color: #1d3c77; color: white;"
+               onmouseover="this.style.backgroundColor='#2181EF'"
+               onmouseout="this.style.backgroundColor='#1d3c77'">
+               Lihat
+            </a>
           </div>
         </div>
 
+        {{-- Tender --}}
         <div class="col">
           <div class="d-flex justify-content-between align-items-center border rounded p-3 bg-white shadow-sm">
             <div class="d-flex align-items-center">
@@ -85,71 +88,89 @@
                 <i class="fas fa-chart-bar fs-4" style="color: #3366CC;"></i>
               </div>
               <div>
-                <div class="fw-bold fs-4">0</div>
+                <div class="fw-bold fs-4">{{ number_format($tenderCount, 0, ',', '.') }}</div>
                 <div class="text-muted">Tender</div>
               </div>
             </div>
-            <button class="btn"
-  style="background-color: #1d3c77; color: white; transition: background-color 0.2s;"
-  onmouseover="this.style.backgroundColor='#2181EF'"
-  onmouseout="this.style.backgroundColor='#1d3c77'">
-  Lihat
-</button>
+            <a href="{{ route('tender.list') }}" class="btn"
+               style="background-color: #1d3c77; color: white;"
+               onmouseover="this.style.backgroundColor='#2181EF'"
+               onmouseout="this.style.backgroundColor='#1d3c77'">
+               Lihat
+            </a>
           </div>
         </div>
 
+        {{-- Toko Daring --}}
         <div class="col">
           <div class="d-flex justify-content-between align-items-center border rounded p-3 bg-white shadow-sm">
             <div class="d-flex align-items-center">
               <div class="p-2 rounded me-3" style="background-color: #DDEEFF;">
-              <i class="fas fa-shopping-cart fs-4" style="color: #3366CC;"></i>
+                <i class="fas fa-shopping-cart fs-4" style="color: #3366CC;"></i>
               </div>
               <div>
-                <div class="fw-bold fs-4">48</div>
+                <div class="fw-bold fs-4">{{ number_format($belaCount, 0, ',', '.') }}</div>
                 <div class="text-muted">Total Toko Daring</div>
               </div>
             </div>
-            <button class="btn"
-  style="background-color: #1d3c77; color: white; transition: background-color 0.2s;"
-  onmouseover="this.style.backgroundColor='#2181EF'"
-  onmouseout="this.style.backgroundColor='#1d3c77'">
-  Lihat
-</button>
+            <a href="{{ route('report.tokodaring') }}" class="btn"
+               style="background-color: #1d3c77; color: white;"
+               onmouseover="this.style.backgroundColor='#2181EF'"
+               onmouseout="this.style.backgroundColor='#1d3c77'">
+               Lihat
+            </a>
           </div>
         </div>
       </div>
 
-      <div class="row mt-5">
-        <div class="col-md-6 mb-4 mb-md-0">
-          <div class="card border">
-            <div class="card-header fw-bold d-flex justify-content-between">
-              Distribusi Pengadaan
-              <select class="form-select form-select-sm w-auto">
-                <option>2024</option>
-                <option>2025</option>
-
-              </select>
-            </div>
-            <div class="card-body" style="background-color: white;">
-              <canvas id="chart1" height="220"></canvas>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card border">
-            <div class="card-header fw-bold">
-              Pengelompokan Jenis Barang dan Jasa
-            </div>
-            <div class="card-body" style="background-color: white;">
-              <canvas id="chart2" height="220"></canvas>
-            </div>
-          </div>
-        </div>
+<!-- CHART -->
+<div class="row mt-5">
+  <!-- Chart 1: Distribusi Sumber Pengadaan -->
+  <div class="col-md-6 mb-4 mb-md-0">
+    <div class="card border">
+      <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+        Distribusi Pengadaan
+        <form method="GET" id="tahunForm">
+          <input type="hidden" name="kategori_chart2" value="{{ $kategoriChart2 }}">
+          <select id="tahunFilter" name="tahun" class="form-select form-select-sm w-auto">
+            @foreach ($availableYears as $th)
+              <option value="{{ $th }}" {{ $tahun == $th ? 'selected' : '' }}>{{ $th }}</option>
+            @endforeach
+          </select>
+        </form>
       </div>
+      <div class="card-body" style="background-color: white;">
+        <canvas id="chart1" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart 2: Jenis Barang dan Jasa -->
+  <div class="col-md-6">
+    <div class="card border">
+      <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+        Pengelompokan Jenis Barang dan Jasa
+        <form method="GET" id="kategoriForm">
+          <input type="hidden" name="tahun" value="{{ $tahun }}">
+          <select id="chart2Filter" name="kategori_chart2" class="form-select form-select-sm w-auto">
+            <option value="tender" {{ $kategoriChart2 == 'tender' ? 'selected' : '' }}>Tender</option>
+            <option value="non_tender" {{ $kategoriChart2 == 'non_tender' ? 'selected' : '' }}>Non Tender</option>
+          </select>
+        </form>
+      </div>
+      <div class="card-body" style="background-color: white;">
+        <canvas id="chart2" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
     </div>
   </div>
 </div>
+
 
 
 
@@ -325,115 +346,195 @@
 </div>
 
 
-<!-- SECTION: Transparansi Keuangan Daerah -->
+<!-- SECTION: Laporan Pengadaan Tahun 2025 -->
 <section class="transparansi-wrapper position-relative py-5">
-<div class="background-abu-kanan transparansi-abu"></div>
+  <div class="background-abu-kanan transparansi-abu"></div>
 
   <div class="container position-relative">
     <div class="transparansi-card shadow-lg p-4 bg-white">
       <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
         <div>
-          <h4 class="fw-bold text-dark">Transparansi Keuangan Daerah</h4>
-          <p class="text-muted">Menyajikan Publikasi Kinerja Keuangan Daerah Provinsi Jawa Barat</p>
+          <h4 class="fw-bold text-dark">Laporan Pengadaan Tahun 2025</h4>
+          <p class="text-muted">Publikasi data kinerja pengadaan barang/jasa Pemerintah Provinsi Lampung Tahun Anggaran 2025</p>
         </div>
-        <a href="#" class="hero-btn fw-semibold mt-2 mt-md-0">
-          Lihat Semua Laporan <i class="bi bi-box-arrow-up-right ms-1"></i>
-        </a>
       </div>
 
       <div id="carouselPDF" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
         <div class="carousel-inner">
-          <!-- Slide 1 -->
+          <!-- SLIDE 1 -->
           <div class="carousel-item active">
             <div class="d-flex gap-3 flex-wrap justify-content-center">
+
+              <!-- Tender -->
               <div class="pdf-card">
                 <div class="text-center mb-2">
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
-                <small class="text-muted">Transparansi Pengelolaan Keuangan Daerah</small>
-                <h6 class="fw-bold mt-1">Neraca Tahun 2024</h6>
-                <p class="desc-text">Informasi Neraca Tahun 2024 per 31 Desember 2024 dan 2023</p>
+                <small class="text-muted">Laporan Tender</small>
+                <h6 class="fw-bold mt-1">Rekap Tender Tahun 2025</h6>
+                <p class="desc-text">Jumlah dan nilai seluruh paket tender aktif dan selesai Tahun 2025</p>
                 <div class="d-flex gap-2 mt-2">
-                <a href="#" class="btn btn-sm btn-pdf-outline w-100"><i class="bi bi-eye"></i> Lihat</a>
-                <a href="#" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
-  <i class="bi bi-download me-1"></i> Unduh
-</a>
-
+                  <a href="#" class="btn btn-sm btn-pdf-outline w-100"><i class="bi bi-eye"></i> Lihat</a>
+                  <a href="#" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
+                    <i class="bi bi-download me-1"></i> Unduh
+                  </a>
                 </div>
               </div>
-              <div class="pdf-card">
-                <div class="text-center mb-2">
-                  <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
-                </div>
-                <small class="text-muted">Transparansi Pengelolaan Keuangan Daerah</small>
-                <h6 class="fw-bold mt-1">Laporan Arus Kas Tahun 2024</h6>
-                <p class="desc-text">Laporan Arus Kas Tahun 2024 dan perbandingan 2023</p>
-                <div class="d-flex gap-2 mt-2">
-                <a href="#" class="btn btn-sm btn-pdf-outline w-100"><i class="bi bi-eye"></i> Lihat</a>
-                <a href="#" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
-  <i class="bi bi-download me-1"></i> Unduh
+
+<!-- Non Tender -->
+@php
+    $today = \Carbon\Carbon::now();
+@endphp
+<div class="pdf-card">
+  <div class="text-center mb-2">
+    <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
+  </div>
+  <small class="text-muted">Laporan Non Tender</small>
+  <h6 class="fw-bold mt-1">Rekap Non Tender Tahun 2025</h6>
+  <p class="desc-text">Data paket non tender yang berlangsung dan selesai tahun 2025</p>
+  <div class="d-flex gap-2 mt-2">
+    <!-- Tombol Lihat -->
+    <a href="{{ route('non-tender.viewPdf', [
+    'year' => $today->year,
+    'month' => 'ALL',
+    'day' => 'ALL'
+]) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
+  <i class="bi bi-eye"></i> Lihat
 </a>
 
-                </div>
-              </div>
+    <!-- Tombol Unduh -->
+    <a href="{{ route('non-tender.downloadPdf', [
+    'year' => $today->year,
+    'month' => 'ALL',
+    'day' => 'ALL'
+]) }}" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
+  <i class="bi bi-download me-1"></i> Unduh
+</a>
+  </div>
+</div>
+
+
+              <!-- e-Katalog V6 -->
+<div class="pdf-card">
+  <div class="text-center mb-2">
+    <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
+  </div>
+  <small class="text-muted">Laporan E-Katalog V6</small>
+  <h6 class="fw-bold mt-1">Transaksi E-Katalog V6 Tahun 2025</h6>
+  <p class="desc-text">Total nilai dan jumlah transaksi melalui e-Katalog versi 6</p>
+  <div class="d-flex gap-2 mt-2">
+  <a href="{{ route('report.ekatalog.exportpdf', ['tahun' => 2025, 'versi' => 'V6']) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
+  <i class="bi bi-eye"></i> Lihat
+</a>
+<a href="{{ route('report.ekatalog.exportpdf', ['tahun' => 2025, 'versi' => 'V6', 'mode' => 'D']) }}" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
+  <i class="bi bi-download me-1"></i> Unduh
+</a>
+  </div>
+</div>
+
+<!-- e-Katalog V5 -->
+<div class="pdf-card">
+  <div class="text-center mb-2">
+    <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
+  </div>
+  <small class="text-muted">Laporan E-Katalog V5</small>
+  <h6 class="fw-bold mt-1">Transaksi E-Katalog V5 Tahun 2025</h6>
+  <p class="desc-text">Total nilai transaksi pengadaan menggunakan e-Katalog versi 5</p>
+  <div class="d-flex gap-2 mt-2">
+    <a href="{{ route('report.ekatalog.exportpdf', ['tahun' => 2025, 'versi' => 'V5']) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
+      <i class="bi bi-eye"></i> Lihat
+    </a>
+    <a href="{{ route('report.ekatalog.exportpdf', ['tahun' => 2025, 'versi' => 'V5', 'mode' => 'D']) }}" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
+      <i class="bi bi-download me-1"></i> Unduh
+    </a>
+  </div>
+</div>
+
+
             </div>
           </div>
 
-          <!-- Slide 2 -->
+          <!-- SLIDE 2 -->
           <div class="carousel-item">
             <div class="d-flex gap-3 flex-wrap justify-content-center">
+
+              <!-- Toko Daring -->
               <div class="pdf-card">
                 <div class="text-center mb-2">
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
-                <small class="text-muted">Transparansi Pengelolaan Keuangan Daerah</small>
-                <h6 class="fw-bold mt-1">Peraturan Kepala Daerah</h6>
-                <p class="desc-text">Peraturan Gubernur Tahun 2024 Tentang Kebijakan Akuntansi</p>
+                <small class="text-muted">Laporan Toko Daring</small>
+                <h6 class="fw-bold mt-1">Realisasi Toko Daring 2025</h6>
+                <p class="desc-text">Ringkasan pengadaan barang/jasa melalui sistem toko daring tahun 2025</p>
                 <div class="d-flex gap-2 mt-2">
-                <a href="#" class="btn btn-sm btn-pdf-outline w-100"><i class="bi bi-eye"></i> Lihat</a>
-                <a href="#" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
-  <i class="bi bi-download me-1"></i> Unduh
-</a>
+                <a href="{{ route('report.tokodaring.exportpdf', ['tahun' => 2025]) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
+      <i class="bi bi-eye"></i> Lihat
+    </a>
+    <a href="{{ route('report.tokodaring.exportpdf', ['tahun' => 2025, 'mode' => 'D']) }}" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
+      <i class="bi bi-download me-1"></i> Unduh
+    </a>                    
                 </div>
               </div>
+
+              <!-- RUP -->
               <div class="pdf-card">
                 <div class="text-center mb-2">
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
-                <small class="text-muted">Transparansi Pengelolaan Keuangan Daerah</small>
-                <h6 class="fw-bold mt-1">Anggaran Pendapatan</h6>
-                <p class="desc-text">Perubahan Anggaran Pendapatan Daerah 2024</p>
+                <small class="text-muted">Laporan RUP</small>
+                <h6 class="fw-bold mt-1">RUP Provinsi Lampung 2025</h6>
+                <p class="desc-text">Total paket RUP dan pagu belanja pengadaan untuk seluruh OPD tahun 2025</p>
                 <div class="d-flex gap-2 mt-2">
-                <a href="#" class="btn btn-sm btn-pdf-outline w-100"><i class="bi bi-eye"></i> Lihat</a>
-                <a href="#" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
-  <i class="bi bi-download me-1"></i> Unduh
-</a>
+
+                <a href="{{ route('report.rup.pdf', ['tahun' => 2025]) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
+      <i class="bi bi-eye"></i> Lihat
+    </a>
+    <a href="{{ route('report.rup.pdf', ['tahun' => 2025, 'mode' => 'D']) }}" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
+      <i class="bi bi-download me-1"></i> Unduh
+    </a>  
 
                 </div>
               </div>
+
+              <!-- Monitoring -->
+              <div class="pdf-card">
+                <div class="text-center mb-2">
+                  <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
+                </div>
+                <small class="text-muted">Monitoring Pengadaan</small>
+                <h6 class="fw-bold mt-1">Realisasi Pengadaan s.d Juli 2025</h6>
+                <p class="desc-text">Persentase realisasi pengadaan terhadap total belanja pengadaan</p>
+                <div class="d-flex gap-2 mt-2">
+                  <a href="#" class="btn btn-sm btn-pdf-outline w-100"><i class="bi bi-eye"></i> Lihat</a>
+                  <a href="#" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
+                    <i class="bi bi-download me-1"></i> Unduh
+                  </a>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
 
-         <!-- Navigasi PANAH (tetap di dalam kotak putih) -->
-         <button class="carousel-control-prev inside-arrow" type="button" data-bs-target="#carouselPDF" data-bs-slide="prev">
-  <span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next inside-arrow" type="button" data-bs-target="#carouselPDF" data-bs-slide="next">
-  <span class="carousel-control-next-icon"></span>
-</button>
+        <!-- PANAH -->
+        <button class="carousel-control-prev inside-arrow" type="button" data-bs-target="#carouselPDF" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next inside-arrow" type="button" data-bs-target="#carouselPDF" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
 
+        <!-- BULLETS -->
+        <div class="carousel-indicators mt-4">
+          <button type="button" data-bs-target="#carouselPDF" data-bs-slide-to="0" class="active indicator-dot"></button>
+          <button type="button" data-bs-target="#carouselPDF" data-bs-slide-to="1" class="indicator-dot"></button>
+        </div>
 
-<!-- Bullets -->
-<div class="carousel-indicators mt-4">
-  <button type="button" data-bs-target="#carouselPDF" data-bs-slide-to="0" 
-    class="active indicator-dot"></button>
-  <button type="button" data-bs-target="#carouselPDF" data-bs-slide-to="1" 
-    class="indicator-dot"></button>
-</div>
-
-
+      </div> <!-- end carousel -->
+    </div> <!-- end transparansi-card -->
+  </div> <!-- end container -->
 </section>
+
 
 
 
@@ -466,12 +567,18 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+  // CHART 1: Sumber pengadaan
+  const chart1Data = {!! json_encode($chart1Data) !!};
+  const chart1Labels = Object.keys(chart1Data);
+  const chart1Values = Object.values(chart1Data);
+
   new Chart(document.getElementById('chart1'), {
     type: 'pie',
     data: {
-      labels: ['Tender', 'Non Tender'],
+      labels: chart1Labels,
       datasets: [{
-        data: [30, 70],
+        data: chart1Values,
         backgroundColor: ['#3366CC', '#66B2FF']
       }]
     },
@@ -479,29 +586,66 @@
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle' } }
-      }
+  legend: {
+    position: 'right', // ✅ Pindahkan ke kanan
+    align: 'center',
+    labels: {
+      usePointStyle: true,
+      pointStyle: 'circle',
+      boxWidth: 10
+    }
+  }
+}
+
     }
   });
+
+  // CHART 2: Jenis pengadaan berdasarkan kategori terpilih
+  const chart2Data = {!! json_encode($chart2Data) !!};
+  const chart2Labels = Object.keys(chart2Data);
+  const chart2Values = Object.values(chart2Data);
+  const backgroundColors = ['#66B2FF', '#3366CC', '#A7C5EB', '#4A90E2', '#3F51B5', '#5C8DF6'];
 
   new Chart(document.getElementById('chart2'), {
     type: 'pie',
     data: {
-      labels: ['Barang', 'Jasa', 'Lainnya', 'Konstruksi'],
+      labels: chart2Labels,
       datasets: [{
-        data: [35, 25, 15, 25],
-        backgroundColor: ['#66B2FF', '#3366CC', '#A7C5EB', '#4A90E2']
+        data: chart2Values,
+        backgroundColor: backgroundColors.slice(0, chart2Labels.length)
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle' } }
-      }
+  legend: {
+    position: 'right', // ✅ Pindahkan ke kanan
+    align: 'center',
+    labels: {
+      usePointStyle: true,
+      pointStyle: 'circle',
+      boxWidth: 10
+    }
+  }
+}
+
     }
   });
+
+  // Filter tahun (chart 1)
+  document.getElementById('tahunFilter').addEventListener('change', function () {
+    document.getElementById('tahunForm').submit();
+  });
+
+  // Filter kategori chart 2
+  document.getElementById('chart2Filter').addEventListener('change', function () {
+    document.getElementById('kategoriForm').submit();
+  });
+});
 </script>
+
+
 
 
 <script>

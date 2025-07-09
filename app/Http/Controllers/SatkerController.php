@@ -285,6 +285,8 @@ class SatkerController extends Controller
 public function exportpdf()
 {
     $tahun = $this->request->get('tahun', date('Y'));
+    $mode  = $this->request->input('mode', 'I'); // 'I' = inline / lihat, 'D' = download langsung
+
 
     $struktur = StrukturAnggaran::where('tahun_anggaran', $tahun)
         ->where('kd_klpd', 'D264')
@@ -367,7 +369,7 @@ public function exportpdf()
     </style>' . $render;
 
     $html2pdf->writeHTML($render);
-    return $html2pdf->output("laporan-rup-$tahun.pdf", 'I');
+    return $html2pdf->output("laporan-rup-$tahun.pdf",  $mode);
 }
 
     public function all()

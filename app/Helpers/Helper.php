@@ -100,9 +100,21 @@ function getBelaCount() {
 
 
 function getEkatalogCount() {
-    $v5 = \App\Models\EkatalogV5Paket::whereIn('tahun_anggaran', [2024, 2025])->count();
-    $v6 = \App\Models\EkatalogV6Paket::whereIn('tahun_anggaran', [2024, 2025])->count();
+    $v5 = \App\Models\EkatalogV5Paket::whereIn('tahun_anggaran', [2024, 2025])
+        ->select('kd_paket')
+        ->groupBy('kd_paket')
+        ->get()
+        ->count();
+
+    $v6 = \App\Models\EkatalogV6Paket::whereIn('tahun_anggaran', [2024, 2025])
+        ->whereNotNull('nama_satker')
+        ->select('kd_paket')
+        ->groupBy('kd_paket')
+        ->get()
+        ->count();
+
     return $v5 + $v6;
 }
+
 
 

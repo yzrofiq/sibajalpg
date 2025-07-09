@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\NonTenderPengumuman;
+use App\Models\StrukturAnggaran;
 use App\Models\Satker;
 use App\Services\HelperService;
 use Carbon\Carbon;
@@ -118,11 +119,12 @@ class NonTenderController extends Controller
         ? 'non-tender.index-lte'
         : 'users.non-tender.index-lte';
     
-    return view($view, compact(
-        'satkers', 'years', 'data', 'total', 'totalFull',
-        'code', 'name', 'year', 'satkerCode',
-        'categories', 'categoriesCount', 'url', 'categoryParam'
-    ));
+return view($view, compact(
+     'satkers', 'years', 'data', 'total', 'totalFull',
+     'code', 'name', 'year', 'satkerCode',
+     'categories', 'categoriesCount', 'url', 'categoryParam'
+ ));
+
     
     }
 
@@ -144,92 +146,231 @@ class NonTenderController extends Controller
     return view($view, compact('data', 'url'));
         }
 
-    public function realization()
-    {
-        $now = Carbon::now();
+        public function viewPdf(Request $request)
+{
+    $year = $request->input('year');
+    $month = $request->input('month');
+    $day = $request->input('day');
 
-        $raw = DB::table('non_tender_pengumuman as p')
-            ->leftJoin('non_tender_contract as c', 'p.kd_nontender', '=', 'c.kd_nontender')
-            ->leftJoin('non_tender_selesai as s', 'p.kd_nontender', '=', 's.kd_nontender')
-            ->select(
-                'p.nama_satker',
-                'p.jenis_pengadaan',
-                'p.pagu',
-                'p.hps',
-                DB::raw('COALESCE(c.nilai_kontrak, s.nilai_kontrak, 0) as nilai_terkontrak')
-            )
-            ->where('p.kd_klpd', 'D264')
-            ->whereYear('p.tgl_buat_paket', $now->year)
-            ->whereIn('p.status_nontender', ['Selesai', 'Berlangsung'])
-            ->get();
+    // Ambil data realisasi dari tabel non_tender_pengumuman
+    $query = DB::table('non_tender_pengumuman as p')
+        ->leftJoin('non_tender_contract as c', 'p.kd_nontender', '=', 'c.kd_nontender')
+        ->leftJoin('non_tender_selesai as s', 'p.kd_nontender', '=', 's.kd_nontender')
+        ->select(
+            'p.nama_satker',
+            'p.jenis_pengadaan',
+            'p.pagu',
+            'p.hps',
+            DB::raw('COALESCE(c.nilai_kontrak, s.nilai_kontrak, 0) as nilai_terkontrak')
+        )
+        ->where('p.kd_klpd', 'D264')
+        ->whereYear('p.tgl_buat_paket', $year);
 
-        $satkers = DB::table('non_tender_pengumuman')
-            ->select('nama_satker')
-            ->where('kd_klpd', 'D264')
-            ->whereNotNull('nama_satker')
-            ->groupBy('nama_satker')
-            ->orderBy('nama_satker')
-            ->pluck('nama_satker')
-            ->toArray();
+    if ($month !== 'ALL') {
+        $query->whereMonth('p.tgl_buat_paket', $month);
+    }
 
-        $data = [];
-        $total = [
-            'package_count' => 0,
-            'constructions' => 0,
-            'consultations' => 0,
-            'goods' => 0,
-            'services' => 0,
-            'pagu' => 0,
-            'hps' => 0,
-            'nilai_terkontrak' => 0,
-            'efficiency' => 0,
-        ];
+    if ($day !== 'ALL') {
+        $query->whereDay('p.tgl_buat_paket', $day);
+    }
 
-        foreach ($satkers as $nama) {
-            $data[$nama] = array_merge(['name' => $nama], array_fill_keys(array_keys($total), 0));
+    $raw = $query->whereIn('p.status_nontender', ['Selesai', 'Berlangsung'])->get();
+
+    // Ambil seluruh satker dari struktur anggaran (bukan dari pengumuman)
+    $satkers = StrukturAnggaran::where('kd_klpd', 'D264')
+        ->where('tahun_anggaran', $year)
+        ->pluck('nama_satker')
+        ->unique()
+        ->sort()
+        ->values()
+        ->toArray();
+
+    $data = [];
+    $total = [
+        'package_count' => 0,
+        'constructions' => 0,
+        'consultations' => 0,
+        'goods' => 0,
+        'services' => 0,
+        'pagu' => 0,
+        'hps' => 0,
+        'nilai_terkontrak' => 0,
+        'efficiency' => 0,
+    ];
+
+    foreach ($satkers as $nama) {
+        $data[$nama] = array_merge(['name' => $nama], array_fill_keys(array_keys($total), 0));
+    }
+
+    foreach ($raw as $value) {
+        $satker = $value->nama_satker;
+        if (!isset($data[$satker])) continue;
+
+        $data[$satker]['package_count'] += 1;
+        $total['package_count'] += 1;
+
+        $category = getCategory($value->jenis_pengadaan);
+        if ($category && isset($data[$satker][$category])) {
+            $data[$satker][$category] += 1;
+            $total[$category] += 1;
         }
 
-        foreach ($raw as $value) {
-            $satker = $value->nama_satker;
-            if (!isset($data[$satker])) continue;
+        $data[$satker]['pagu'] += $value->pagu;
+        $total['pagu'] += $value->pagu;
 
-            $data[$satker]['package_count'] += 1;
-            $total['package_count'] += 1;
+        $data[$satker]['hps'] += $value->hps;
+        $total['hps'] += $value->hps;
 
-            $category = getCategory($value->jenis_pengadaan);
-            if ($category && isset($data[$satker][$category])) {
-                $data[$satker][$category] += 1;
-                $total[$category] += 1;
-            }
+        $data[$satker]['nilai_terkontrak'] += $value->nilai_terkontrak;
+        $total['nilai_terkontrak'] += $value->nilai_terkontrak;
 
-            $data[$satker]['pagu'] += $value->pagu;
-            $total['pagu'] += $value->pagu;
+        $efficiency = $value->pagu - $value->nilai_terkontrak;
+        $data[$satker]['efficiency'] += $efficiency;
+        $total['efficiency'] += $efficiency;
+    }
 
-            $data[$satker]['hps'] += $value->hps;
-            $total['hps'] += $value->hps;
+    $finalData = array_values($data);
 
-            $data[$satker]['nilai_terkontrak'] += $value->nilai_terkontrak;
-            $total['nilai_terkontrak'] += $value->nilai_terkontrak;
+    // Judul PDF
+    $monthName = strtoupper(getMonthName($month));
+    $title = "TAHUN ANGGARAN {$year}";
+    if ($month !== 'ALL' && $day !== 'ALL' && $day !== null) {
+        $title .= " TANGGAL {$day} {$monthName} {$year}";
+    } else if ($month !== 'ALL') {
+        $title .= " {$monthName} {$year}";
+    }
 
-            $efficiency = $value->pagu - $value->nilai_terkontrak;
-            $data[$satker]['efficiency'] += $efficiency;
-            $total['efficiency'] += $efficiency;
-        }
-
-        $finalData = array_values($data);
-
-        $html2pdf = new Html2Pdf('L', 'A3', 'en', true, 'UTF-8', [10, 10, 10, 10]);
-        $view = auth()->user()->role_id == 1
+    $html2pdf = new Html2Pdf('L', 'A3', 'en', true, 'UTF-8', [10, 10, 10, 10]);
+    $view = auth()->user()->role_id == 1
         ? 'non-tender.realization'
         : 'users.non-tender.realization';
-    
+
     $render = view($view, [
         'data' => $finalData,
-        'total' => $total
+        'total' => $total,
+        'title' => $title,
     ]);
+    $html2pdf->pdf->SetAutoPageBreak(true, 10);
+    $html2pdf->writeHTML($render);
+    $html2pdf->output();
+}
+
+
+
+
+
+
+
     
-        $html2pdf->writeHTML($render);
-        $html2pdf->output();
+public function downloadPdf(Request $request)
+{
+    $year = $request->input('year');
+    $month = $request->input('month');
+    $day = $request->input('day');
+
+    $query = DB::table('non_tender_pengumuman as p')
+        ->leftJoin('non_tender_contract as c', 'p.kd_nontender', '=', 'c.kd_nontender')
+        ->leftJoin('non_tender_selesai as s', 'p.kd_nontender', '=', 's.kd_nontender')
+        ->select(
+            'p.nama_satker',
+            'p.jenis_pengadaan',
+            'p.pagu',
+            'p.hps',
+            DB::raw('COALESCE(c.nilai_kontrak, s.nilai_kontrak, 0) as nilai_terkontrak')
+        )
+        ->where('p.kd_klpd', 'D264')
+        ->whereYear('p.tgl_buat_paket', $year);
+
+    if ($month !== 'ALL') {
+        $query->whereMonth('p.tgl_buat_paket', $month);
     }
+
+    if ($day !== 'ALL') {
+        $query->whereDay('p.tgl_buat_paket', $day);
+    }
+
+    $raw = $query->whereIn('p.status_nontender', ['Selesai', 'Berlangsung'])->get();
+
+    $satkers = StrukturAnggaran::where('kd_klpd', 'D264')
+        ->where('tahun_anggaran', $year)
+        ->pluck('nama_satker')
+        ->unique()
+        ->sort()
+        ->values()
+        ->toArray();
+
+    $data = [];
+    $total = [
+        'package_count' => 0,
+        'constructions' => 0,
+        'consultations' => 0,
+        'goods' => 0,
+        'services' => 0,
+        'pagu' => 0,
+        'hps' => 0,
+        'nilai_terkontrak' => 0,
+        'efficiency' => 0,
+    ];
+
+    foreach ($satkers as $nama) {
+        $data[$nama] = array_merge(['name' => $nama], array_fill_keys(array_keys($total), 0));
+    }
+
+    foreach ($raw as $value) {
+        $satker = $value->nama_satker;
+        if (!isset($data[$satker])) continue;
+
+        $data[$satker]['package_count'] += 1;
+        $total['package_count'] += 1;
+
+        $category = getCategory($value->jenis_pengadaan);
+        if ($category && isset($data[$satker][$category])) {
+            $data[$satker][$category] += 1;
+            $total[$category] += 1;
+        }
+
+        $data[$satker]['pagu'] += $value->pagu;
+        $total['pagu'] += $value->pagu;
+
+        $data[$satker]['hps'] += $value->hps;
+        $total['hps'] += $value->hps;
+
+        $data[$satker]['nilai_terkontrak'] += $value->nilai_terkontrak;
+        $total['nilai_terkontrak'] += $value->nilai_terkontrak;
+
+        $efficiency = $value->pagu - $value->nilai_terkontrak;
+        $data[$satker]['efficiency'] += $efficiency;
+        $total['efficiency'] += $efficiency;
+    }
+
+    $finalData = array_values($data);
+
+    $monthName = strtoupper(getMonthName($month));
+    $title = "REALISASI PAKET NON TENDER\nOPD PROVINSI LAMPUNG\n";
+
+    if ($day !== 'ALL' && $day !== null) {
+        $title .= "TAHUN ANGGARAN {$year} TANGGAL {$day} {$monthName} {$year}";
+    } elseif ($month !== 'ALL') {
+        $title .= "TAHUN ANGGARAN {$year} S.D {$monthName} {$year}";
+    } else {
+        $title .= "TAHUN ANGGARAN {$year} S.D TANGGAL " . strtoupper(now()->translatedFormat('d F Y'));
+    }
+
+    $html2pdf = new Html2Pdf('L', 'A3', 'en', true, 'UTF-8', [10, 10, 10, 10]);
+    $view = auth()->user()->role_id == 1
+        ? 'non-tender.realization'
+        : 'users.non-tender.realization';
+
+    $render = view($view, [
+        'data' => $finalData,
+        'total' => $total,
+        'title' => $title,
+    ]);
+    $html2pdf->pdf->SetAutoPageBreak(true, 10);
+    $html2pdf->writeHTML($render);
+    return $html2pdf->output("realisasi_non_tender_{$year}.pdf", 'D');
+}
+
+
     
 }
