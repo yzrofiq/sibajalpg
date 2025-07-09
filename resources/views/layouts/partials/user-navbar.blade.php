@@ -1,4 +1,4 @@
-{{-- File: resources\views\layouts\partials\user-navbar.blade.php --}}
+{{-- File: resources/views/layouts/partials/user-navbar.blade.php --}}
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-blue shadow-sm sticky-top">
   <div class="container-fluid px-4">
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Toggle Button -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -36,71 +36,70 @@
           <a class="nav-link {{ request()->routeIs('non-tender.list') ? 'active' : '' }}" href="{{ route('non-tender.list') }}">Non Tender</a>
         </li>
 
-       <!-- Dropdown: E-Purchasing -->
-<li class="nav-item dropdown">
-  <a class="nav-link dropdown-toggle {{ request()->routeIs('report.ekatalog') || request()->routeIs('report.tokodaring') ? 'active' : '' }}" href="#" data-bs-toggle="dropdown">
-    E-Purchasing
-  </a>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="{{ route('report.ekatalog') }}">E-Katalog</a></li>
-    <li><a class="dropdown-item" href="{{ route('report.tokodaring') }}">Toko Daring</a></li>
-  </ul>
-</li>
+        <!-- Dropdown: E-Purchasing -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {{ request()->routeIs('report.ekatalog') || request()->routeIs('report.tokodaring') ? 'active' : '' }}" href="#" data-toggle="dropdown">
+            E-Purchasing
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ route('report.ekatalog') }}">E-Katalog</a></li>
+            <li><a class="dropdown-item" href="{{ route('report.tokodaring') }}">Toko Daring</a></li>
+          </ul>
+        </li>
 
-<li class="nav-item">
-  <a class="nav-link {{ request()->routeIs('report.rup') ? 'active' : '' }}" href="{{ route('report.rup') }}">RUP</a>
-</li>
+        <li class="nav-item">
+          <a class="nav-link {{ request()->routeIs('report.rup') ? 'active' : '' }}" href="{{ route('report.rup') }}">RUP</a>
+        </li>
 
-<!-- Dropdown: Summary Report -->
-<li class="nav-item dropdown">
-  @php
-    $isSummaryReportActive = request()->routeIs('tender.strategic')
-      || request()->routeIs('report.categorize')
-      || request()->routeIs('tender.fund.source')
-      || request()->routeIs('report.all')
-      || request()->routeIs('non-tender.realization')
-      || request()->routeIs('tender.realization')
-      || request()->routeIs('report.review');
-  @endphp
-  <a class="nav-link dropdown-toggle {{ $isSummaryReportActive ? 'active' : '' }}" href="#" data-bs-toggle="dropdown">
-    Summary Report
-  </a>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="{{ route('tender.strategic') }}">10 Paket Strategis</a></li>
-    <li class="dropdown-submenu position-relative">
-      <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown">Reviu Perencanaan PBJ</a>
-      <ul class="dropdown-menu border-0 shadow">
-        <li><a class="dropdown-item" href="{{ route('report.categorize') }}" target="_blank">Pengelompokan Jenis Pengadaan</a></li>
-        <li><a class="dropdown-item" href="{{ route('tender.fund.source') }}" target="_blank">Hasil Sumber Dana</a></li>
-        <li><a class="dropdown-item" href="{{ route('report.all') }}" target="_blank">Laporan Keseluruhan</a></li>
-      </ul>
-    </li>
-    <li><a class="dropdown-item" href="{{ route('non-tender.realization') }}" target="_blank">Realisasi Non Tender</a></li>
-    <li><a class="dropdown-item" href="{{ route('tender.realization') }}" target="_blank">Realisasi Tender</a></li>
-    <li><a class="dropdown-item" href="{{ route('report.review') }}" target="_blank">Hasil Review</a></li>
-  </ul>
-</li>
+        <!-- Dropdown: Summary Report -->
+        <li class="nav-item dropdown">
+          @php
+            $isSummaryReportActive = request()->routeIs('tender.strategic')
+              || request()->routeIs('report.categorize')
+              || request()->routeIs('tender.fund.source')
+              || request()->routeIs('report.all')
+              || request()->routeIs('non-tender.realization')
+              || request()->routeIs('tender.realization')
+              || request()->routeIs('report.review');
+          @endphp
+          <a class="nav-link dropdown-toggle {{ $isSummaryReportActive ? 'active' : '' }}" href="#" data-toggle="dropdown">
+            Summary Report
+          </a>
+          <ul class="dropdown-menu">
+            <!-- <li><a class="dropdown-item" href="{{ route('tender.strategic') }}">10 Paket Strategis</a></li>
+            <li class="dropdown-submenu position-relative">
+              <a class="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">Reviu Perencanaan PBJ</a>
+              <ul class="dropdown-menu border-0 shadow">
+                <li><a class="dropdown-item" href="{{ route('report.categorize') }}" target="_blank">Pengelompokan Jenis Pengadaan</a></li>
+                <li><a class="dropdown-item" href="{{ route('tender.fund.source') }}" target="_blank">Hasil Sumber Dana</a></li>
+                <li><a class="dropdown-item" href="{{ route('report.all') }}" target="_blank">Laporan Keseluruhan</a></li>
+              </ul>
+            </li> -->
+            <li>
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#filterModal">Realisasi Non Tender</a>
+            </li>
+            <li><a class="dropdown-item" href="{{ route('tender.realization') }}" target="_blank">Realisasi Tender</a></li>
+            <!-- <li><a class="dropdown-item" href="{{ route('report.review') }}" target="_blank">Hasil Review</a></li> -->
+          </ul>
+        </li>
 
         <!-- Dropdown: Monitoring -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle {{ request()->is('monitoring*') ? 'active' : '' }}" href="#" data-bs-toggle="dropdown">Monitoring</a>
+          <a class="nav-link dropdown-toggle {{ request()->is('monitoring*') ? 'active' : '' }}" href="#" data-toggle="dropdown">Monitoring</a>
           <ul class="dropdown-menu">
             {{-- Kosong untuk saat ini --}}
           </ul>
         </li>
 
-        <li class="nav-item">
-          <a class="nav-link {{ request()->routeIs('report') ? 'active' : '' }}" href="{{ route('report') }}" target="_blank">Grafik Report</a>
-        </li>
       </ul>
 
       <!-- User Account Menu -->
       <ul class="navbar-nav">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarUserDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-person-circle" style="font-size: 1.4rem;"></i>
           </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
+          <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarUserDropdown">
             <li><a class="dropdown-item text-danger" href="{{ route('logout') }}">Logout</a></li>
           </ul>
         </li>
@@ -108,3 +107,28 @@
     </div>
   </div>
 </nav>
+
+{{-- JS support dropdown-submenu (for Bootstrap 4) --}}
+@push('script')
+<script>
+  $(function () {
+    $('.dropdown-menu a.dropdown-toggle').on('click', function(e) {
+      var $el = $(this);
+      var $parent = $el.offsetParent(".dropdown-menu");
+      if (!$el.next().hasClass('show')) {
+        $el.parents('.dropdown-menu').first().find('.show').removeClass("show");
+      }
+      var $subMenu = $el.next(".dropdown-menu");
+      $subMenu.toggleClass('show');
+
+      $el.parent("li").toggleClass('show');
+
+      $el.parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
+        $('.dropdown-submenu .show').removeClass("show");
+      });
+
+      return false;
+    });
+  });
+</script>
+@endpush

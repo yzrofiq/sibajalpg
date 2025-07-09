@@ -106,6 +106,7 @@ public function exportPdf(Request $request)
 {
     $tahun = $request->input('tahun', date('Y'));
     $versi = $request->input('versi', 'V5');
+    $mode  = $request->input('mode', 'I'); // 'I' = inline / lihat, 'D' = download langsung
 
     $model = $versi === 'V6' ? new EkatalogV6Paket() : new EkatalogV5Paket();
     $query = $model->newQuery()->where('tahun_anggaran', $tahun);
@@ -120,10 +121,9 @@ public function exportPdf(Request $request)
         ? Penyedia::where('tahun_anggaran', $tahun)->pluck('nama_satker', 'kd_satker')
         : collect();
 
-    // Group data per kd_paket
+    // Group by kd_paket untuk akurasi rekap
     $grouped = $rawData->groupBy('kd_paket');
 
-    // Siapkan data rekap berdasarkan nama satker
     $dataRekap = [];
 
     foreach ($grouped as $items) {
@@ -146,12 +146,14 @@ public function exportPdf(Request $request)
         $dataRekap[$nama_satker]['nilai_transaksi'] += $total_harga;
     }
 
-    ksort($dataRekap);
+    ksort($dataRekap); // Sort alfabet nama satker
 
+    // Penulisan tanggal dinamis
     $tanggal = $tahun == 2024
         ? '31 Desember 2024'
         : Carbon::now()->locale('id')->translatedFormat('d F Y');
 
+    // Render view
     $html = view('E-purchasing.ekatalog-pdf', [
         'data' => $dataRekap,
         'tanggal' => $tanggal,
@@ -159,6 +161,7 @@ public function exportPdf(Request $request)
         'versi' => $versi,
     ])->render();
 
+    // Tambahkan style CSS inline
     $html = '<style>
         body { font-family: sans-serif; font-size: 11px; }
         table { border-collapse: collapse; width: 100%; }
@@ -166,9 +169,11 @@ public function exportPdf(Request $request)
         th { background-color: #eee; }
     </style>' . $html;
 
+    // Generate PDF
     $pdf = new Html2Pdf('P', 'A4', 'fr');
     $pdf->writeHTML($html);
-    return $pdf->output("laporan-ekatalog-{$tahun}-{$versi}.pdf", 'I');
+    return $pdf->output("laporan-ekatalog-{$tahun}-{$versi}.pdf", $mode);
 }
+
 
 }

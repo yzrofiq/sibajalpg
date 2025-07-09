@@ -88,9 +88,10 @@
         <div class="col-md-3 mb-2">
           <select name="satker" class="form-control form-control-sm w-100" onchange="this.form.submit()">
             <option value="Semua" {{ $satker == 'Semua' ? 'selected' : '' }}>Semua Satuan Kerja</option>
-            @foreach($satkerList as $s)
-              <option value="{{ $s }}" {{ $satker == $s ? 'selected' : '' }}>{{ $s }}</option>
-            @endforeach
+            @foreach($satkerList as $kd => $nama)
+  <option value="{{ $kd }}" {{ $satker == $kd ? 'selected' : '' }}>{{ $nama }}</option>
+@endforeach
+
           </select>
         </div>
 
@@ -165,13 +166,14 @@
             </tr>
           </thead>
           <tbody>
-            @foreach($rekap as $namaSatker => $rekapData)
-              <tr>
-                <td>{{ $namaSatker }}</td>
-                <td>{{ $rekapData['total_transaksi'] }}</td>
-                <td class="text-end">Rp {{ number_format($rekapData['nilai_transaksi'], 0, ',', '.') }}</td>
-              </tr>
-            @endforeach
+          @foreach($rekap as $kdSatker => $rekapData)
+  <tr>
+    <td>{{ $rekapData['nama_satker'] }}</td>
+    <td>{{ $rekapData['total_transaksi'] }}</td>
+    <td class="text-end">Rp {{ number_format($rekapData['nilai_transaksi'], 0, ',', '.') }}</td>
+  </tr>
+@endforeach
+
           </tbody>
         </table>
       </div>

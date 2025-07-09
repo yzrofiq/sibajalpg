@@ -67,25 +67,24 @@
       $totalNilai = 0;
     @endphp
 
-    @foreach($rekap as $namaSatker => $rekapData)
-      <tr>
-        <td>{{ $i++ }}</td>
-        <td style="text-align: left;">{{ $namaSatker }}</td>
-        <td>{{ $rekapData['total_transaksi'] }}</td>
-        <td style="text-align: right;">Rp{{ number_format($rekapData['nilai_transaksi'], 0, ',', '.') }}</td>
-      </tr>
-      @php
-        $totalPaket += $rekapData['total_transaksi'];
-        $totalNilai += $rekapData['nilai_transaksi'];
-      @endphp
+    @foreach($rekap as $kdSatker => $data)
+<tr>
+  <td>{{ $i++ }}</td>
+  <td style="text-align: left;">{{ $data['nama_satker'] }}</td>
+  <td>{{ number_format($data['total_transaksi'], 0, ',', '.') }}</td>
+  <td style="text-align: right;">Rp{{ number_format($data['nilai_transaksi'], 0, ',', '.') }}</td>
+</tr>
+    @php
+      $totalPaket += $data['total_transaksi'];
+      $totalNilai += $data['nilai_transaksi'];
+    @endphp
     @endforeach
 
     <tr class="summary-row">
-  <td colspan="2">TOTAL</td>
-  <td>{{ number_format($totalPaket, 0, ',', '.') }}</td>
-  <td style="text-align: right;">Rp{{ number_format($totalNilai, 0, ',', '.') }}</td>
-</tr>
-
+      <td colspan="2">TOTAL</td>
+      <td>{{ number_format($totalPaket, 0, ',', '.') }}</td>
+      <td style="text-align: right;">Rp{{ number_format($totalNilai, 0, ',', '.') }}</td>
+    </tr>
   </tbody>
 </table>
 

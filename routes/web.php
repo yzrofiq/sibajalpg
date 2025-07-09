@@ -34,11 +34,6 @@ Route::post('/', [AuthController::class, 'login'])->middleware('guest')->name('l
 Route::get('/graph-report', [FrontController::class, 'report'])->name('report');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/home', [HomeController::class, 'index'])->middleware('auth')->name('home');
-// Route untuk generate PDF berdasarkan filter
-Route::get('/generate-pdf', [NonTenderController::class, 'generateFilteredPdf'])->name('generate-pdf');
-
-// Route untuk melihat PDF berdasarkan filter
-Route::get('/view-pdf', [NonTenderController::class, 'viewFilteredPdf'])->name('view-pdf');
 
 Route::group([
     'prefix' => 'non-tender',
@@ -48,6 +43,10 @@ Route::group([
     Route::get('/list', [NonTenderController::class, 'index'])->name('list');
     Route::get('/show/{code}', [NonTenderController::class, 'show'])->name('show');
     Route::get('/realization', [NonTenderController::class, 'realization'])->name('realization');
+
+     // ✅ Tambahkan di sini agar tetap di dalam middleware auth
+     Route::get('/view-pdf', [NonTenderController::class, 'viewPdf'])->name('viewPdf');
+     Route::get('/download-pdf', [NonTenderController::class, 'downloadPdf'])->name('downloadPdf');
 });
 
 Route::group([

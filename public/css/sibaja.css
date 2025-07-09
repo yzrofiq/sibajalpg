@@ -186,6 +186,44 @@ body {
     color: #555;
 }
 
+/* --- Tinggi Tetap PDF Card --- */
+.pdf-card {
+  height: 360px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pdf-card h6 {
+  min-height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.desc-text {
+  min-height: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* Batasi area carousel agar tidak keluar box */
+.transparansi-card .carousel,
+.transparansi-card .carousel-inner {
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.carousel-item {
+  transition: transform 0.6s ease-in-out;
+}
+
+
 .btn-success, .btn-outline-primary {
     font-size: 14px;
     padding: 6px 12px;
@@ -670,10 +708,13 @@ body {
   }
   
   .carousel-indicators {
-    margin-top: 40px; /* Diturunkan lebih jauh agar tidak menimpa card */
+    margin-top: 40px !important;
     position: relative;
     z-index: 2;
+    justify-content: center;
+    bottom: -5px; /* ⬅️ Ini yang penting untuk menurunkannya */
   }
+  
   
   /* Bullet Carousel Indicator */
 .carousel-indicators .indicator-dot {
