@@ -9,7 +9,17 @@
   <div style="text-align: center; font-size: 14px">
     <p style="margin: 0;"><b>REALISASI PAKET NON TENDER</b></p>
     <p style="margin: 0;"><b>OPD PROVINSI LAMPUNG</b></p>
-    <p style="margin: 0;"><b>TAHUN ANGGARAN {{ date("Y") }} S.D TANGGAL {{ date("d") }} {{ strtoupper(getMonthName(date("m"))) }} {{ date("Y") }}</b></p>
+    
+    <!-- Dynamic title generation based on filters -->
+    <p style="margin: 0;"><b>
+      @if ($month !== 'ALL' && $day !== 'ALL')
+        TAHUN ANGGARAN {{ $year }} TANGGAL {{ $day }} {{ strtoupper(getMonthName($month)) }} {{ $year }}
+      @elseif ($month !== 'ALL')
+        TAHUN ANGGARAN {{ $year }} {{ strtoupper(getMonthName($month)) }} {{ $year }}
+      @else
+        TAHUN ANGGARAN {{ $year }} S.D TANGGAL {{ date("d") }} {{ strtoupper(getMonthName(date("m"))) }} {{ date("Y") }}
+      @endif
+    </b></p>
   </div>
 
   <br/>

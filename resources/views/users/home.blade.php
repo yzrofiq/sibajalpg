@@ -173,7 +173,6 @@
 
 
 
-
 <!-- SECTION: Transparency Report -->
 <section id="reports" style="position: relative; z-index: 1;">
 
@@ -188,84 +187,93 @@
           <!-- SLIDE 1 -->
           <div class="carousel-item active">
             <div class="row g-3">
-              <div class="col-md-3">
-                <div class="report-card shadow-sm">
-                  <h6><span class="text-warning fw-bold">Package</span> Procurement Statistics</h6>
-                  <p>Tender: 21</p>
-                  <p>Non Tender: 677</p>
-                  <p>Total e-Ratalog: 458</p>
-                  <a href="#">View Details →</a>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="report-card shadow-sm">
-                  <h6><span class="text-warning fw-bold">Package</span> Procurement Statistics</h6>
-                  <p>Tender: 21</p>
-                  <p>Non Tender: 677</p>
-                  <p>Total e-Ratalog: 458</p>
-                  <a href="#">View Details →</a>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="report-card shadow-sm">
-                  <h6>Bandar Lampung city<br>Hall Poofing Construction</h6>
-                  <p>Code: 1223.50,1635</p>
-                  <p>HPS: Rp 2,005,040,000</p>
-                  <p>Stage: In Progress</p>
-                  <a href="#">View Details →</a>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="report-card shadow-sm">
-                  <h6>Construction of the RUP<br>New State University<br>Building 2025</h6>
-                  <p>Code: 168.903.5525</p>
-                  <p>HPS: Rp 18,500,000,000</p>
-                  <p>Stage: In Progress</p>
-                  <a href="#">View Details →</a>
-                </div>
-              </div>
+<!-- Transparency Report: Non Tender -->
+<div class="col-md-3">
+    <div class="report-card shadow-sm" style="min-height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+        <h6><span class="text-warning fw-bold">Non Tender</span> Procurement Statistics</h6>
+        <p><strong>Jumlah Paket:</strong> {{ $totalNonTender['package_count'] }} Paket</p>
+        <p><strong>Jumlah Pagu:</strong> Rp {{ number_format($totalNonTender['pagu'], 0, ',', '.') }}</p>
+        <p><strong>HPS:</strong> Rp {{ number_format($totalNonTender['hps'], 0, ',', '.') }}</p>
+        <p><strong>Nilai Terkontrak:</strong> Rp {{ number_format($totalNonTender['pagu'] - $totalNonTender['hps'], 0, ',', '.') }}</p>
+        <p><strong>Efisiensi:</strong> Rp {{ number_format($totalNonTender['efficiency'], 0, ',', '.') }}</p>
+
+        <!-- View Details link to the Non Tender list page -->
+        <a href="{{ route('non-tender.list') }}">View Details →</a>
+    </div>
+</div>
+
+<!-- Transparency Report: E-Katalog V5 and V6 -->
+<div class="col-md-3">
+    <div class="report-card shadow-sm" style="min-height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+        <h6><span class="text-warning fw-bold">E-Katalog</span> Procurement Statistics</h6>
+        
+        <!-- E-Katalog V5 Stats -->
+        <p><strong>Jumlah Paket V5:</strong> {{ $totalEkatalogV5['package_count'] }} Paket</p>
+        <p><strong>Total Nilai Transaksi V5:</strong> Rp {{ number_format($totalEkatalogV5['total_transaksi'], 0, ',', '.') }}</p>
+
+        <!-- E-Katalog V6 Stats -->
+        <p><strong>Jumlah Paket V6:</strong> {{ $totalEkatalogV6['package_count'] }} Paket</p>
+        <p><strong>Total Nilai Transaksi V6:</strong> Rp {{ number_format($totalEkatalogV6['total_transaksi'], 0, ',', '.') }}</p>
+
+        <!-- View Details link to the E-Katalog report page -->
+        <a href="{{ route('report.ekatalog') }}">View Details →</a>
+    </div>
+</div>
+
+<!-- Transparency Report: Toko Daring -->
+<div class="col-md-3">
+    <div class="report-card shadow-sm" style="min-height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+        <h6><span class="text-warning fw-bold">Toko Daring</span> Procurement Statistics</h6>
+        
+        <!-- Toko Daring Stats -->
+        <p><strong>Total Paket Toko Daring:</strong> {{ $rekapTokoDaring->sum('total_transaksi') }} Paket</p>
+        <p><strong>Total Nilai Transaksi:</strong> Rp {{ number_format($rekapTokoDaring->sum('nilai_transaksi'), 0, ',', '.') }}</p>
+        
+        <!-- View Details link to the Toko Daring report page -->
+        <a href="{{ route('report.tokodaring') }}">View Details →</a>
+    </div>
+</div>
+
+<!-- RUP Procurement Statistics -->
+<div class="col-md-3">
+    <div class="report-card shadow-sm" style="min-height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+        <h6><span class="text-warning fw-bold">RUP</span> Procurement Statistics</h6>
+        
+        <!-- Total RUP -->
+        <p><strong>Total Paket RUP:</strong> {{ $totalRup['paket_total'] }} Paket</p>
+        <p><strong>Total Pagu RUP:</strong> Rp {{ number_format($totalRup['pagu_total'], 0, ',', '.') }}</p>
+
+        <!-- RUP Stats -->
+        <p><strong>Jumlah Paket Penyedia:</strong> {{ $totalRup['paket_penyedia'] }} Paket</p>
+        <!-- <p><strong>Total Pagu Penyedia:</strong> Rp {{ number_format($totalRup['pagu_penyedia'], 0, ',', '.') }}</p> -->
+        <p><strong>Jumlah Paket Swakelola:</strong> {{ $totalRup['paket_swakelola'] }} Paket</p>
+        <!-- <p><strong>Total Pagu Swakelola:</strong> Rp {{ number_format($totalRup['pagu_swakelola'], 0, ',', '.') }}</p>
+        <p><strong>Jumlah Paket Penyedia dalam Swakelola:</strong> {{ $totalRup['paket_dalam'] }} Paket</p>
+        <p><strong>Total Pagu Penyedia dalam Swakelola:</strong> Rp {{ number_format($totalRup['pagu_dalam'], 0, ',', '.') }}</p> -->
+
+
+        <!-- View Details link to the RUP report page -->
+        <a href="{{ route('report.rup') }}">View Details →</a>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+              
+              <!-- Other report cards can be filled similarly -->
+
             </div>
           </div>
 
           <!-- SLIDE 2 -->
           <div class="carousel-item">
             <div class="row g-3">
-              <div class="col-md-3">
-                <div class="report-card shadow-sm">
-                  <h6>Example Project 5</h6>
-                  <p>Code: 123456</p>
-                  <p>HPS: Rp 1,000,000,000</p>
-                  <p>Stage: Completed</p>
-                  <a href="#">View Details →</a>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="report-card shadow-sm">
-                  <h6>Example Project 6</h6>
-                  <p>Code: 654321</p>
-                  <p>HPS: Rp 800,000,000</p>
-                  <p>Stage: In Progress</p>
-                  <a href="#">View Details →</a>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="report-card shadow-sm">
-                  <h6>Example Project 7</h6>
-                  <p>Code: 222333</p>
-                  <p>HPS: Rp 900,000,000</p>
-                  <p>Stage: Planning</p>
-                  <a href="#">View Details →</a>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="report-card shadow-sm">
-                  <h6>Example Project 8</h6>
-                  <p>Code: 777888</p>
-                  <p>HPS: Rp 1,200,000,000</p>
-                  <p>Stage: In Progress</p>
-                  <a href="#">View Details →</a>
-                </div>
-              </div>
+              <!-- Add other slides content here as necessary -->
             </div>
           </div>
 
@@ -294,6 +302,7 @@
 
 
 
+
 <!-- Strip Biru Vertikal -->
 <div class="strip-wrapper position-relative">
   <div class="vertical-blue-strip"></div>
@@ -303,46 +312,53 @@
     <div class="background-abu-kanan"></div>
 
     <div class="container-lg position-relative">
-      <div class="kantor-wrapper d-flex justify-content-center">
-        <div id="carouselKantor" class="carousel slide kantor-carousel" data-bs-ride="carousel">
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <img src="{{ asset('images/kantor1.png') }}" class="d-block kantor-carousel-img" alt="Kantor 1">
+        <div class="kantor-wrapper d-flex justify-content-center">
+    <div id="carouselKantor" class="carousel slide kantor-carousel" data-bs-ride="carousel">
+        <div class="kantor-carousel-inner"> <!-- Ganti .carousel-inner jadi .kantor-carousel-inner -->
+            <!-- Gambar Kantor 1 -->
+            <div class="kantor-carousel-item active"> <!-- Ganti .carousel-item jadi .kantor-carousel-item -->
+                <div class="carousel-image-wrapper">
+                    <img src="{{ asset('images/kantor1.png') }}" class="d-block kantor-carousel-img" alt="Kantor 1">
+                    <div class="overlay"></div>
+                </div>
+            </div>          
+            <!-- Gambar Kantor 2 -->
+            <div class="kantor-carousel-item"> <!-- Ganti .carousel-item jadi .kantor-carousel-item -->
+                <div class="carousel-image-wrapper">
+                    <img src="{{ asset('images/kantor2.png') }}" class="d-block kantor-carousel-img" alt="Kantor 2">
+                    <div class="overlay"></div>
+                </div>
             </div>
-            <!-- Tambahan slide jika perlu -->
-          </div>
         </div>
-      </div>
-
-      <div class="tentang-box animate-up shadow">
-        <h6 class="text-primary fw-semibold mb-1">Tentang Kami</h6>
-        <h4 class="fw-bold mb-5">LPSE - Biro Pengadaan Barang dan Jasa Provinsi Lampung</h4>
-        <div class="mb-0">
-  <h6 class="fw-bold mb-4">VISI DAN MISI</h6>
-  <div class="mb-3">
-    <strong>VISI</strong><br>
-    <em>"Terwujudnya Layanan Pengadaan Barang / Jasa Kualitas Prima Dan Berkesinambungan"</em>
-  </div>
-
-  <div>
-    <strong>MISI</strong>
-    <ol class="mt-2 mb-0 ps-3">
-      <li>
-        Memberikan Layanan kepada Pengguna Sistem Pengadaan Secara Elektronik (SPSE)
-        yang sederhana, Cepat, Tepat, Berkesinambungan dan Akuntabel Tanpa Dipungut Biaya.
-      </li>
-      <li>
-        Mengedepankan Pelayanan Yang Tertib Administrasi, Tertib Hukum dan Tertib Pelaksanaan.
-      </li>
-    </ol>
-  </div>
+    </div>
 </div>
 
-        <!-- Tambahkan spacer DIV setelah teks -->
-<div style="height: 3rem;"></div>
-      </div>
+
+        <div class="tentang-box animate-up shadow">
+            <h6 class="text-primary fw-semibold mb-1">Tentang Kami</h6>
+            <h4 class="fw-bold mb-5">LPSE - Biro Pengadaan Barang dan Jasa Provinsi Lampung</h4>
+            <div class="mb-0">
+                <h6 class="fw-bold mb-4">VISI DAN MISI</h6>
+                <div class="mb-3">
+                    <strong>VISI</strong><br>
+                    <em>"Terwujudnya Layanan Pengadaan Barang / Jasa Kualitas Prima Dan Berkesinambungan"</em>
+                </div>
+
+                <div>
+                    <strong>MISI</strong>
+                    <ol class="mt-2 mb-0 ps-3">
+                        <li>Memberikan Layanan kepada Pengguna Sistem Pengadaan Secara Elektronik (SPSE) yang sederhana, Cepat, Tepat, Berkesinambungan dan Akuntabel Tanpa Dipungut Biaya.</li>
+                        <li>Mengedepankan Pelayanan Yang Tertib Administrasi, Tertib Hukum dan Tertib Pelaksanaan.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Tambahkan spacer DIV setelah teks -->
+            <div style="height: 3rem;"></div>
+        </div>
     </div>
-  </section>
+</section>
+
 </div>
 
 
