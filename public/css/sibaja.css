@@ -510,27 +510,65 @@ body {
     background-color: #F5F8FD;
     z-index: 0;
   }
-  
-  .kantor-wrapper {
-    max-width: 110%;
-    margin-left: -4%;
-    margin-right: auto;
-    width: 108%; /* sebelumnya 108% */
-    padding: 0 3vw;
-    position: relative;
-    z-index: 1;
-  }
-  .kantor-carousel {
-    width: 100%;
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-  
-  .kantor-carousel-img {
-    width: 100%;
-    height: 700px;
-    object-fit: cover;
-  }
+  /* Ganti nama kelas untuk mencegah tabrakan */
+.kantor-carousel {
+  width: 100%;
+  max-height: 690px; /* Tentukan tinggi tetap untuk carousel */
+  overflow: hidden; /* Menjaga ukuran tetap */
+}
+
+.kantor-carousel-img {
+  width: 140%;
+  height: 100%;
+  object-fit: cover; /* Pastikan gambar menutupi seluruh area tanpa merubah ukuran */
+  transition: opacity 1s ease-in-out; /* Menambahkan animasi ganti gambar */
+}
+
+.kantor-carousel-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.kantor-carousel-item {
+  opacity: 0;
+  transition: opacity 1s ease-in-out; /* Perlahan berubah menjadi tampak */
+}
+
+.kantor-carousel-item.active {
+  opacity: 1;
+}
+
+/* Overlay hitam transparan */
+.carousel-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3); /* Black transparent overlay */
+  z-index: 2;
+}
+
+/* Animasi transisi gambar yang perlahan */
+.kantor-carousel-item {
+  transition: opacity 1s ease-in-out;
+}
+
+.kantor-wrapper {
+  position: relative;
+  max-width: 120%;
+  margin-left: -3.5%;
+  width: 107%;
+  padding: 0 3vw;
+  z-index: 1;
+}
+
   
   /* Box Putih */
   .tentang-box {
@@ -835,10 +873,7 @@ body {
       font-size: 0.95rem;
     }
   
-    .kantor-carousel-img {
-      height: 300px;
-      object-fit: cover;
-    }
+
   
     .info-box {
       width: 100%;
@@ -900,11 +935,6 @@ body {
       right: 0;
     }
   
-    .kantor-wrapper {
-      padding: 0 16px;
-      margin-left: 0;
-      width: 100%;
-    }
   }
 
   .dropdown-submenu {

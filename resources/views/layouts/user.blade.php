@@ -181,14 +181,10 @@
             </div>
             <div class="modal-body">
             <label for="year">Tahun:</label>
-<select id="year" class="form-control">
-    @isset($years)
-        @foreach ($years as $year)
-            <option value="{{ $year }}" {{ $year == date('Y') ? 'selected' : '' }}>{{ $year }}</option>
-        @endforeach
-    @else
-        <option value="{{ date('Y') }}">{{ date('Y') }}</option>
-    @endisset
+                <select form="form" name="year" id="year" class="form-control">
+    @foreach ($availableYears as $item)
+        <option value="{{ $item }}" {{ $tahun == $item ? 'selected' : '' }}>{{ $item }}</option>
+    @endforeach
 </select>
 
                 <label for="month">Bulan:</label>
