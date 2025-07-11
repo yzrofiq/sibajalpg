@@ -166,7 +166,7 @@ class NonTenderController extends Controller
 
         public function viewPdf(Request $request)
 {
-    $year = $request->input('year');
+    $year = $request->input('year', date('Y'));
     $month = $request->input('month');
     $day = $request->input('day');
 
@@ -291,7 +291,7 @@ class NonTenderController extends Controller
     
 public function downloadPdf(Request $request)
 {
-    $year = $request->input('year');
+    $year = $request->input('year', date('Y'));
     $month = $request->input('month');
     $day = $request->input('day');
 
