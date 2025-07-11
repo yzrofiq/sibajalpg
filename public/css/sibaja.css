@@ -861,6 +861,24 @@ body {
       box-shadow: none;
     }
   
+    .kantor-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 0; /* Mengurangi margin bawah agar gambar lebih rapat */
+    }
+
+    .kantor-carousel {
+        max-height: 300px;  /* Menurunkan tinggi carousel untuk membuatnya lebih compact */
+        overflow: hidden;
+    }
+
+    .kantor-carousel-img {
+        width: 100%;  /* Mengatur lebar gambar agar sesuai dengan container */
+        height: auto;
+        object-fit: cover; /* Menjaga gambar tetap penuh tanpa merusak proporsi */
+    }
+
     .tentang-box h4 {
       font-size: 1.3rem;
     }
