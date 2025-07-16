@@ -32,7 +32,7 @@
     <div class="bg-white p-4 rounded w-100" style="max-width: 1140px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
 
       <h3 class="fw-bold mb-0 text-primary">Statistik Umum Pengadaan</h3>
-      <p class="text-muted">Menampilkan data ringkas mengenai jumlah paket pengadaan dan instansi aktif yang terlibat dalam sistem.</p>
+      <p class="text-muted">Menampilkan data ringkas mengenai jumlah paket pengadaan dan instansi aktif.</p>
 
       <div class="row row-cols-1 row-cols-md-2 g-3 mt-4">
         {{-- Non Tender --}}
@@ -125,19 +125,12 @@
   <!-- Chart 1: Distribusi Sumber Pengadaan -->
   <div class="col-md-6 mb-4 mb-md-0">
     <div class="card border">
-      <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-        Distribusi Pengadaan
-        <form method="GET" id="tahunForm">
-          <input type="hidden" name="kategori_chart2" value="{{ $kategoriChart2 }}">
-          <select id="tahunFilter" name="tahun" class="form-select form-select-sm w-auto">
-            @foreach ($availableYears as $th)
-              <option value="{{ $th }}" {{ $tahun == $th ? 'selected' : '' }}>{{ $th }}</option>
-            @endforeach
-          </select>
-        </form>
-      </div>
+<div class="card-header fw-bold">
+  Distribusi Pengadaan Tahun {{ $tahun }}
+</div>
+
       <div class="card-body" style="background-color: white;">
-        <canvas id="chart1" height="220"></canvas>
+        <canvas id="chart1" height="227"></canvas>
       </div>
     </div>
   </div>
@@ -169,131 +162,6 @@
 </div>
 
 
-
-<!-- SECTION: Transparency Report -->
-<section id="reports" style="position: relative; z-index: 1;">
-
-  <!-- Bagian atas: putih -->
-  <div class="transparency-section" style="background-color: white; padding: 60px 0 30px 0;">
-    <div class="container">
-      <h4 class="section-title text-white mb-4">Transparency Reports</h4>
-
-      <div id="transparencyCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-
-          <!-- SLIDE 1 -->
-          <div class="carousel-item active">
-            <div class="row g-3">
-<!-- Transparency Report: Non Tender -->
-<div class="col-md-3">
-    <div class="report-card shadow-sm" style="min-height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
-        <h6><span class="text-warning fw-bold">Non Tender</span> Procurement Statistics</h6>
-        <p><strong>Jumlah Paket:</strong> {{ $totalNonTender['package_count'] }} Paket</p>
-        <p><strong>Jumlah Pagu:</strong> Rp {{ number_format($totalNonTender['pagu'], 0, ',', '.') }}</p>
-        <p><strong>HPS:</strong> Rp {{ number_format($totalNonTender['hps'], 0, ',', '.') }}</p>
-        <p><strong>Nilai Terkontrak:</strong> Rp {{ number_format($totalNonTender['pagu'] - $totalNonTender['hps'], 0, ',', '.') }}</p>
-        <p><strong>Efisiensi:</strong> Rp {{ number_format($totalNonTender['efficiency'], 0, ',', '.') }}</p>
-
-        <!-- View Details link to the Non Tender list page -->
-        <a href="{{ route('non-tender.list') }}">View Details →</a>
-    </div>
-</div>
-
-<!-- Transparency Report: E-Katalog V5 and V6 -->
-<div class="col-md-3">
-    <div class="report-card shadow-sm" style="min-height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
-        <h6><span class="text-warning fw-bold">E-Katalog</span> Procurement Statistics</h6>
-        
-        <!-- E-Katalog V5 Stats -->
-        <p><strong>Jumlah Paket V5:</strong> {{ $totalEkatalogV5['package_count'] }} Paket</p>
-        <p><strong>Total Nilai Transaksi V5:</strong> Rp {{ number_format($totalEkatalogV5['total_transaksi'], 0, ',', '.') }}</p>
-
-        <!-- E-Katalog V6 Stats -->
-        <p><strong>Jumlah Paket V6:</strong> {{ $totalEkatalogV6['package_count'] }} Paket</p>
-        <p><strong>Total Nilai Transaksi V6:</strong> Rp {{ number_format($totalEkatalogV6['total_transaksi'], 0, ',', '.') }}</p>
-
-        <!-- View Details link to the E-Katalog report page -->
-        <a href="{{ route('report.ekatalog') }}">View Details →</a>
-    </div>
-</div>
-
-<!-- Transparency Report: Toko Daring -->
-<div class="col-md-3">
-    <div class="report-card shadow-sm" style="min-height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
-        <h6><span class="text-warning fw-bold">Toko Daring</span> Procurement Statistics</h6>
-        
-        <!-- Toko Daring Stats -->
-        <p><strong>Total Paket Toko Daring:</strong> {{ $rekapTokoDaring->sum('total_transaksi') }} Paket</p>
-        <p><strong>Total Nilai Transaksi:</strong> Rp {{ number_format($rekapTokoDaring->sum('nilai_transaksi'), 0, ',', '.') }}</p>
-        
-        <!-- View Details link to the Toko Daring report page -->
-        <a href="{{ route('report.tokodaring') }}">View Details →</a>
-    </div>
-</div>
-
-<!-- RUP Procurement Statistics -->
-<div class="col-md-3">
-    <div class="report-card shadow-sm" style="min-height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
-        <h6><span class="text-warning fw-bold">RUP</span> Procurement Statistics</h6>
-        
-        <!-- Total RUP -->
-        <p><strong>Total Paket RUP:</strong> {{ $totalRup['paket_total'] }} Paket</p>
-        <p><strong>Total Pagu RUP:</strong> Rp {{ number_format($totalRup['pagu_total'], 0, ',', '.') }}</p>
-
-        <!-- RUP Stats -->
-        <p><strong>Jumlah Paket Penyedia:</strong> {{ $totalRup['paket_penyedia'] }} Paket</p>
-        <!-- <p><strong>Total Pagu Penyedia:</strong> Rp {{ number_format($totalRup['pagu_penyedia'], 0, ',', '.') }}</p> -->
-        <p><strong>Jumlah Paket Swakelola:</strong> {{ $totalRup['paket_swakelola'] }} Paket</p>
-        <!-- <p><strong>Total Pagu Swakelola:</strong> Rp {{ number_format($totalRup['pagu_swakelola'], 0, ',', '.') }}</p>
-        <p><strong>Jumlah Paket Penyedia dalam Swakelola:</strong> {{ $totalRup['paket_dalam'] }} Paket</p>
-        <p><strong>Total Pagu Penyedia dalam Swakelola:</strong> Rp {{ number_format($totalRup['pagu_dalam'], 0, ',', '.') }}</p> -->
-
-
-        <!-- View Details link to the RUP report page -->
-        <a href="{{ route('report.rup') }}">View Details →</a>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-              
-              <!-- Other report cards can be filled similarly -->
-
-            </div>
-          </div>
-
-          <!-- SLIDE 2 -->
-          <div class="carousel-item">
-            <div class="row g-3">
-              <!-- Add other slides content here as necessary -->
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Carousel Controls -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#transparencyCarousel" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#transparencyCarousel" data-bs-slide="next">
-          <span class="carousel-control-next-icon"></span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bagian bawah abu muda -->
-  <div style="background-color: #F5F8FD; padding: 25px 0;">
-    <div class="container">
-      <!-- Kosongkan atau isi konten pelengkap jika dibutuhkan -->
-    </div>
-  </div>
-</section>
 
 
 
@@ -367,8 +235,9 @@
     <div class="transparansi-card shadow-lg p-4 bg-white">
       <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
         <div>
-          <h4 class="fw-bold text-dark">Laporan Pengadaan Tahun 2025</h4>
-          <p class="text-muted">Publikasi data kinerja pengadaan barang/jasa Pemerintah Provinsi Lampung Tahun Anggaran 2025</p>
+        <h4 class="fw-bold text-dark">Laporan Pengadaan Tahun {{ date('Y') }}</h4>
+        <p class="text-muted">Publikasi data kinerja pengadaan barang/jasa Pemerintah Provinsi Lampung Tahun Anggaran {{ date('Y') }}</p>
+
         </div>
       </div>
 
@@ -384,8 +253,8 @@
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
                 <small class="text-muted">Laporan Tender</small>
-                <h6 class="fw-bold mt-1">Rekap Tender Tahun 2025</h6>
-                <p class="desc-text">Jumlah dan nilai seluruh paket tender aktif dan selesai Tahun 2025</p>
+                <h6 class="fw-bold mt-1">Rekap Tender</h6>
+                <p class="desc-text">Jumlah dan nilai seluruh paket tender aktif dan selesai</p>
                 <div class="d-flex gap-2 mt-2">
                   <a href="#" class="btn btn-sm btn-pdf-outline w-100"><i class="bi bi-eye"></i> Lihat</a>
                   <a href="#" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center">
@@ -403,8 +272,8 @@
     <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
   </div>
   <small class="text-muted">Laporan Non Tender</small>
-  <h6 class="fw-bold mt-1">Rekap Non Tender Tahun 2025</h6>
-  <p class="desc-text">Data paket non tender yang berlangsung dan selesai tahun 2025</p>
+  <h6 class="fw-bold mt-1">Rekap Non Tender</h6>
+  <p class="desc-text">Data paket non tender yang berlangsung dan selesai</p>
   <div class="d-flex gap-2 mt-2">
     <!-- Tombol Lihat -->
     <a href="{{ route('non-tender.viewPdf', [
@@ -433,7 +302,7 @@
     <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
   </div>
   <small class="text-muted">Laporan E-Katalog V6</small>
-  <h6 class="fw-bold mt-1">Transaksi E-Katalog V6 Tahun 2025</h6>
+  <h6 class="fw-bold mt-1">Transaksi E-Katalog V6</h6>
   <p class="desc-text">Total nilai dan jumlah transaksi melalui e-Katalog versi 6</p>
   <div class="d-flex gap-2 mt-2">
   <a href="{{ route('report.ekatalog.exportpdf', ['tahun' => 2025, 'versi' => 'V6']) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
@@ -451,7 +320,7 @@
     <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
   </div>
   <small class="text-muted">Laporan E-Katalog V5</small>
-  <h6 class="fw-bold mt-1">Transaksi E-Katalog V5 Tahun 2025</h6>
+  <h6 class="fw-bold mt-1">Transaksi E-Katalog V5</h6>
   <p class="desc-text">Total nilai transaksi pengadaan menggunakan e-Katalog versi 5</p>
   <div class="d-flex gap-2 mt-2">
     <a href="{{ route('report.ekatalog.exportpdf', ['tahun' => 2025, 'versi' => 'V5']) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
@@ -477,8 +346,8 @@
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
                 <small class="text-muted">Laporan Toko Daring</small>
-                <h6 class="fw-bold mt-1">Realisasi Toko Daring 2025</h6>
-                <p class="desc-text">Ringkasan pengadaan barang/jasa melalui sistem toko daring tahun 2025</p>
+                <h6 class="fw-bold mt-1">Realisasi Toko Daring</h6>
+                <p class="desc-text">Ringkasan pengadaan barang/jasa melalui sistem toko daring</p>
                 <div class="d-flex gap-2 mt-2">
                 <a href="{{ route('report.tokodaring.exportpdf', ['tahun' => 2025]) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
       <i class="bi bi-eye"></i> Lihat
@@ -495,8 +364,8 @@
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
                 <small class="text-muted">Laporan RUP</small>
-                <h6 class="fw-bold mt-1">RUP Provinsi Lampung 2025</h6>
-                <p class="desc-text">Total paket RUP dan pagu belanja pengadaan untuk seluruh OPD tahun 2025</p>
+                <h6 class="fw-bold mt-1">RUP Provinsi Lampung</h6>
+                <p class="desc-text">Total paket RUP dan pagu belanja pengadaan untuk seluruh OPD</p>
                 <div class="d-flex gap-2 mt-2">
 
                 <a href="{{ route('report.rup.pdf', ['tahun' => 2025]) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
@@ -592,7 +461,7 @@ document.addEventListener("DOMContentLoaded", function () {
       labels: chart1Labels,
       datasets: [{
         data: chart1Values,
-        backgroundColor: ['#3366CC', '#66B2FF']
+        backgroundColor: ['#569FB2', '#FF6A3F']
       }]
     },
     options: {
@@ -617,7 +486,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const chart2Data = {!! json_encode($chart2Data) !!};
   const chart2Labels = Object.keys(chart2Data);
   const chart2Values = Object.values(chart2Data);
-  const backgroundColors = ['#66B2FF', '#3366CC', '#A7C5EB', '#4A90E2', '#3F51B5', '#5C8DF6'];
+  const backgroundColors = ['#27214D', '#569FB2', '#86D7B7', '#F8E08A', '#FF6A3F', '#5C8DF6'];
+  // const backgroundColors = ['#7B3F9B', '#2D6A8D', '#6CB34A', '#F0D43A', '#E88C3C', '#5C8DF6'];
+
 
   new Chart(document.getElementById('chart2'), {
     type: 'pie',

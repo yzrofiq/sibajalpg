@@ -1,9 +1,20 @@
+@php
+  // Ambil filter dari query string request (pastikan kd_satker ambil dari param)
+  $filters = [
+    'year' => request('year'),
+    'kd_satker' => request('kd_satker'), // Selalu kirim kode dari dropdown master satker
+    'code' => request('code'),
+    'name' => request('name'),
+    'category' => request('category'),
+  ];
+@endphp
+
 <div class="row">
   {{-- Tender --}}
   <div class="col-lg-3 col-md-6">
     <div class="small-box bg-info">
       <div class="inner">
-        <h3>{{ moneyFormat(getTenderCount()) }}</h3>
+        <h3>{{ moneyFormat(getTenderCount($filters)) }}</h3>
         <p>Tender</p>
       </div>
       <div class="icon">
@@ -17,7 +28,7 @@
   <div class="col-lg-3 col-md-6">
     <div class="small-box bg-warning">
       <div class="inner">
-        <h3>{{ moneyFormat(\App\Models\NonTenderPengumuman::whereIn('status_nontender', ['Selesai', 'Berlangsung'])->count()) }}</h3>
+        <h3>{{ number_format(getNonTenderCount($filters), 0, ',', '.') }}</h3>
         <p>Non Tender</p>
       </div>
       <div class="icon">
@@ -31,7 +42,7 @@
   <div class="col-lg-3 col-md-6">
     <div class="small-box bg-success">
       <div class="inner">
-      <h3>{{ number_format(getEkatalogCount(), 0, ',', '.') }}</h3>
+        <h3>{{ number_format(getEkatalogCount($filters), 0, ',', '.') }}</h3>
         <p>Total e-Katalog</p>
       </div>
       <div class="icon">
@@ -42,25 +53,23 @@
   </div>
 
   {{-- Toko Daring (Bela Pengadaan) --}}
-<div class="col-lg-3 col-md-6">
-  <div class="small-box bg-danger">
-    <div class="inner">
-    <h3>{{ number_format(getBelaCount(), 0, ',', '.') }}</h3>
-      <p>Toko Daring</p>
-    </div>
-    <div class="icon">
-      <i class="ion ion-pie-graph"></i>
-    </div>
-    <a href="{{ route('report.tokodaring') }}" class="small-box-footer">
-      Lihat <i class="fas fa-arrow-circle-right"></i>
-    </a>
-    @if (Auth::user()->role_id == 1)
-      <a href="{{ route('bela.update') }}" class="small-box-footer text-warning">
-        Update Data
+  <div class="col-lg-3 col-md-6">
+    <div class="small-box bg-danger">
+      <div class="inner">
+        <h3>{{ number_format(getBelaCount($filters), 0, ',', '.') }}</h3>
+        <p>Total Toko Daring</p>
+      </div>
+      <div class="icon">
+        <i class="ion ion-pie-graph"></i>
+      </div>
+      <a href="{{ route('report.tokodaring') }}" class="small-box-footer">
+        Lihat <i class="fas fa-arrow-circle-right"></i>
       </a>
-    @endif
+      @if (Auth::user()->role_id == 1)
+        <a href="{{ route('bela.update') }}" class="small-box-footer text-warning">
+          Update Data
+        </a>
+      @endif
+    </div>
   </div>
-</div>
-
-
 </div>

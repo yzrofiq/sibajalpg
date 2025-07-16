@@ -1,78 +1,86 @@
 <style>
-    td {
+    td, th {
       border: 1px solid #000000; 
-      padding: 5px; 
+      padding: 7px 5px; 
+      font-size: 12px;
     }
-  </style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+</style>
 <page>
-    <div style="text-align: center; font-size: 14px">
+    <div style="text-align: center; font-size: 15px; font-weight: bold;">
         <p style="margin: 0;"><b>DATA RENCANA UMUM PENGADAAN (RUP)</b></p>
         <p style="margin: 0;"><b>PEMERINTAH PROVINSI LAMPUNG</b></p>
         @if ($tahun == '2024')
-        <p style="margin: 0;"><b>PER DESEMBER 2024</b></p>
+        <p style="margin: 0;"><b>DESEMBER 2024</b></p>
         @else
-        <p style="margin: 0;"><b>PER TANGGAL {{ date("d") }} {{ strtoupper(getMonthName(date("m"))) }} {{ $tahun }}</b></p>
+        <p style="margin: 0;"><b>TANGGAL {{ date("d") }} {{ strtoupper(getMonthName(date("m"))) }} {{ $tahun }}</b></p>
         @endif
     </div>
-
     <br/>
 
     <div>
-        <table style="width: 100%; border-collapse: collapse; max-width: 100%; display: block; border: 1px solid #000000">
-            <tr style="text-align: center;">
-                <td rowspan="2" style="text-align: center; vertical-align: middle;">No.</td>
-                <td rowspan="2" style="text-align: center; vertical-align: middle;">SATUAN KERJA</td>
-                <td colspan="2" style="width: 13%; text-align: center;">PENYEDIA</td>
-                <td colspan="2" style="width: 13%; text-align: center;">SWAKELOLA</td>
-                <td colspan="3" style="width: 22%; text-align: center;">PENYEDIA DALAM SWAKELOLA</td>
-                <td>TOTAL</td>
+        <table>
+            <tr style="text-align: center; font-weight: bold;">
+                <td rowspan="2" style="vertical-align: middle;">No.</td>
+                <td rowspan="2" style="vertical-align: middle;">SATUAN KERJA</td>
+                <td colspan="2">PENYEDIA</td>
+                <td colspan="2">SWAKELOLA</td>
+                <td colspan="2">PENYEDIA<br>DALAM SWAKELOLA</td>
+                <td colspan="2">TOTAL</td>
             </tr>
-            <tr>
-                <td style="vertical-align: middle; text-align: center;">PAKET</td>
-                <td style="vertical-align: middle; text-align: center;">PAGU</td>
-                <td style="vertical-align: middle; text-align: center;">PAKET</td>
-                <td style="vertical-align: middle; text-align: center;">PAGU</td>
-                <td style="vertical-align: middle; text-align: center;">PAKET</td>
-                <td style="vertical-align: middle; text-align: center;">PAGU</td>
-                <td style="text-align: center; font-size: 10px;">TOTAL<br/>DALAM PAKET</td>
-                <td>TOTAL PAGU</td>
+            <tr style="text-align: center; font-weight: bold;">
+                <td>PAKET</td>
+                <td>PAGU</td>
+                <td>PAKET</td>
+                <td>PAGU</td>
+                <td>PAKET</td>
+                <td>PAGU</td>
+                <td>PAKET</td>
+                <td>PAGU</td>
             </tr>
-
-            @foreach ($data as $item)
+            @php $rowNum = 1; @endphp
+            @foreach ($rekap as $item)
             <tr>
-                <td style="text-align: center;">{{ $loop->iteration }}</td>
-                <td>{{ $item['name'] }}</td>
-                @for ($i = 2; $i <= 9; $i++)
-                <td>{{ moneyFormat($item['data'][$i]) }}</td>
-                @endfor
+                <td style="text-align: center;">{{ $rowNum++ }}</td>
+                <td>{{ $item['nama_satker'] }}</td>
+                <td style="text-align: right;">{{ moneyFormat($item['paket_penyedia']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($item['pagu_penyedia']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($item['paket_swakelola']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($item['pagu_swakelola']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($item['paket_dalam']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($item['pagu_dalam']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($item['paket_total']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($item['pagu_total']) }}</td>
             </tr>
             @endforeach
-
-            <!-- Baris Total Keseluruhan di Paling Bawah -->
-            <tr style="font-weight: bold; text-align: center;">
+            <tr style="font-weight: bold; background: #f5f5f5;">
                 <td colspan="2" style="text-align: center;">TOTAL</td>
-                <td>{{ moneyFormat($grandTotal['paket_penyedia']) }}</td>
-                <td>{{ moneyFormat($grandTotal['pagu_penyedia']) }}</td>
-                <td>{{ moneyFormat($grandTotal['paket_swakelola']) }}</td>
-                <td>{{ moneyFormat($grandTotal['pagu_swakelola']) }}</td>
-                <td>{{ moneyFormat($grandTotal['paket_dalam']) }}</td>
-                <td>{{ moneyFormat($grandTotal['pagu_dalam']) }}</td>
-                <td>{{ moneyFormat($grandTotal['paket_total']) }}</td>
-                <td>{{ moneyFormat($grandTotal['pagu_total']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($grandTotal['paket_penyedia']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($grandTotal['pagu_penyedia']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($grandTotal['paket_swakelola']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($grandTotal['pagu_swakelola']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($grandTotal['paket_dalam']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($grandTotal['pagu_dalam']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($grandTotal['paket_total']) }}</td>
+                <td style="text-align: right;">{{ moneyFormat($grandTotal['pagu_total']) }}</td>
             </tr>
         </table>
         
         <br/><br/><br/><br/>
         <table style="width: 90%;">
             <tr>
-                <td style="width: 80%; border: 0;"></td>
-                <td style="width: 29.5%; text-align: center; font-weight: bold; border: 0;">
-                    <p style="margin: 0;">KEPALA BIRO PENGADAAN</p>
+                <td style="width: 75%; border: 0;"></td>
+                <td style="width: 25%; text-align: center; font-weight: bold; border: 0;">
+                <p style="margin: 0;">KEPALA BIRO PENGADAAN</p>
                     <p style="margin: 0;">BARANG DAN JASA,</p>
                     <br/><br/><br/><br/><br/><br/><br/><br/>
-                    <p style="margin: 0;">SLAMET RIADI, S.Sos</p>
+                    <p style="margin: 0;">PUADI JAILANI,SH.,MH</p>
                     <p style="margin: 0;">PEMBINA UTAMA MUDA</p>
-                    <p style="margin: 0;">NIP. 19670828 199903 1 005</p>
+                    <p style="margin: 0;">NIP. 19650905 199103 1 004</p>
                 </td>
             </tr>
         </table>

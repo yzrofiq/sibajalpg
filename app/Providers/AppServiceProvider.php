@@ -39,6 +39,6 @@ class AppServiceProvider extends ServiceProvider
 
         // Share data years dan year ke seluruh view
         view()->share('years', $years);
-        // view()->share('year', $year);
+        view()->share('year', $year);
     }
 }
