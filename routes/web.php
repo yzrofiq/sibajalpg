@@ -47,6 +47,8 @@ Route::group([
      // ✅ Tambahkan di sini agar tetap di dalam middleware auth
      Route::get('/view-pdf', [NonTenderController::class, 'viewPdf'])->name('viewPdf');
      Route::get('/download-pdf', [NonTenderController::class, 'downloadPdf'])->name('downloadPdf');
+     Route::get('search', [NonTenderController::class, 'search'])->name('search');
+
 });
 
 Route::group([

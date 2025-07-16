@@ -115,14 +115,15 @@
         <div class="modal-body">
           <label for="year">Tahun:</label>
           <select name="year" id="year" class="form-control" form="filterForm">
-            @isset($years)
-              @foreach ($years as $yearOption)
-                <option value="{{ $yearOption }}" {{ $year == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
-              @endforeach
-            @else
-              <option value="{{ date('Y') }}">{{ date('Y') }}</option>
-            @endisset
-          </select>
+    @isset($years)
+        @foreach ($years as $yearOption)
+            <option value="{{ $yearOption }}" {{ $year == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
+        @endforeach
+    @else
+        <option value="{{ date('Y') }}">{{ date('Y') }}</option>
+    @endisset
+</select>
+
 
           <label for="month">Bulan:</label>
           <select name="month" id="month" class="form-control" form="filterForm">
@@ -250,6 +251,8 @@
     });
   });
 </script>
+
+
 
 
 @stack('script')

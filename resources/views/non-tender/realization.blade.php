@@ -81,9 +81,9 @@
           <p style="margin: 0;">KEPALA BIRO PENGADAAN</p>
           <p style="margin: 0;">BARANG DAN JASA,</p>
           <br/><br/><br/><br/><br/><br/><br/><br/>
-          <p style="margin: 0;">SLAMET RIADI, S.Sos</p>
+          <p style="margin: 0;">PUADI JAILANI,SH.,MH</p>
           <p style="margin: 0;">PEMBINA UTAMA MUDA</p>
-          <p style="margin: 0;">NIP. 19670828 199903 1 005</p>
+          <p style="margin: 0;">NIP. 19650905 199103 1 004</p>
         </td>
       </tr>
     </table>
