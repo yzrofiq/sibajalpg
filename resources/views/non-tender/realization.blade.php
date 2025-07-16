@@ -6,11 +6,20 @@
 </style>
 
 <page>
-<div style="text-align: center; font-size: 14px">
-    {{-- Tampilkan judul dari controller --}}
-    @foreach (explode("\n", $title) as $line)
-      <p style="margin: 0;"><b>{{ $line }}</b></p>
-    @endforeach
+  <div style="text-align: center; font-size: 14px">
+    <p style="margin: 0;"><b>REALISASI PAKET NON TENDER</b></p>
+    <p style="margin: 0;"><b>OPD PROVINSI LAMPUNG</b></p>
+    
+    <!-- Dynamic title generation based on filters -->
+    <p style="margin: 0;"><b>
+      @if ($month !== 'ALL' && $day !== 'ALL')
+        TAHUN ANGGARAN {{ $year }} TANGGAL {{ $day }} {{ strtoupper(getMonthName($month)) }} {{ $year }}
+      @elseif ($month !== 'ALL')
+        TAHUN ANGGARAN {{ $year }} {{ strtoupper(getMonthName($month)) }} {{ $year }}
+      @else
+        TAHUN ANGGARAN {{ $year }} S.D TANGGAL {{ date("d") }} {{ strtoupper(getMonthName(date("m"))) }} {{ date("Y") }}
+      @endif
+    </b></p>
   </div>
 
   <br/>
@@ -69,12 +78,12 @@
       <tr>
         <td style="width: 80%; border: 0;"></td>
         <td style="width: 29.5%; text-align: center; font-weight: bold; border: 0;">
-          <p style="margin: 0;">KEPALA BIRO PENGADAAN</p>
-          <p style="margin: 0;">BARANG DAN JASA,</p>
-          <br/><br/><br/><br/><br/><br/><br/><br/>
-          <p style="margin: 0;">SLAMET RIADI, S.Sos</p>
-          <p style="margin: 0;">PEMBINA UTAMA MUDA</p>
-          <p style="margin: 0;">NIP. 19670828 199903 1 005</p>
+        <p style="margin: 0;">KEPALA BIRO PENGADAAN</p>
+                    <p style="margin: 0;">BARANG DAN JASA,</p>
+                    <br/><br/><br/><br/><br/><br/><br/><br/>
+                    <p style="margin: 0;">PUADI JAILANI,SH.,MH</p>
+                    <p style="margin: 0;">PEMBINA UTAMA MUDA</p>
+                    <p style="margin: 0;">NIP. 19650905 199103 1 004</p>
         </td>
       </tr>
     </table>

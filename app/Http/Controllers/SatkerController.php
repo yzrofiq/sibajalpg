@@ -185,201 +185,181 @@ class SatkerController extends Controller
     }
 
     public function rup(Request $request)
-    {
-        $tahun = $request->input('tahun', date('Y'));
-        $opd = $request->input('opd');
-    
-        $struktur = StrukturAnggaran::where('tahun_anggaran', $tahun)
-            ->where('kd_klpd', 'D264')
-            ->where('nama_klpd', 'Provinsi Lampung');
-        $swakelola = Swakelola::where('tahun_anggaran', $tahun)
-            ->where('kd_klpd', 'D264')
-            ->where('nama_klpd', 'Provinsi Lampung')
-            ->where('status_aktif_rup', true);
-        $penyedia = Penyedia::where('tahun_anggaran', $tahun)
-            ->where('kd_klpd', 'D264')
-            ->where('nama_klpd', 'Provinsi Lampung')
-            ->where('status_aktif_rup', true);
-    
-        // Query dulu (tanpa filter OPD) untuk daftarSatker
-        $daftarSatker = StrukturAnggaran::where('tahun_anggaran', $tahun)
-            ->where('kd_klpd', 'D264')
-            ->where('nama_klpd', 'Provinsi Lampung')
-            ->pluck('nama_satker')
-            ->merge(Swakelola::where('tahun_anggaran', $tahun)
-                ->where('kd_klpd', 'D264')
-                ->where('nama_klpd', 'Provinsi Lampung')
-                ->pluck('nama_satker'))
-            ->merge(Penyedia::where('tahun_anggaran', $tahun)
-                ->where('kd_klpd', 'D264')
-                ->where('nama_klpd', 'Provinsi Lampung')
-                ->pluck('nama_satker'))
-            ->filter()
-            ->unique()
-            ->sort()
-            ->values();
-    
-        // Baru apply filter OPD ke data utama
-        if ($opd) {
-            $struktur = $struktur->where('nama_satker', $opd);
-            $swakelola = $swakelola->where('nama_satker', $opd);
-            $penyedia = $penyedia->where('nama_satker', $opd);
-        }
-    
-        $struktur = $struktur->get();
-        $swakelola = $swakelola->get();
-        $penyedia = $penyedia->get();
-    
-        $data = [];
-    
-        foreach ($daftarSatker as $satker) {
-            if ($opd && $opd !== $satker) continue; // Tampilkan hanya yang dipilih
-    
-            $penyediaSatker = $penyedia->where('nama_satker', $satker);
-            $swakelolaSatker = $swakelola->where('nama_satker', $satker);
-    
-            $paketPenyedia = $penyediaSatker->count();
-            $paguPenyedia = $penyediaSatker->sum('pagu');
-    
-            $paketSwakelola = $swakelolaSatker->count();
-            $paguSwakelola = $swakelolaSatker->sum('pagu');
-    
-            $paketPenyediaDalamSwakelola = 0; // Placeholder
-            $paguPenyediaDalamSwakelola = 0;
-    
-            $totalDalamPaket = $paketPenyedia + $paketSwakelola + $paketPenyediaDalamSwakelola;
-            $totalPagu = $paguPenyedia + $paguSwakelola + $paguPenyediaDalamSwakelola;
-    
-            $data[] = [
-                'name' => $satker,
-                'data' => [
-                    2 => $paketPenyedia,
-                    3 => $paguPenyedia,
-                    4 => $paketSwakelola,
-                    5 => $paguSwakelola,
-                    6 => $paketPenyediaDalamSwakelola,
-                    7 => $paguPenyediaDalamSwakelola,
-                    8 => $totalDalamPaket,
-                    9 => $totalPagu,
-                ],
-            ];
-        }
-    
-        $grandTotal = [
-            'paket_total' => collect($data)->sum(fn($item) => $item['data'][8]),
-            'pagu_total' => collect($data)->sum(fn($item) => $item['data'][9]),
-        ];
-    
-        $tahunTersedia = collect([2024, 2025])->sortDesc()->values();
-
-        if (auth()->user()->role_id == 2) {
-            return view('users.Satker.rup', compact(
-                'data', 'grandTotal', 'tahun', 'opd', 'daftarSatker', 'tahunTersedia'
-            ));
-        }
-
-        return view('satker.rup', compact('data', 'grandTotal', 'tahun', 'opd', 'daftarSatker', 'tahunTersedia'));
-    }
-    
-
-    public function exportpdf(Request $request)
 {
-    $tahun = $request->get('tahun', date('Y'));
-    $mode  = $request->get('mode', 'I'); // 'I' = inline (view), 'D' = download
-    $filterSatker = $request->get('opd'); // ✅ GANTI: gunakan 'opd' sesuai form
+    $tahun = $request->input('tahun', date('Y'));
+    $kdSatkerFilter = $request->input('satker', 'Semua');
+    // ⬇️ Ambil semua Satker, urut nama, tahun sesuai input
+    $satkerList = Satker::where('tahun_anggaran', $tahun)
+        ->orderBy('nama_satker')
+        ->pluck('nama_satker', 'kd_satker');
 
-    // Struktur Anggaran
-    $strukturQuery = StrukturAnggaran::where('tahun_anggaran', $tahun)
-        ->where('kd_klpd', 'D264')
-        ->where('nama_klpd', 'Provinsi Lampung');
+    // ⬇️ List satker yg akan direkap (skip kode tertentu, misal 350504)
+    $skipSatker = ['350504'];
+    $allSatker = $satkerList->filter(function ($nama, $kd) use ($skipSatker) {
+        return !in_array($kd, $skipSatker);
+    });
 
-    $swakelolaQuery = Swakelola::where('tahun_anggaran', $tahun)
+    // ⬇️ Ambil data Penyedia & Swakelola untuk tahun dan satker terkait
+    $penyedia = Penyedia::where('tahun_anggaran', $tahun)
         ->where('kd_klpd', 'D264')
         ->where('nama_klpd', 'Provinsi Lampung')
-        ->where('status_aktif_rup', true);
-
-    $penyediaQuery = Penyedia::where('tahun_anggaran', $tahun)
+        ->where('status_aktif_rup', true)
+        ->get();
+    $swakelola = Swakelola::where('tahun_anggaran', $tahun)
         ->where('kd_klpd', 'D264')
         ->where('nama_klpd', 'Provinsi Lampung')
-        ->where('status_aktif_rup', true);
+        ->where('status_aktif_rup', true)
+        ->get();
 
-    // ✅ Filter satker jika dipilih
-    if ($filterSatker) {
-        $strukturQuery->where('nama_satker', $filterSatker);
-        $swakelolaQuery->where('nama_satker', $filterSatker);
-        $penyediaQuery->where('nama_satker', $filterSatker);
-    }
+    // ⬇️ Rekap per Satker (harus semua satker tampil, meskipun 0)
+    $rekap = collect();
+    foreach ($allSatker as $kdSatker => $namaSatker) {
+        // Kalau filter Satker, hanya tampil 1
+        if ($kdSatkerFilter !== 'Semua' && $kdSatkerFilter != $kdSatker) continue;
 
-    $struktur = $strukturQuery->get();
-    $swakelola = $swakelolaQuery->get();
-    $penyedia = $penyediaQuery->get();
-
-    // Gabungkan nama satker dari semua sumber
-    $satkers = collect($struktur)->pluck('nama_satker')
-        ->merge($swakelola->pluck('nama_satker'))
-        ->merge($penyedia->pluck('nama_satker'))
-        ->filter()
-        ->unique()
-        ->sort()
-        ->values();
-
-    $data = [];
-
-    foreach ($satkers as $satker) {
-        $penyediaSatker = $penyedia->where('nama_satker', $satker);
-        $swakelolaSatker = $swakelola->where('nama_satker', $satker);
+        $penyediaSatker = $penyedia->where('kd_satker', $kdSatker);
+        $swakelolaSatker = $swakelola->where('kd_satker', $kdSatker);
 
         $paketPenyedia = $penyediaSatker->count();
         $paguPenyedia = $penyediaSatker->sum('pagu');
-
         $paketSwakelola = $swakelolaSatker->count();
         $paguSwakelola = $swakelolaSatker->sum('pagu');
-
         $paketPenyediaDalamSwakelola = 0;
         $paguPenyediaDalamSwakelola = 0;
-
         $totalDalamPaket = $paketPenyedia + $paketSwakelola + $paketPenyediaDalamSwakelola;
         $totalPagu = $paguPenyedia + $paguSwakelola + $paguPenyediaDalamSwakelola;
 
-        $data[] = [
-            'name' => $satker,
-            'data' => [
-                2 => $paketPenyedia,
-                3 => $paguPenyedia,
-                4 => $paketSwakelola,
-                5 => $paguSwakelola,
-                6 => $paketPenyediaDalamSwakelola,
-                7 => $paguPenyediaDalamSwakelola,
-                8 => $totalDalamPaket,
-                9 => $totalPagu,
-            ],
+        $rekap[$kdSatker] = [
+            'nama_satker' => $namaSatker,
+            'paket_penyedia' => $paketPenyedia,
+            'pagu_penyedia' => $paguPenyedia,
+            'paket_swakelola' => $paketSwakelola,
+            'pagu_swakelola' => $paguSwakelola,
+            'paket_dalam' => $paketPenyediaDalamSwakelola,
+            'pagu_dalam' => $paguPenyediaDalamSwakelola,
+            'paket_total' => $totalDalamPaket,
+            'pagu_total' => $totalPagu,
+        ];
+    }
+
+    // Total summary
+    $grandTotal = [
+        'paket_penyedia' => $rekap->sum('paket_penyedia'),
+        'pagu_penyedia' => $rekap->sum('pagu_penyedia'),
+        'paket_swakelola' => $rekap->sum('paket_swakelola'),
+        'pagu_swakelola' => $rekap->sum('pagu_swakelola'),
+        'paket_dalam' => $rekap->sum('paket_dalam'),
+        'pagu_dalam' => $rekap->sum('pagu_dalam'),
+        'paket_total' => $rekap->sum('paket_total'),
+        'pagu_total' => $rekap->sum('pagu_total'),
+    ];
+
+    // Urutkan rekap by nama satker
+    $rekap = $rekap->sortBy('nama_satker');
+
+    // Tahun tersedia (customize kalau perlu)
+    $tahunTersedia = Satker::select('tahun_anggaran')->distinct()->orderByDesc('tahun_anggaran')->pluck('tahun_anggaran');
+
+    // View sesuai role
+    if (auth()->user()->role_id == 2) {
+        return view('users.Satker.rup', compact('rekap', 'grandTotal', 'tahun', 'kdSatkerFilter', 'allSatker', 'tahunTersedia'));
+    }
+    return view('satker.rup', compact('rekap', 'grandTotal', 'tahun', 'kdSatkerFilter', 'allSatker', 'tahunTersedia'));
+}
+
+    
+
+public function exportpdf(Request $request)
+{
+    $tahun = $request->input('tahun', date('Y'));
+    $kdSatkerFilter = $request->input('satker', 'Semua');
+    $mode  = $request->input('mode', 'I');
+
+    $satkerList = Satker::where('tahun_anggaran', $tahun)
+        ->orderBy('nama_satker')
+        ->pluck('nama_satker', 'kd_satker');
+    $skipSatker = ['350504'];
+    $allSatker = $satkerList->filter(function ($nama, $kd) use ($skipSatker) {
+        return !in_array($kd, $skipSatker);
+    });
+
+    $penyedia = Penyedia::where('tahun_anggaran', $tahun)
+        ->where('kd_klpd', 'D264')
+        ->where('nama_klpd', 'Provinsi Lampung')
+        ->where('status_aktif_rup', true)
+        ->get();
+    $swakelola = Swakelola::where('tahun_anggaran', $tahun)
+        ->where('kd_klpd', 'D264')
+        ->where('nama_klpd', 'Provinsi Lampung')
+        ->where('status_aktif_rup', true)
+        ->get();
+
+    $rekap = collect();
+    foreach ($allSatker as $kdSatker => $namaSatker) {
+        if ($kdSatkerFilter !== 'Semua' && $kdSatkerFilter != $kdSatker) continue;
+        $penyediaSatker = $penyedia->where('kd_satker', $kdSatker);
+        $swakelolaSatker = $swakelola->where('kd_satker', $kdSatker);
+
+        $paketPenyedia = $penyediaSatker->count();
+        $paguPenyedia = $penyediaSatker->sum('pagu');
+        $paketSwakelola = $swakelolaSatker->count();
+        $paguSwakelola = $swakelolaSatker->sum('pagu');
+        $paketPenyediaDalamSwakelola = 0;
+        $paguPenyediaDalamSwakelola = 0;
+        $totalDalamPaket = $paketPenyedia + $paketSwakelola + $paketPenyediaDalamSwakelola;
+        $totalPagu = $paguPenyedia + $paguSwakelola + $paguPenyediaDalamSwakelola;
+
+        $rekap[$kdSatker] = [
+            'nama_satker' => $namaSatker,
+            'paket_penyedia' => $paketPenyedia,
+            'pagu_penyedia' => $paguPenyedia,
+            'paket_swakelola' => $paketSwakelola,
+            'pagu_swakelola' => $paguSwakelola,
+            'paket_dalam' => $paketPenyediaDalamSwakelola,
+            'pagu_dalam' => $paguPenyediaDalamSwakelola,
+            'paket_total' => $totalDalamPaket,
+            'pagu_total' => $totalPagu,
         ];
     }
 
     $grandTotal = [
-        'paket_penyedia' => collect($data)->sum(fn($item) => $item['data'][2]),
-        'pagu_penyedia' => collect($data)->sum(fn($item) => $item['data'][3]),
-        'paket_swakelola' => collect($data)->sum(fn($item) => $item['data'][4]),
-        'pagu_swakelola' => collect($data)->sum(fn($item) => $item['data'][5]),
-        'paket_dalam' => collect($data)->sum(fn($item) => $item['data'][6]),
-        'pagu_dalam' => collect($data)->sum(fn($item) => $item['data'][7]),
-        'paket_total' => collect($data)->sum(fn($item) => $item['data'][8]),
-        'pagu_total' => collect($data)->sum(fn($item) => $item['data'][9]),
+        'paket_penyedia' => $rekap->sum('paket_penyedia'),
+        'pagu_penyedia' => $rekap->sum('pagu_penyedia'),
+        'paket_swakelola' => $rekap->sum('paket_swakelola'),
+        'pagu_swakelola' => $rekap->sum('pagu_swakelola'),
+        'paket_dalam' => $rekap->sum('paket_dalam'),
+        'pagu_dalam' => $rekap->sum('pagu_dalam'),
+        'paket_total' => $rekap->sum('paket_total'),
+        'pagu_total' => $rekap->sum('pagu_total'),
     ];
 
-    $html2pdf = new \Spipu\Html2Pdf\Html2Pdf('L', 'F4', 'en', true, 'UTF-8', [5, 5, 5, 5]);
+    $rekap = $rekap->sortBy('nama_satker');
 
-    $render = view('satker.ruppdf', compact('data', 'grandTotal', 'tahun', 'filterSatker'))->render();
+    $tanggal = $tahun == 2024
+        ? 'Per Desember 2024'
+        : 'Per ' . \Carbon\Carbon::now()->translatedFormat('d F Y');
 
-    $render = '<style>
-        body { font-size: 11px; }
-        table { font-size: 10px; }
-        td, th { padding: 4px !important; word-wrap: break-word; }
-    </style>' . $render;
+    $html = view('satker.ruppdf', [
+        'rekap' => $rekap,
+        'grandTotal' => $grandTotal,
+        'tanggal' => $tanggal,
+        'tahun' => $tahun,
+        'satker' => $kdSatkerFilter,
+    ])->render();
 
-    $html2pdf->writeHTML($render);
-    return $html2pdf->output("laporan-rup-$tahun.pdf", $mode);
+    $html = '<style>
+        body { font-family: sans-serif; font-size: 11px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #000; padding: 6px; text-align: left; }
+        th { background-color: #eee; }
+    </style>' . $html;
+
+    $pdf = new \Spipu\Html2Pdf\Html2Pdf('L', 'F4', 'en', true, 'UTF-8', [5, 5, 5, 5]);
+    $pdf->writeHTML($html);
+
+    return $pdf->output("laporan-rup-{$tahun}.pdf", $mode);
 }
+
 
 
     public function all()

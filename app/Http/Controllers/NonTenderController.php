@@ -2,167 +2,225 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TenderPengumumanData;
 use App\Models\NonTenderPengumuman;
-use App\Models\StrukturAnggaran;
 use App\Models\Satker;
-use App\Services\HelperService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\StrukturAnggaran;
 use Spipu\Html2Pdf\Html2Pdf;
+
 
 class NonTenderController extends Controller
 {
-    protected $request;
-
-    public function __construct(Request $request)
+    public function index(Request $request)
     {
-        $this->request = $request;
+        $year        = $request->input('year', date('Y'));
+        $satkerCode  = $request->input('kd_satker'); // = kd_satker_str
+        $code        = $request->input('code');
+        $name        = $request->input('name');
+        $categoryParam = $request->input('category');
+        $perPage     = $request->input('per_page', 30);
+
+        // --- Ambil Satker Unique berdasar kd_satker_str ---
+        $satkers = Satker::where('kd_klpd', 'D264')
+            ->where('kd_satker', '!=', '350504')
+            ->select('kd_satker', 'kd_satker_str', 'nama_satker')
+            ->orderBy('nama_satker')
+            ->get()
+            ->unique('kd_satker_str')
+            ->values();
+
+        // --- Data utama Non Tender ---
+        $query = NonTenderPengumuman::query()
+            ->leftJoin('non_tender_selesai', 'non_tender_pengumuman.kd_nontender', '=', 'non_tender_selesai.kd_nontender')
+            ->leftJoin('non_tender_contract', 'non_tender_pengumuman.kd_nontender', '=', 'non_tender_contract.kd_nontender')
+            ->leftJoin('satkers', 'non_tender_pengumuman.kd_satker_str', '=', 'satkers.kd_satker_str')
+            ->where('non_tender_pengumuman.kd_satker', '!=', '350504')
+            ->where('non_tender_pengumuman.tahun_anggaran', $year)
+            ->where('non_tender_pengumuman.kd_klpd', 'D264')
+            ->whereIn('non_tender_pengumuman.status_nontender', ['Selesai', 'Berlangsung']);
+
+
+        if ($categoryParam) {
+            $query->where('non_tender_pengumuman.jenis_pengadaan', 'like', "%$categoryParam%");
+        }
+        if ($code) {
+            $query->where('non_tender_pengumuman.kd_nontender', 'like', "%$code%");
+        }
+        if ($name) {
+            $query->whereRaw('LOWER(non_tender_pengumuman.nama_paket) LIKE ?', ['%' . strtolower($name) . '%']);
+        }
+        if ($satkerCode) {
+            $query->where('non_tender_pengumuman.kd_satker_str', $satkerCode);
+        }
+
+        // Gunakan groupBy supaya data tidak dobel di PostgreSQL!
+        $data = $query->select(
+                'non_tender_pengumuman.kd_nontender',
+                'non_tender_pengumuman.kd_klpd',
+                'non_tender_pengumuman.kd_satker',
+                'non_tender_pengumuman.kd_satker_str',
+                'non_tender_pengumuman.tahun_anggaran',
+                'non_tender_pengumuman.nama_paket',
+                'non_tender_pengumuman.status_nontender',
+                'non_tender_pengumuman.hps',
+                'non_tender_pengumuman.jenis_pengadaan',
+                'non_tender_pengumuman.pagu',
+                'satkers.nama_satker',
+                DB::raw('COALESCE(non_tender_contract.nilai_pdn_kontrak, non_tender_selesai.nilai_pdn_kontrak, 0) as nilai_pdn_kontrak'),
+                DB::raw('COALESCE(non_tender_contract.nilai_umk_kontrak, non_tender_selesai.nilai_umk_kontrak, 0) as nilai_umk_kontrak')
+            )
+            ->groupBy([
+                'non_tender_pengumuman.kd_nontender',
+                'non_tender_pengumuman.kd_klpd',
+                'non_tender_pengumuman.kd_satker',
+                'non_tender_pengumuman.kd_satker_str',
+                'non_tender_pengumuman.tahun_anggaran',
+                'non_tender_pengumuman.nama_paket',
+                'non_tender_pengumuman.status_nontender',
+                'non_tender_pengumuman.hps',
+                'non_tender_pengumuman.jenis_pengadaan',
+                'non_tender_pengumuman.pagu',
+                'satkers.nama_satker',
+                'non_tender_contract.nilai_pdn_kontrak',
+                'non_tender_selesai.nilai_pdn_kontrak',
+                'non_tender_contract.nilai_umk_kontrak',
+                'non_tender_selesai.nilai_umk_kontrak',
+            ])
+            ->orderByRaw("
+                CASE 
+                    WHEN non_tender_pengumuman.status_nontender = 'Berlangsung' THEN 0
+                    WHEN non_tender_pengumuman.status_nontender = 'Selesai' THEN 1
+                    ELSE 2
+                END
+            ")
+            ->orderBy('non_tender_pengumuman.nama_paket', 'asc')
+            ->paginate($perPage)
+            ->appends([
+                'code' => $code,
+                'name' => $name,
+                'kd_satker' => $satkerCode,
+                'year' => $year,
+                'category' => $categoryParam,
+                'per_page' => $perPage,
+            ]);
+
+        // --- Dropdown Tahun & Kategori ---
+        $years = NonTenderPengumuman::select('tahun_anggaran')->distinct()->orderBy('tahun_anggaran', 'desc')->pluck('tahun_anggaran')->toArray();
+        $categories = NonTenderPengumuman::where('tahun_anggaran', $year)
+        ->select('jenis_pengadaan')
+        ->distinct()
+        ->pluck('jenis_pengadaan')
+        ->toArray();
+    
+        // --- Total filtered & full ---
+        $total = $data->total(); // Lebih aman pakai total dari pagination (sudah group)
+        $totalFull = NonTenderPengumuman::where('tahun_anggaran', $year)
+            ->where('kd_klpd', 'D264')
+            ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
+            ->count();
+
+        // --- Jumlah per kategori ---
+        $categoriesCount = [];
+        foreach ($categories as $category) {
+            $catQuery = NonTenderPengumuman::where('tahun_anggaran', $year)
+                ->where('kd_klpd', 'D264')
+                ->where('jenis_pengadaan', $category)
+                ->whereIn('status_nontender', ['Selesai', 'Berlangsung']);
+            if ($code) $catQuery->where('kd_nontender', 'like', "%$code%");
+            if ($name) $catQuery->whereRaw('LOWER(nama_paket) LIKE ?', ['%' . strtolower($name) . '%']);
+            if ($satkerCode) $catQuery->where('kd_satker_str', $satkerCode);
+
+            $categoriesCount[] = $catQuery->count();
+        }
+
+        $url = url()->full();
+        if (!str_contains($url, "?")) $url .= "?";
+
+        $view = (auth()->user()->role_id == 2)
+            ? 'users.non-tender.index-lte'
+            : 'non-tender.index-lte';
+
+        return view($view, compact(
+            'satkers', 'years', 'data', 'total', 'totalFull',
+            'code', 'name', 'year', 'satkerCode',
+            'categories', 'categoriesCount', 'url', 'categoryParam'
+        ));
     }
 
-    public function index(Request $request)
+public function search(Request $request)
 {
-    $year = $request->input('year', date('Y'));
-    $satkers = Satker::select('kd_satker', 'nama_satker')
-        ->where('kd_klpd', 'D264')
-        ->orderBy('nama_satker')
-        ->get();
-
-    $categories = [];
-    $categoriesCount = [];
-
     $code = $request->input('code');
     $name = $request->input('name');
-    $satkerCode = $request->input('kd_satker'); // berisi NAMA satker
+    $year = $request->input('year', date('Y'));
+    $satkerCode = $request->input('kd_satker');
     $categoryParam = $request->input('category');
-    $perPage = $request->input('per_page', 50);
+    $perPage = 30; // atau sesuaikan
 
     $query = NonTenderPengumuman::query()
         ->leftJoin('non_tender_selesai', 'non_tender_pengumuman.kd_nontender', '=', 'non_tender_selesai.kd_nontender')
         ->leftJoin('non_tender_contract', 'non_tender_pengumuman.kd_nontender', '=', 'non_tender_contract.kd_nontender')
+        ->leftJoin('satkers', 'non_tender_pengumuman.kd_satker_str', '=', 'satkers.kd_satker_str')
+        ->where('non_tender_pengumuman.kd_satker', '!=', '350504')
         ->where('non_tender_pengumuman.tahun_anggaran', $year)
         ->where('non_tender_pengumuman.kd_klpd', 'D264')
         ->whereIn('non_tender_pengumuman.status_nontender', ['Selesai', 'Berlangsung']);
 
-    if ($code) {
-        $query->where('non_tender_pengumuman.kd_nontender', 'like', "%$code%");
-    }
-
-    if ($name) {
-        $query->whereRaw('LOWER(non_tender_pengumuman.nama_paket) LIKE ?', ['%' . strtolower($name) . '%']);
-    }
-
-    if ($satkerCode) {
-        $query->where('non_tender_pengumuman.nama_satker', $satkerCode);
-    }
-
     if ($categoryParam) {
         $query->where('non_tender_pengumuman.jenis_pengadaan', 'like', "%$categoryParam%");
     }
-
-    $data = $query
-        ->select(
-            'non_tender_pengumuman.*',
-            DB::raw('COALESCE(non_tender_contract.nilai_pdn_kontrak, non_tender_selesai.nilai_pdn_kontrak, 0) as nilai_pdn_kontrak'),
-            DB::raw('COALESCE(non_tender_contract.nilai_umk_kontrak, non_tender_selesai.nilai_umk_kontrak, 0) as nilai_umk_kontrak')
-        )
-        ->orderByRaw("
-            CASE 
-                WHEN non_tender_pengumuman.status_nontender = 'Berlangsung' THEN 0
-                WHEN non_tender_pengumuman.status_nontender = 'Selesai' THEN 1
-                ELSE 2
-            END
-        ")
-        ->orderBy('non_tender_pengumuman.nama_paket', 'asc')
-        ->paginate($perPage)
-        ->appends([
-            'code' => $code,
-            'name' => $name,
-            'kd_satker' => $satkerCode,
-            'year' => $year,
-            'category' => $categoryParam,
-            'per_page' => $perPage,
-        ]);
-
-    $years = NonTenderPengumuman::select('tahun_anggaran')->distinct()->pluck('tahun_anggaran')->toArray();
-    $categories = NonTenderPengumuman::select('jenis_pengadaan')->distinct()->pluck('jenis_pengadaan')->toArray();
-
-    $total = $query->count();
-
-    $totalFull = NonTenderPengumuman::where('tahun_anggaran', $year)
-        ->where('kd_klpd', 'D264')
-        ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
-        ->count();
-
-    foreach ($categories as $category) {
-        $catQuery = NonTenderPengumuman::where('tahun_anggaran', $year)
-            ->where('kd_klpd', 'D264')
-            ->where('jenis_pengadaan', $category)
-            ->whereIn('status_nontender', ['Selesai', 'Berlangsung']);
-
-        if ($code) $catQuery->where('kd_nontender', 'like', "%$code%");
-        if ($name) $catQuery->whereRaw('LOWER(nama_paket) LIKE ?', ['%' . strtolower($name) . '%']);
-        if ($satkerCode) $catQuery->where('nama_satker', $satkerCode);
-
-        $categoriesCount[$category] = $catQuery->count();
+    if ($code) {
+        $query->where('non_tender_pengumuman.kd_nontender', 'like', "%$code%");
+    }
+    if ($name) {
+        $query->whereRaw('LOWER(non_tender_pengumuman.nama_paket) LIKE ?', ['%' . strtolower($name) . '%']);
+    }
+    if ($satkerCode) {
+        $query->where('non_tender_pengumuman.kd_satker_str', $satkerCode);
     }
 
-    $url = url()->full();
-    if (!str_contains($url, "?")) $url .= "?";
+    $data = $query->select(
+        'non_tender_pengumuman.kd_nontender',
+        'non_tender_pengumuman.nama_paket',
+        'non_tender_pengumuman.status_nontender',
+        'non_tender_pengumuman.hps',
+        'satkers.nama_satker',
+        DB::raw('COALESCE(non_tender_contract.nilai_pdn_kontrak, non_tender_selesai.nilai_pdn_kontrak, 0) as nilai_pdn_kontrak'),
+        DB::raw('COALESCE(non_tender_contract.nilai_umk_kontrak, non_tender_selesai.nilai_umk_kontrak, 0) as nilai_umk_kontrak')
+    )
+    ->groupBy(
+        'non_tender_pengumuman.kd_nontender',
+        'non_tender_pengumuman.nama_paket',
+        'non_tender_pengumuman.status_nontender',
+        'non_tender_pengumuman.hps',
+        'satkers.nama_satker',
+        'non_tender_contract.nilai_pdn_kontrak',
+        'non_tender_selesai.nilai_pdn_kontrak',
+        'non_tender_contract.nilai_umk_kontrak',
+        'non_tender_selesai.nilai_umk_kontrak'
+    )
+    ->orderBy('non_tender_pengumuman.nama_paket', 'asc')
+    ->paginate($perPage);
 
-    $filterYear = $request->year;
-
-    $tenderCount = TenderPengumumanData::where('kd_klpd', 'D264')
-        ->when($filterYear, fn($q) => $q->where('tahun', $filterYear))
-        ->whereIn('status_tender', ['Selesai', 'Berlangsung'])
-        ->count();
-
-    $nonTenderCount = NonTenderPengumuman::where('kd_klpd', 'D264')
-        ->when($filterYear, fn($q) => $q->where('tahun_anggaran', $filterYear))
-        ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
-        ->count();
-
-    $view = auth()->user()->role_id == 2
-        ? 'users.non-tender.index-lte'
-        : 'non-tender.index-lte';
-
-    return view($view, compact(
-        'satkers', 'years', 'data', 'total', 'totalFull',
-        'code', 'name', 'year', 'satkerCode',
-        'categories', 'categoriesCount', 'url', 'categoryParam',
-        'tenderCount', 'nonTenderCount'
-    ));
+    return response()->json([
+        'html' => view('components.tables.nontender-rows', compact('data'))->render(),
+        'pagination' => $data->links('pagination::bootstrap-4')->toHtml(),
+        'totalData' => $data->total(),
+        'currentPage' => $data->currentPage(),
+        'lastPage' => $data->lastPage(),
+    ]);
+}
+public function viewPdf(Request $request)
+{
+    return $this->generateNonTenderPdf($request, 'view');
 }
 
-    public function show($code)
-    {
-        $url = $this->request->from ?? route('non-tender.list');
-        $data = NonTenderPengumuman::where('kd_nontender', 'like', $code)->first();
-
-        if (!$data) {
-            return redirect(route('front'));
-        }
-
-        $data->pagu = HelperService::moneyFormat($data->pagu);
-
-        $view = auth()->user()->role_id == 1
-        ? 'non-tender.show-lte'
-        : 'users.non-tender.show-lte';
-    
-    return view($view, compact('data', 'url'));
-        }
-   
-        public function viewPdf(Request $request)
-        {
-            return $this->generateNonTenderPdf($request, 'view');
-        }
-        
-        public function downloadPdf(Request $request)
-        {
-            return $this->generateNonTenderPdf($request, 'download');
-        }
-        private function generateNonTenderPdf(Request $request, $mode = 'view')
+public function downloadPdf(Request $request)
+{
+    return $this->generateNonTenderPdf($request, 'download');
+}
+private function generateNonTenderPdf(Request $request, $mode = 'view')
         {
             // Prioritaskan parameter 'end' jika ada
             $endParam = $request->input('end');
@@ -288,4 +346,5 @@ class NonTenderController extends Controller
                 : $html2pdf->output();
         }
         
+
 }

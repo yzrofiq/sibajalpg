@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Rekapitulasi Realisasi Pengadaan Berlangsung - Tahun {{ $tahun }}</title>
     <style>
-        @page { margin: 20px; size: A4 landscape; } /* Landscape */
+        @page { margin: 20px; size: A4 landscape; }
         body { font-family: Arial, sans-serif; font-size: 10px; margin: 0; }
 
         h3 { text-align: center; margin-bottom: 16px; font-size: 16px; }
@@ -29,7 +29,6 @@
         .text-left { text-align: left; }
         .text-right { text-align: right; }
 
-        /* Proporsi Lebar Kolom */
         th:nth-child(1), td:nth-child(1) { width: 3%; }
         th:nth-child(2), td:nth-child(2) { width: 20%; text-align: left; }
         th:nth-child(3), td:nth-child(3),
@@ -83,30 +82,29 @@
         @endphp
 
         @foreach ($data as $i => $row)
-    @php
-        $total['tender_paket'] += $row->total_paket_tender;
-        $total['tender_nilai'] += $row->total_nilai_tender;
-        $total['nontender_paket'] += $row->total_paket_nontender;
-        $total['nontender_nilai'] += $row->total_nilai_nontender;
-        $total['ekatalog_paket'] += $row->total_paket_ekatalog;
-        $total['ekatalog_nilai'] += $row->total_nilai_ekatalog;
-        $total['tokodaring_paket'] += $row->total_paket_tokodaring;
-        $total['tokodaring_nilai'] += $row->total_nilai_tokodaring;
-    @endphp
-    <tr>
-        <td>{{ $i + 1 }}</td>
-        <td class="text-left">{{ $row->nama_satker }}</td>
-        <td>{{ $row->total_paket_tender }}</td>
-        <td>{{ number_format($row->total_nilai_tender, 0, ',', '.') }}</td>
-        <td>{{ $row->total_paket_nontender }}</td>
-        <td>{{ number_format($row->total_nilai_nontender, 0, ',', '.') }}</td>
-        <td>{{ $row->total_paket_ekatalog }}</td>
-        <td>{{ number_format($row->total_nilai_ekatalog, 0, ',', '.') }}</td>
-        <td>{{ $row->total_paket_tokodaring }}</td>
-        <td>{{ number_format($row->total_nilai_tokodaring, 0, ',', '.') }}</td>
-    </tr>
-@endforeach
-
+            @php
+                $total['tender_paket'] += $row['total_paket_tender'];
+                $total['tender_nilai'] += $row['total_nilai_tender'];
+                $total['nontender_paket'] += $row['total_paket_nontender'];
+                $total['nontender_nilai'] += $row['total_nilai_nontender'];
+                $total['ekatalog_paket'] += $row['total_paket_ekatalog'];
+                $total['ekatalog_nilai'] += $row['total_nilai_ekatalog'];
+                $total['tokodaring_paket'] += $row['total_paket_tokodaring'];
+                $total['tokodaring_nilai'] += $row['total_nilai_tokodaring'];
+            @endphp
+            <tr>
+                <td>{{ $i + 1 }}</td>
+                <td class="text-left">{{ $row['nama_satker'] }}</td>
+                <td>{{ $row['total_paket_tender'] }}</td>
+                <td>{{ number_format($row['total_nilai_tender'], 0, ',', '.') }}</td>
+                <td>{{ $row['total_paket_nontender'] }}</td>
+                <td>{{ number_format($row['total_nilai_nontender'], 0, ',', '.') }}</td>
+                <td>{{ $row['total_paket_ekatalog'] }}</td>
+                <td>{{ number_format($row['total_nilai_ekatalog'], 0, ',', '.') }}</td>
+                <td>{{ $row['total_paket_tokodaring'] }}</td>
+                <td>{{ number_format($row['total_nilai_tokodaring'], 0, ',', '.') }}</td>
+            </tr>
+        @endforeach
 
         <tr class="total-row">
             <td colspan="2">TOTAL</td>

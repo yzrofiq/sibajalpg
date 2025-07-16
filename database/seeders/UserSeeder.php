@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
             ['username' => 'admin'],
             [
                 'name' => 'Admin',
-                'password' => bcrypt('passwordVMS'), // atau gunakan hash langsung
+                'password' => '$2y$10$G49WG5OjNbIv56.4z10pOuOZMX6oHguX0DZ5L4xD2OnD2GwQ935sC',
                 'role_id' => 1
             ]
         );
@@ -40,5 +40,6 @@ class UserSeeder extends Seeder
                 'role_id' => 2
             ]
         );
+
     }
 }

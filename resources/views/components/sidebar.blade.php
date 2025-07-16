@@ -18,7 +18,7 @@
       </li>
 
       <li class="nav-item">
-        <a target="_blank" href="{{ route('report.rup') }}" class="nav-link">
+      <a href="{{ route('report.rup') }}" class="nav-link">
           <i class="nav-icon fas fa-file-alt"></i>
           <p>RUP</p>
         </a>
@@ -46,9 +46,7 @@
         </ul>
       </li>
 
-
-      <!-- Summary Report -->
-      <li class="nav-item has-treeview">
+      <li class="nav-item">
         <a href="#" class="nav-link">
           <i class="nav-icon fas fa-download"></i>
           <p>
@@ -57,7 +55,6 @@
           </p>
         </a>
         <ul class="nav nav-treeview">
-
           <li class="nav-item">
             <a href="#" class="nav-link" data-toggle="modal" data-target="#filterModal">
               <p>Realisasi Non Tender</p>
@@ -77,15 +74,15 @@
         </a>
       </li>
 
+      @if (Auth::check() && Auth::user()->role_id == 1)
+  <li class="nav-item">
+    <a href="{{ route('user.list') }}" class="nav-link">
+      <i class="nav-icon fa fa-users"></i>
+      <p>Manajemen User</p>
+    </a>
+  </li>
+@endif
 
-      @if ( Auth::user()->role_id == 1 )
-      <li class="nav-item">
-        <a href="{{ route('user.list') }}" class="nav-link">
-          <i class="nav-icon fa fa-users"></i>
-          <p>Manajemen User</p>
-        </a>
-      </li>
-      @endif
 
     </ul>
   </nav>

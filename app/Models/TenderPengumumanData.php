@@ -51,6 +51,8 @@ class TenderPengumumanData extends Model
         'nilai_umk_kontrak',
         'nilai_kontrak',
         'besar_pembayaran',
+
+        
     ];
     
 }

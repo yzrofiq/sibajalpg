@@ -6,59 +6,26 @@
 <link rel="stylesheet" href="{{ url('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="{{ url('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <style>
-  body {
-    background-color: #F5F8FD !important;
-  }
-
-  .content-wrapper,
-  section.content {
-    background-color: #F5F8FD;
-    padding-bottom: 4rem;
-  }
-
-  .card {
-    background-color: white;
-    border-radius: 6px;
-  }
-
-  .box-softblue {
-    background-color: #5ca8dd !important;
-    color: white;
-  }
-
-  .box-green {
-    background-color: #319b74 !important;
-    color: white;
-  }
-
-  .filter-container {
-    background-color: white;
-    padding: 1rem;
-    border-radius: 6px;
-    box-shadow: 0 0 10px rgba(91, 123, 154, 0.1);
-  }
-
-  .filter-row select.form-control {
-    appearance: auto !important;
-    background-image: none !important;
-    margin-left: 3px;
-  }
-
-  .table th,
-  .table td {
-    font-size: 0.875rem;
-  }
-
-  .dataTables_wrapper .dataTables_paginate,
-  .dataTables_wrapper .dataTables_info {
-    margin-top: 15px !important;
-  }
-
-  .swakelola-col {
-    min-width: 80px;
-  }
+  body { background-color: #F5F8FD !important; }
+  .content-wrapper, section.content { background-color: #F5F8FD; padding-bottom: 4rem; }
+  .card { background-color: white; border-radius: 6px; }
+  .box-softblue { background-color: #5ca8dd !important; color: white; }
+  .box-green { background-color: #319b74 !important; color: white; }
+  .filter-container { background-color: white; padding: 1rem; border-radius: 6px; box-shadow: 0 0 10px rgba(91, 123, 154, 0.1);}
+  .filter-row .form-control,
+  .select2-container--default .select2-selection--single { margin-top: 2px; }
+  .select2-container--default .select2-selection--single { border: 1px solid #ced4da !important; border-radius: 4px; height: calc(1.8125rem + 2px) !important; font-size: 0.875rem; padding: 0.25rem 0.5rem; display: flex; align-items: center;}
+  .select2-container--default .select2-selection--single .select2-selection__rendered {display: flex; align-items: center; padding-left: 0.25rem; padding-top: 6px !important; line-height: normal !important; height: 100%;}
+  .select2-container--default .select2-results__option[aria-selected=true] {background-color: white !important; color: #212529;}
+  .select2-container--default .select2-results__option--highlighted[aria-selected] {background-color: #2181EF !important; color: white !important;}
+  .select2-container--default .select2-selection--single .select2-selection__arrow {height: 100%; top: 2px !important; right: 4px;}
+  .table th, .table td { font-size: 0.875rem; }
+  .dataTables_wrapper .dataTables_paginate, .dataTables_wrapper .dataTables_info {margin-top: 15px !important;}
+  .swakelola-col { min-width: 80px; }
+  .dataTables_length select {min-width: 60px;}
 </style>
 @endpush
 
@@ -73,18 +40,18 @@
         </div>
 
         <div class="col-md-2 mb-2">
-          <select name="tahun" class="form-control form-control-sm w-100" onchange="this.form.submit()">
-            @foreach(collect($tahunTersedia)->sortDesc() as $t)
-              <option value="{{ $t }}" {{ request('tahun') == $t ? 'selected' : '' }}>{{ $t }}</option>
+          <select name="tahun" class="form-control form-control-sm select2 w-100">
+            @foreach($tahunTersedia as $t)
+              <option value="{{ $t }}" {{ $tahun == $t ? 'selected' : '' }}>{{ $t }}</option>
             @endforeach
           </select>
         </div>
 
         <div class="col-md-3 mb-2">
-          <select name="opd" class="form-control form-control-sm w-100" onchange="this.form.submit()">
-            <option value="">Semua Satuan Kerja</option>
-            @foreach($daftarSatker as $satker)
-              <option value="{{ $satker }}" {{ request('opd') == $satker ? 'selected' : '' }}>{{ $satker }}</option>
+          <select name="satker" class="form-control form-control-sm select2 w-100">
+            <option value="Semua" {{ $kdSatkerFilter == 'Semua' ? 'selected' : '' }}>Semua Satuan Kerja</option>
+            @foreach($allSatker as $kdSatker => $nama)
+              <option value="{{ $kdSatker }}" {{ $kdSatkerFilter == $kdSatker ? 'selected' : '' }}>{{ $nama }}</option>
             @endforeach
           </select>
         </div>
@@ -102,7 +69,7 @@
     {{-- Header --}}
     <div class="mt-3 mb-4 ps-1">
       <h4 class="fw-bold" style="color: #1f3d7a;">
-        Rencana Umum Pengadaan (RUP) - Tahun {{ request('tahun') }}
+        Rencana Umum Pengadaan (RUP) - Tahun {{ $tahun }}
       </h4>
     </div>
 
@@ -136,12 +103,13 @@
       </div>
     </div>
 
-    {{-- Table --}}
+    {{-- Tabel --}}
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h3 class="card-title">Rekapitulasi RUP</h3>
         <div class="ml-auto">
-          <a href="{{ route('report.rup.pdf', request()->all()) }}" class="btn btn-success btn-sm" target="_blank">
+          <a href="{{ route('report.rup.pdf', ['tahun' => $tahun, 'satker' => $kdSatkerFilter]) }}"
+             class="btn btn-success btn-sm" target="_blank">
             <i class="fas fa-file-pdf mr-1"></i> Export PDF
           </a>
         </div>
@@ -166,15 +134,19 @@
             </tr>
           </thead>
           <tbody>
-            @foreach($data as $index => $item)
+            @php $rowNum = 1; @endphp
+            @foreach($rekap as $item)
               <tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $item['name'] }}</td>
-                @for ($i = 2; $i <= 9; $i++)
-                  <td class="{{ in_array($i, [6,7]) ? 'swakelola-col' : '' }}">
-                    {{ number_format($item['data'][$i], 0, ',', '.') }}
-                  </td>
-                @endfor
+                <td>{{ $rowNum++ }}</td>
+                <td>{{ $item['nama_satker'] }}</td>
+                <td>{{ number_format($item['paket_penyedia'], 0, ',', '.') }}</td>
+                <td>{{ number_format($item['pagu_penyedia'], 0, ',', '.') }}</td>
+                <td>{{ number_format($item['paket_swakelola'], 0, ',', '.') }}</td>
+                <td>{{ number_format($item['pagu_swakelola'], 0, ',', '.') }}</td>
+                <td class="swakelola-col">{{ number_format($item['paket_dalam'], 0, ',', '.') }}</td>
+                <td class="swakelola-col">{{ number_format($item['pagu_dalam'], 0, ',', '.') }}</td>
+                <td>{{ number_format($item['paket_total'], 0, ',', '.') }}</td>
+                <td>{{ number_format($item['pagu_total'], 0, ',', '.') }}</td>
               </tr>
             @endforeach
           </tbody>
@@ -190,6 +162,8 @@
 <script src="{{ url('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ url('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ url('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
   $(function () {
     $('#rupTable').DataTable({
@@ -203,6 +177,14 @@
         infoEmpty: "Tidak ada entri",
         paginate: { previous: "Sebelumnya", next: "Berikutnya" }
       }
+    });
+
+    // Select2 untuk filter
+    $('select[name="tahun"], select[name="satker"]').select2({
+      width: 'resolve',
+      minimumResultsForSearch: 5
+    }).on('change', function () {
+      $('#filterForm').submit();
     });
   });
 </script>

@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Satker extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
+        'tahun_anggaran',
         'kd_satker',
-        'kd_satker_lpse', // ✅ Tambahkan ini
         'kd_satker_str',
         'nama_satker',
         'alamat',
@@ -23,4 +26,11 @@ class Satker extends Model
         'jenis_klpd',
         'kode_eselon',
     ];
+
+    // Jika Anda ingin memformat kolom tertentu atau menjalankan relasi, Anda dapat menambahkannya di sini.
+    // Contoh:
+    // public function klpd() {
+    //     return $this->belongsTo(Klpd::class, 'kd_klpd', 'kd_klpd');
+    // }
+    
 }

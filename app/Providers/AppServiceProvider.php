@@ -14,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
+
     public function boot()
     {
         $nonTenderYears = [];
@@ -46,5 +47,6 @@ class AppServiceProvider extends ServiceProvider
             'nonTenderYears' => $nonTenderYears,
             'tenderYears' => $tenderYears,
         ]);
+
     }
 }

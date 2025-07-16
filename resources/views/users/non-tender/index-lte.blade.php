@@ -5,13 +5,13 @@
 <link rel="stylesheet" href="{{ url('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('css/sibaja.css') }}">
+
 <style>
   .small-box.bg-warning { background-color: #ffc107 !important; color: #000 !important; }
   .small-box.bg-info { background-color: #17a2b8 !important; color: #fff !important; }
   .small-box.bg-success { background-color: #28a745 !important; color: #fff !important; }
   .small-box.bg-danger { background-color: #dc3545 !important; color: #fff !important; }
-  .small-box .inner h3,
-  .small-box .inner p { color: inherit !important; }
+  .small-box .inner h3, .small-box .inner p { color: inherit !important; }
 </style>
 @endpush
 
@@ -19,19 +19,13 @@
 <div class="content-header">
   <div class="container-fluid">
     <div class="row mb-2">
+      <div class="col-sm-6"><h1 class="m-0">Non Tender</h1></div>
       <div class="col-sm-6">
-        <h1 class="m-0">Non Tender</h1>
-      </div>
-      <div class="col-sm-6">
-        <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item active">Non Tender</li>
-        </ol>
+        <ol class="breadcrumb float-sm-right"><li class="breadcrumb-item active">Non Tender</li></ol>
       </div>
     </div>
   </div>
 </div>
-
-<form action="" method="get" id="form"></form>
 
 <section class="content">
   <div class="container-fluid">
@@ -39,27 +33,27 @@
 
     <div class="row">
       <div class="col-md-2">
-        <label for="code">Kode</label>
-        <input id="codeInput" type="text" name="code" placeholder="Kode" class="form-control" value="{{ $code }}">
+        <label for="filter-kode">Kode</label>
+        <input id="filter-kode" type="text" placeholder="Kode" class="form-control">
       </div>
       <div class="col-md-3">
-        <label for="name">Nama Paket</label>
-        <input id="nameInput" type="text" name="name" placeholder="Nama Paket" class="form-control" value="{{ $name }}">
+        <label for="filter-nama">Nama Paket</label>
+        <input id="filter-nama" type="text" placeholder="Nama Paket" class="form-control">
       </div>
       <div class="col-md-5">
         <label for="kd_satker">Satuan Kerja</label>
-        <select name="kd_satker" class="form-select" form="form" onchange="submitForm()">
-          <option value="">-- Semua Satker --</option>
-          @foreach ($satkers as $satker)
-            <option value="{{ $satker->kd_satker }}" {{ $satkerCode == $satker->kd_satker ? 'selected' : '' }}>
-              {{ $satker->nama_satker }}
+        <select name="kd_satker" id="kd_satker" class="form-control select2" onchange="filterBySatker()">
+          <option value="">--Semua Satuan Kerja---</option>
+          @foreach ($satkers as $item)
+            <option value="{{ $item->kd_satker_str }}" {{ $satkerCode == $item->kd_satker_str ? 'selected' : '' }}>
+              {{ $item->nama_satker }}
             </option>
           @endforeach
         </select>
       </div>
       <div class="col-md-2">
         <label for="year">Tahun</label>
-        <select form="form" name="year" id="year" class="form-control" onchange="submitForm()">
+        <select name="year" id="year" class="form-control" onchange="filterBySatker()">
           <option value="">--Pilih---</option>
           @foreach ($years as $item)
             <option value="{{ $item }}" {{ $year == $item ? 'selected' : '' }}>{{ $item }}</option>
@@ -68,24 +62,32 @@
       </div>
     </div>
 
+    @php
+      // URL filter base tanpa kategori
+      $urlBase = url()->current()
+        . '?year=' . urlencode($year)
+        . '&kd_satker=' . urlencode($satkerCode)
+        . '&code=' . urlencode($code)
+        . '&name=' . urlencode($name);
+    @endphp
+
     <div class="row mt-3">
       <div class="col-12">
+
         <div class="mb-3">
-          <a href="{{ route('non-tender.list') }}" class="text-sm @if(!$categoryParam) bg-success @else bg-secondary @endif py-1 px-2 d-inline-block mb-1 rounded">
+          <a href="{{ $urlBase }}" class="text-sm @if(!$categoryParam) bg-success @else bg-secondary @endif py-1 px-2 d-inline-block mb-1 rounded">
             Semua ({{ $totalFull }})
           </a>
           @foreach ($categories as $key => $value)
-            @if (!empty($categoriesCount[$key]) && $categoriesCount[$key] > 0)
-              <a href="{{ $url . '&category=' . $value }}" class="text-sm @if($categoryParam == $value) bg-success @else bg-secondary @endif py-1 px-2 d-inline-block rounded mb-1">
-                {{ $value . ' (' . $categoriesCount[$key] . ')' }}
-              </a>
-            @endif
+            <a href="{{ $urlBase . '&category=' . urlencode($value) }}" class="text-sm @if($categoryParam == $value) bg-success @else bg-secondary @endif py-1 px-2 d-inline-block rounded mb-1">
+              {{ $value . ' (' . $categoriesCount[$key] . ')' }}
+            </a>
           @endforeach
         </div>
 
         <div class="card">
           <div class="card-body table-responsive p-0">
-            <table class="table table-head-fixed table-hover">
+            <table id="nontenderTable" class="table table-head-fixed table-hover">
               <thead>
                 <tr>
                   <th>Kode Non Tender</th>
@@ -97,27 +99,19 @@
                 </tr>
               </thead>
               <tbody>
-                @forelse ($data as $item)
-                  <tr>
-                    <td><p class="text-sm">{{ $item->kd_nontender }}</p></td>
-                    <td><p class="text-sm"><a href="#" class="text-blue-500">{{ $item->nama_paket }}</a></p></td>
-                    <td><p class="text-sm">{{ $item->status_nontender ?? '-' }}</p></td>
-                    <td><p class="text-sm">{{ \App\Services\HelperService::moneyFormat($item->hps) }}</p></td>
-                    <td><p class="text-sm">{{ isset($item->nilai_pdn_kontrak) ? \App\Services\HelperService::moneyFormat($item->nilai_pdn_kontrak) : '-' }}</p></td>
-                    <td><p class="text-sm">{{ isset($item->nilai_umk_kontrak) ? \App\Services\HelperService::moneyFormat($item->nilai_umk_kontrak) : '-' }}</p></td>
-                  </tr>
-                @empty
-                  <tr>
-                    <td colspan="6" class="text-center">Tidak ada data ditemukan</td>
-                  </tr>
-                @endforelse
+                @include('components.tables.nontender-rows', ['data' => $data])
               </tbody>
             </table>
           </div>
           <div class="card-footer clearfix">
-            {{ $data->links('pagination::bootstrap-4') }}
+            @if ($data->count() > 10)
+              <div class="pagination-container">
+                {{ $data->links('pagination::bootstrap-4') }}
+              </div>
+            @endif
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -125,28 +119,62 @@
 @endsection
 
 @push('script')
+<script src="{{ url('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script>
-  function submitForm() {
-    document.getElementById('form').submit();
-  }
+let initialData = null;
 
-  function handleEnterSubmit(inputId, paramName) {
-    const input = document.getElementById(inputId);
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const form = document.getElementById('form');
-        const hidden = document.createElement('input');
-        hidden.type = 'hidden';
-        hidden.name = paramName;
-        hidden.value = input.value;
-        form.appendChild(hidden);
-        form.submit();
+$(function () {
+  initialData = $('#nontenderTable tbody').html();
+
+  $('.select2').select2();
+
+  $('#filter-kode, #filter-nama').on('keyup', function () {
+    searchNonTender();
+  });
+
+  function searchNonTender(page = 1) {
+  const code = $('#filter-kode').val().trim();
+  const name = $('#filter-nama').val().trim();
+  const kd_satker = $('#kd_satker').val();
+  const year = $('#year').val();
+  const category = '{{ $categoryParam }}';
+
+  $.ajax({
+    url: "{{ route('non-tender.search') }}",
+    data: { code, name, kd_satker, year, category, page },
+    success: function (response) {
+      $('#nontenderTable tbody').html(response.html);
+
+      if(response.lastPage > 1){
+        $('.pagination-container').html(response.pagination).show();
+      } else {
+        $('.pagination-container').hide();
       }
-    });
-  }
+    },
+    error: function () {
+      $('#nontenderTable tbody').html('<tr><td colspan="6" class="text-center text-danger">Gagal memuat data</td></tr>');
+      $('.pagination-container').hide();
+    }
+  });
+}
 
-  handleEnterSubmit('codeInput', 'code');
-  handleEnterSubmit('nameInput', 'name');
+// Trigger ketika klik pagination yang muncul dari AJAX
+$(document).on('click', '.pagination-container a', function(e) {
+  e.preventDefault();
+  let page = $(this).attr('href').split('page=')[1];
+  searchNonTender(page);
+});
+
+
+  window.filterBySatker = function() {
+    const satker = document.getElementById('kd_satker').value;
+    const year = document.getElementById('year').value;
+    const url = new URL(window.location.href.split('?')[0]);
+    if (satker) url.searchParams.set('kd_satker', satker);
+    if (year) url.searchParams.set('year', year);
+    window.location.href = url.toString();
+  }
+});
 </script>
 @endpush

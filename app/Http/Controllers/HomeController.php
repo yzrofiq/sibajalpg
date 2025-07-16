@@ -15,14 +15,13 @@ use App\Models\StrukturAnggaran;
 use App\Models\Swakelola;
 use App\Models\Penyedia;
 
-
 class HomeController extends Controller
 {
     public function index(Request $request)
-
     {
         $tahun = $request->input('tahun', Carbon::now()->year);
-        $kategoriChart2 = $request->input('kategori_chart2', 'non_tender',); // default: non_tender
+        $kategoriChart2 = $request->input('kategori_chart2', 'non_tender'); // default: non_tender
+
         
         // ✅ Box summary count
         $nonTenderCount = getNonTenderCount();
@@ -34,18 +33,20 @@ class HomeController extends Controller
         $totalNonTender = NonTenderPengumuman::where('tahun_anggaran', $tahun)
             ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
             ->count();        
+
         $totalTender = TenderPengumumanData::where('tahun', $tahun)
             ->whereIn('status_tender', ['Selesai', 'Berlangsung'])
             ->count();  ;
+
         $chart1Data = [
             'Non Tender' => $totalNonTender,
             'Tender' => $totalTender,
         ];
-
         
         // ✅ CHART 2: Distribusi Jenis Pengadaan Berdasarkan Kategori (Tender / Non Tender)
         if ($kategoriChart2 == 'tender') {
             $chart2Data = TenderPengumumanData::where('tahun', $tahun)
+
                 ->whereIn('status_tender', ['Selesai', 'Berlangsung'])
                 ->select('jenis_pengadaan', DB::raw('COUNT(*) as jumlah'))
                 ->groupBy('jenis_pengadaan')
@@ -56,7 +57,9 @@ class HomeController extends Controller
                 ->select('jenis_pengadaan', DB::raw('COUNT(*) as jumlah'))
                 ->groupBy('jenis_pengadaan')
                 ->pluck('jumlah', 'jenis_pengadaan');
+
         }        
+
         // ✅ Menghitung Total untuk Non Tender
         $totalNonTenderData = NonTenderPengumuman::where('tahun_anggaran', $tahun)
             ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
@@ -74,6 +77,7 @@ class HomeController extends Controller
             'hps' => $totalNonTenderData->total_hps,
             'efficiency' => $totalNonTenderData->total_efficiency,
         ];
+
         // ✅ Menghitung Total untuk Tender
         $totalTenderData = TenderPengumumanData::where('tahun', $tahun)
             ->whereIn('status_tender', ['Selesai', 'Berlangsung'])
@@ -91,6 +95,7 @@ class HomeController extends Controller
             'hps' => $totalTenderData->total_hps,
             'efficiency' => $totalTenderData->total_efficiency,
         ];
+
 
         // ✅ Menghitung Total untuk e-Katalog V5
         $totalEkatalogV5Data = EkatalogV5Paket::where('tahun_anggaran', $tahun)
@@ -192,7 +197,6 @@ class HomeController extends Controller
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
 
-
 // ✅ Definisikan tahun yang ingin digabung
 $tahunList = [2024, 2025];
 
@@ -281,5 +285,6 @@ return view('users.home', compact(
     'totalTransaksi',
     'totalPersen' ,
 ));
+
     }
 }

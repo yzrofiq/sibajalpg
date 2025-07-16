@@ -4,17 +4,19 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BelaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontController;
-use App\Http\Controllers\HomeController; 
 use App\Http\Controllers\NonTenderController;
 use App\Http\Controllers\SatkerController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\EkatalogReportController;
-use App\Http\Controllers\StrukturAnggaranController;
-use App\Http\Controllers\MonitoringController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TokoDaringReportController;
+use App\Services\NonTenderService;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StrukturAnggaranController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MonitoringController;
+
 
 
 /*
@@ -34,12 +36,11 @@ Route::get('/graph-report', [FrontController::class, 'report'])->name('report');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/home', [HomeController::class, 'index'])->middleware('auth')->name('home');
 
-// Non-Tender
 Route::group([
     'prefix' => 'non-tender',
     'as' => 'non-tender.',
     'middleware' => 'auth',
-], function () {
+], function() {
     Route::get('/list', [NonTenderController::class, 'index'])->name('list');
     Route::get('/show/{code}', [NonTenderController::class, 'show'])->name('show');
     Route::get('/realization', [NonTenderController::class, 'realization'])->name('realization');
@@ -47,6 +48,8 @@ Route::group([
      // ✅ Tambahkan di sini agar tetap di dalam middleware auth
      Route::get('/view-pdf', [NonTenderController::class, 'viewPdf'])->name('viewPdf');
      Route::get('/download-pdf', [NonTenderController::class, 'downloadPdf'])->name('downloadPdf');
+     Route::get('search', [NonTenderController::class, 'search'])->name('search');
+
 });
 
 Route::group([
@@ -62,7 +65,8 @@ Route::group([
     Route::post('/update/{code}', [TenderController::class, 'update'])->name('update');
 
     Route::get('/view-pdf', [TenderController::class, 'viewPdf'])->name('view-pdf');
-    Route::get('/download-pdf', [TenderController::class, 'downloadPdf'])->name('download-pdf');    
+    Route::get('/download-pdf', [TenderController::class, 'downloadPdf'])->name('download-pdf');  
+    Route::get('search', [TenderController::class, 'search'])->name('search');  
 });
 
 Route::group([
@@ -74,29 +78,30 @@ Route::group([
     Route::get('/ekatalog/show/{version}/{code}', [EkatalogReportController::class, 'show'])->name('ekatalog.show');
     Route::get('/ekatalog/export-pdf', [EkatalogReportController::class, 'exportPdf'])->name('ekatalog.exportpdf');
 
+    // ✅ Tambahkan ini
     Route::get('/tokodaring', [TokoDaringReportController::class, 'index'])->name('tokodaring');
     Route::get('/tokodaring/export-pdf', [TokoDaringReportController::class, 'exportPdf'])->name('tokodaring.exportpdf');
 });
 
-// Vendor
 Route::group([
     'prefix' => 'vendor',
     'as' => 'vendor.',
     'middleware' => 'auth',
-], function () {
+], function() {
     Route::get('/list', [VendorController::class, 'index'])->name('list');
     Route::get('/show/{code}', [VendorController::class, 'show'])->name('show');
     Route::post('/update/{code}', [VendorController::class, 'update'])->name('update');
+
     Route::post('/add-skill/{code}', [VendorController::class, 'addSkill'])->name('skill.add');
     Route::post('/delete-skill/{id}', [VendorController::class, 'removeSkill'])->name('skill.delete');
 });
+Route::get('/graph-report', [DashboardController::class, 'index'])->name('report');
 
-// Reports
 Route::group([
     'prefix' => 'report',
     'as' => 'report.',
     'middleware' => 'auth',
-], function () {
+], function() {
     Route::get('/categorize', [SatkerController::class, 'categorizeReport'])->name('categorize');
     Route::get('/rup', [SatkerController::class, 'rup'])->name('rup');
     Route::get('/rup/pdf', [SatkerController::class, 'exportPdf'])->name('rup.pdf');
@@ -105,26 +110,21 @@ Route::group([
     Route::get('/review', [SatkerController::class, 'review'])->name('review');
 });
 
-// Struktur Anggaran
+
+
 Route::get('/struktur-anggaran', [StrukturAnggaranController::class, 'index'])->name('struktur-anggaran.index');
 
-// Tender Data
-Route::get('/tender-data', [TenderDataController::class, 'index'])->name('tender.data.index');
 
-// Fallback Non-Tender Page
-Route::get('/non-tender', fn () => view('non-tender.index'))->name('non-tender.index');
 
-// Bela Pengadaan Admin
 Route::group([
     'prefix' => 'bela',
     'as' => 'bela.',
     'middleware' => ['auth', 'onlyadmin'],
-], function () {
+], function() {
     Route::get('/update', [BelaController::class, 'formUpdate'])->name('update');
     Route::post('/update', [BelaController::class, 'update']);
 });
 
-// User Management Admin
 Route::group([
     'prefix' => 'user',
     'as' => 'user.',

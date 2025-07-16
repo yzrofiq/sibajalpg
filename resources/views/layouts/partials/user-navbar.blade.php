@@ -56,6 +56,7 @@
           @php
             $isSummaryReportActive = 
               request()->routeIs('report.categorize')
+
               || request()->routeIs('tender.fund.source')
               || request()->routeIs('report.all')
               || request()->routeIs('non-tender.realization')
@@ -122,6 +123,7 @@
     </li>
   </ul>
 </li>
+
       </ul>
 
       <!-- User Account Menu -->

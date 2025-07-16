@@ -1,10 +1,19 @@
 @php
   $judulVersi = $versi === 'V5' ? 'LAPORAN E-KATALOG VERSI 5 (V5)' : 'LAPORAN E-KATALOG VERSI 6 (V6)';
+  $judulStatus = strtoupper($status) === 'SELESAI' 
+                  ? ' - PAKET SELESAI'
+                  : (strtoupper($status) === 'PROSES' 
+                      ? ' - PAKET PROSES'
+                      : ' - SEMUA STATUS');
+
   $totalTransaksi = 0;
   $totalNilai = 0;
 @endphp
 
-<h3 style="text-align: center;">{{ $judulVersi }}<br>{{ $tanggal }}</h3>
+<h3 style="text-align: center;">
+  {{ $judulVersi }}{!! $judulStatus !!}<br>
+  {{ $tanggal }}
+</h3>
 
 <style>
   body {
@@ -91,7 +100,6 @@
       @endphp
     @endforeach
 
-    {{-- Baris total --}}
     <tr>
       <td colspan="2" style="text-align: center; font-weight: bold;">TOTAL</td>
       <td style="font-weight: bold;">{{ $totalTransaksi }}</td>
@@ -102,7 +110,6 @@
   </tbody>
 </table>
 
-{{-- Tanda Tangan --}}
 <table class="ttd-table">
   <tr>
     <td style="width: 60%;"></td>
@@ -110,9 +117,9 @@
       <p>KEPALA BIRO PENGADAAN</p>
       <p>BARANG DAN JASA,</p>
       <br><br><br><br><br>
-      <p>SLAMET RIADI, S.Sos</p>
+      <p>PUADI JAILANI,SH.,MH</p>
       <p>PEMBINA UTAMA MUDA</p>
-      <p>NIP. 19670828 199903 1 005</p>
+      <p>NIP. 19650905 199103 1 004</p>
     </td>
   </tr>
 </table>

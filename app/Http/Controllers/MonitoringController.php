@@ -429,7 +429,8 @@ public function exportRealisasiBerlangsungPdf(Request $request)
     $mode = $request->get('mode', 'V'); // ✅ Tambahkan ini untuk menangkap mode
 
     // Ambil data realisasi berlangsung
-    $data = $this->getRealisasiBerlangsungData($tahun);
+    $data = $this->getRealisasiBerlangsungData($tahun); // keep Collection
+
 
     // Buat PDF
     $pdf = Pdf::loadView('exports.rekap-realisasi-berlangsung', compact('data', 'tahun'))

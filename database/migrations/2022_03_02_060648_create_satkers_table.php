@@ -4,11 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-    public function up(): void {
+class CreateSatkersTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
         Schema::create('satkers', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('kd_satker')->unique();
+            $table->string('tahun_anggaran');
+            $table->string('kd_satker');
             $table->string('kd_satker_str')->nullable();
             $table->string('nama_satker')->nullable();
             $table->string('alamat')->nullable();
@@ -23,11 +31,19 @@ return new class extends Migration {
             $table->string('jenis_klpd')->nullable();
             $table->string('kode_eselon')->nullable();
             $table->timestamps();
+
+            // Menambahkan kombinasi unique pada kolom kd_satker dan tahun_anggaran
+            $table->unique(['kd_satker', 'tahun_anggaran']);
         });
     }
 
-    public function down(): void {
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
         Schema::dropIfExists('satkers');
     }
-};
-
+}

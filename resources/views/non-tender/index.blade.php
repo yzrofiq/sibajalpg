@@ -98,102 +98,61 @@
 
 @push('script')
 <script>
-const satkerInputPlaceholder  = document.querySelector('#kd_satker_placeholder')
-const satkerInput   = document.querySelector('#kd_satker')
-const satkerOptions = document.querySelector('#satker-options')
-const satkers = @json($satkers)
+  const satkerInputPlaceholder = document.querySelector('#kd_satker_placeholder')
+  const satkerInput = document.querySelector('#kd_satker')
+  const satkerOptions = document.querySelector('#satker-options')
+  const satkers = @json($satkers)
+  const selectedSatker = "{{ $satkerCode }}"
 
-const selectedSatker  = "{{ $satkerCode }}"
+  const showSatkerOptions = () => satkerOptions.classList.remove('hidden')
+  const hideSatkerOptions = () => satkerOptions.classList.add('hidden')
 
-
-const showSatkerOptions = () => {
-  satkerOptions.classList.remove('hidden')
-}
-
-const hideSatkerOptions = () => {
-  satkerOptions.classList.add('hidden')
-}
-
-const selectRawSatker  = (code, value) => {
-  satkerInput.value   = code
-  satkerInputPlaceholder.value = value
-  hideSatkerOptions()
-}
-
-const selectSatker  = (ev) => {
-  const el  = ev.target
-  const code  = el.getAttribute('data-code')
-  satkerInput.value   = code
-  satkerInputPlaceholder.value = el.innerHTML
-  hideSatkerOptions()
-}
-
-const buildSatker   = (value) => {
-
-  satkerOptions.innerHTML = ''
-  const firstLi = document.createElement('li')
-  firstLi.textContent = 'SEMUA'
-  firstLi.addEventListener('click', ev => {
-    selectRawSatker('', '')
+  const selectRawSatker = (code, value) => {
+    satkerInput.value = code
+    satkerInputPlaceholder.value = value
     hideSatkerOptions()
-  })
-  satkerOptions.appendChild(firstLi)
+  }
 
-  if( !value ) {
-    satkers.forEach(el => {
+  const selectSatker = (ev) => {
+    const el = ev.target
+    const code = el.getAttribute('data-code')
+    satkerInput.value = code
+    satkerInputPlaceholder.value = el.innerHTML
+    hideSatkerOptions()
+  }
+
+  const buildSatker = (value) => {
+    satkerOptions.innerHTML = ''
+    const firstLi = document.createElement('li')
+    firstLi.textContent = 'SEMUA'
+    firstLi.addEventListener('click', ev => {
+      selectRawSatker('', '')
+      hideSatkerOptions()
+    })
+    satkerOptions.appendChild(firstLi)
+
+    const filtered = value
+      ? satkers.filter(el =>
+          el.nama_satker.toLowerCase().includes(value.toLowerCase()) ||
+          el.kd_satker_str.includes(value)
+        )
+      : satkers
+
+    filtered.forEach(el => {
       const li = document.createElement('li')
       li.setAttribute('data-code', el.kd_satker_str)
-      li.textContent = el.nama_satker  
-      if( el.kd_satker_str == value ) {
-        selectRawSatker(el.kd_satker_str, el.nama_satker)
-      }
-      li.addEventListener('click', selectSatker)
-      satkerOptions.appendChild(li)
-    })
-    
-  } else {
-    
-    const returns = []
-
-    satkers.forEach(el => {
-      const lowerValue  = value.toLowerCase()
-      const lowerData   = el.nama_satker.toLowerCase()
-      
-      const resultName  = lowerData.includes(lowerValue)
-      const resultCode  = el.kd_satker_str.includes(lowerValue)
-
-      if( resultName || resultCode ) {
-        returns.push(el)
-      }
-    })
-
-    if( returns.length > 0 ) {
-      satkerOptions.innerHTML = ''
-    }
-    
-    returns.forEach(el => {
-      const li = document.createElement('li')
-      li.setAttribute('data-code', el.kd_satker_str)
-      li.textContent = el.nama_satker  
-      if( el.kd_satker_str == value ) {
-        selectRawSatker(el.kd_satker_str, el.nama_satker)
-      }
+      li.textContent = el.nama_satker
       li.addEventListener('click', selectSatker)
       satkerOptions.appendChild(li)
     })
   }
-}
 
-satkerInputPlaceholder.addEventListener('focus', ev => {
+  satkerInputPlaceholder.addEventListener('focus', () => {
+    buildSatker(selectedSatker)
+    showSatkerOptions()
+  })
+
+  satkerInputPlaceholder.addEventListener('keyup', ev => buildSatker(ev.target.value))
   buildSatker(selectedSatker)
-  showSatkerOptions()
-})
-
-satkerInputPlaceholder.addEventListener('keyup', ev => {
-  buildSatker(ev.target.value)
-})
-
-buildSatker(selectedSatker)
-
-</script>  
+</script>
 @endpush

@@ -1,4 +1,11 @@
-<h3 style="text-align: center;">LAPORAN TOKO DARING (BELA PENGADAAN)<br>{{ $tanggal }}</h3>
+@php
+  $judul = 'LAPORAN TOKO DARING (BELA PENGADAAN)';
+  if (isset($satker) && $satker !== 'Semua' && $rekap->isNotEmpty()) {
+      $judul .= '<br>' . strtoupper($rekap->first()['nama_satker']);
+  }
+@endphp
+
+<h3 style="text-align: center;">{!! $judul !!}<br>{{ $tanggal }}</h3>
 
 <style>
   body {
@@ -68,12 +75,12 @@
     @endphp
 
     @foreach($rekap as $kdSatker => $data)
-<tr>
-  <td>{{ $i++ }}</td>
-  <td style="text-align: left;">{{ $data['nama_satker'] }}</td>
-  <td>{{ number_format($data['total_transaksi'], 0, ',', '.') }}</td>
-  <td style="text-align: right;">Rp{{ number_format($data['nilai_transaksi'], 0, ',', '.') }}</td>
-</tr>
+    <tr>
+      <td>{{ $i++ }}</td>
+      <td style="text-align: left;">{{ $data['nama_satker'] }}</td>
+      <td>{{ number_format($data['total_transaksi'], 0, ',', '.') }}</td>
+      <td style="text-align: right;">Rp{{ number_format($data['nilai_transaksi'], 0, ',', '.') }}</td>
+    </tr>
     @php
       $totalPaket += $data['total_transaksi'];
       $totalNilai += $data['nilai_transaksi'];
@@ -96,9 +103,9 @@
       <p>KEPALA BIRO PENGADAAN</p>
       <p>BARANG DAN JASA,</p>
       <br><br><br><br><br>
-      <p>SLAMET RIADI, S.Sos</p>
+      <p>PUADI JAILANI,SH.,MH</p>
       <p>PEMBINA UTAMA MUDA</p>
-      <p>NIP. 19670828 199903 1 005</p>
+      <p>NIP. 19650905 199103 1 004</p>
     </td>
   </tr>
 </table>
