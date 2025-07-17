@@ -136,7 +136,7 @@ Route::group([
     Route::get('/add', [UserController::class, 'formAdd'])->name('add');
     Route::post('/add', [UserController::class, 'add']);
     Route::get('/update/{id}', [UserController::class, 'formUpdate'])->name('update');
-    Route::post('/update/{id}', [UserController::class, 'update']);
+    Route::put('/update/{id}', [UserController::class, 'update'])->name('user.update');
     Route::post('/delete/{id}', [UserController::class, 'delete'])->name('delete');
 });
 
