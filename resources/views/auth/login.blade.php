@@ -165,7 +165,6 @@
         <img src="{{ url('logo.png') }}" alt="SIBAJA Logo" style="width: 80px; margin-bottom: 20px;">
         <h1>SIBAJA</h1>
         <p>Sistem Informasi Pengadaan Barang & Jasa (SIBAJA) adalah platform inovatif untuk mempercepat, mempermudah, dan meningkatkan transparansi pengadaan. Pantau seluruh tahapan mulai dari perencanaan hingga penyelesaian proyek secara efisien.</p>
-        <a href="#" class="btn-learn">Pelajari Lebih Lanjut</a>
     </div>
 
     <div class="right-panel">
