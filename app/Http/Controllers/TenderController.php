@@ -107,33 +107,63 @@ class TenderController extends Controller
 
         // Dropdown Tahun
         $years = TenderPengumumanData::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun')->toArray();
+
         // Kategori
-        $categories = TenderPengumumanData::whereYear('tgl_pengumuman_tender', $year)
-            ->select('jenis_pengadaan')
-            ->distinct()
-            ->pluck('jenis_pengadaan')
-            ->toArray();
+        if ($satkerCode) {
+            $categoriesRaw = TenderPengumumanData::whereYear('tgl_pengumuman_tender', $year)
+                ->where('kd_klpd', 'D264')
+                ->where('kd_satker_str', $satkerCode)
+                ->whereIn('status_tender', ['Selesai', 'Berlangsung'])
+                ->select('jenis_pengadaan')
+                ->distinct()
+                ->pluck('jenis_pengadaan')
+                ->toArray();
+        } else {
+            $categoriesRaw = TenderPengumumanData::whereYear('tgl_pengumuman_tender', $year)
+                ->where('kd_klpd', 'D264')
+                ->whereIn('status_tender', ['Selesai', 'Berlangsung'])
+                ->select('jenis_pengadaan')
+                ->distinct()
+                ->pluck('jenis_pengadaan')
+                ->toArray();
+        }
+
+        $categories = [];
+        $categoriesCount = [];
+        foreach ($categoriesRaw as $category) {
+            $catQuery = TenderPengumumanData::whereYear('tgl_pengumuman_tender', $year)
+                ->where('kd_klpd', 'D264')
+                ->where('jenis_pengadaan', $category)
+                ->whereIn('status_tender', ['Selesai', 'Berlangsung']);
+            if ($satkerCode) $catQuery->where('kd_satker_str', $satkerCode);
+            if ($code) $catQuery->where('kode_tender', 'like', "%$code%");
+            if ($name) $catQuery->whereRaw('LOWER(nama_tender) LIKE ?', ['%' . strtolower($name) . '%']);
+
+            $count = $catQuery->count();
+            if ($count > 0 || !$satkerCode) {
+                $categories[] = $category;
+                $categoriesCount[] = $count;
+            }
+        }
 
         // Total jumlah filtered dan full
         $total = $data->total();
-        $totalFull = TenderPengumumanData::where('tahun', $year)
-        ->where('kd_klpd', 'D264')
-        ->whereIn('status_tender', ['Selesai', 'Berlangsung'])
-        ->count();
-
-        // Jumlah per kategori
-        $categoriesCount = [];
-        foreach ($categories as $category) {
-            $catQuery = TenderPengumumanData::where('tahun', $year)
-            ->where('kd_klpd', 'D264')
-            ->where('jenis_pengadaan', $category)
-            ->whereIn('status_tender', ['Selesai', 'Berlangsung']);
-            if ($code) $catQuery->where('kd_tender', 'like', "%$code%");
-            if ($name) $catQuery->whereRaw('LOWER(nama_paket) LIKE ?', ['%' . strtolower($name) . '%']);
-            if ($satkerCode) $catQuery->where('kd_satker_str', $satkerCode);
-
-            $categoriesCount[] = $catQuery->count();
+        if ($satkerCode) {
+            $totalFullQuery = TenderPengumumanData::where('tahun', $year)
+                ->where('kd_klpd', 'D264')
+                ->whereIn('status_tender', ['Selesai', 'Berlangsung']);
+            if ($satkerCode) $totalFullQuery->where('kd_satker_str', $satkerCode);
+            if ($code) $totalFullQuery->where('kode_tender', 'like', "%$code%");
+            if ($name) $totalFullQuery->whereRaw('LOWER(nama_tender) LIKE ?', ['%' . strtolower($name) . '%']);
+            $totalFull = $totalFullQuery->count();
+        } else {
+            $totalFull = TenderPengumumanData::where('tahun', $year)
+                ->where('kd_klpd', 'D264')
+                ->whereIn('status_tender', ['Selesai', 'Berlangsung'])
+                ->count();
         }
+
+
 
         $url = url()->full();
         if (!str_contains($url, "?")) $url .= "?";

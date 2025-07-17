@@ -287,4 +287,31 @@ return view('users.home', compact(
 ));
 
     }
+
+    public function updateChartData(Request $request)
+{
+    $tahun = $request->input('tahun', Carbon::now()->year);
+    $kategoriChart2 = $request->input('kategori_chart2', 'non_tender');
+
+    // CHART 2: Update data berdasarkan kategori
+    if ($kategoriChart2 == 'tender') {
+        $chart2Data = TenderPengumumanData::where('tahun', $tahun)
+            ->whereIn('status_tender', ['Selesai', 'Berlangsung'])
+            ->select('jenis_pengadaan', DB::raw('COUNT(*) as jumlah'))
+            ->groupBy('jenis_pengadaan')
+            ->pluck('jumlah', 'jenis_pengadaan');
+    } else {
+        $chart2Data = NonTenderPengumuman::where('tahun_anggaran', $tahun)
+            ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
+            ->select('jenis_pengadaan', DB::raw('COUNT(*) as jumlah'))
+            ->groupBy('jenis_pengadaan')
+            ->pluck('jumlah', 'jenis_pengadaan');
+    }
+
+    // Mengembalikan data dalam format JSON untuk digunakan oleh frontend
+    return response()->json(['chart2Data' => $chart2Data]);
+}
+
+
+
 }

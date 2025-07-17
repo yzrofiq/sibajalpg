@@ -108,22 +108,29 @@ class NonTenderController extends Controller
 
         // --- Dropdown Tahun & Kategori ---
         $years = NonTenderPengumuman::select('tahun_anggaran')->distinct()->orderBy('tahun_anggaran', 'desc')->pluck('tahun_anggaran')->toArray();
-        $categories = NonTenderPengumuman::where('tahun_anggaran', $year)
-        ->select('jenis_pengadaan')
-        ->distinct()
-        ->pluck('jenis_pengadaan')
-        ->toArray();
-    
-        // --- Total filtered & full ---
-        $total = $data->total(); // Lebih aman pakai total dari pagination (sudah group)
-        $totalFull = NonTenderPengumuman::where('tahun_anggaran', $year)
-            ->where('kd_klpd', 'D264')
-            ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
-            ->count();
 
-        // --- Jumlah per kategori ---
+        if ($satkerCode) {
+            $categoriesRaw = NonTenderPengumuman::where('tahun_anggaran', $year)
+                ->where('kd_klpd', 'D264')
+                ->where('kd_satker_str', $satkerCode)
+                ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
+                ->select('jenis_pengadaan')
+                ->distinct()
+                ->pluck('jenis_pengadaan')
+                ->toArray();
+        } else {
+            $categoriesRaw = NonTenderPengumuman::where('tahun_anggaran', $year)
+                ->where('kd_klpd', 'D264')
+                ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
+                ->select('jenis_pengadaan')
+                ->distinct()
+                ->pluck('jenis_pengadaan')
+                ->toArray();
+        }
+
+        $categories = [];
         $categoriesCount = [];
-        foreach ($categories as $category) {
+        foreach ($categoriesRaw as $category) {
             $catQuery = NonTenderPengumuman::where('tahun_anggaran', $year)
                 ->where('kd_klpd', 'D264')
                 ->where('jenis_pengadaan', $category)
@@ -132,7 +139,34 @@ class NonTenderController extends Controller
             if ($name) $catQuery->whereRaw('LOWER(nama_paket) LIKE ?', ['%' . strtolower($name) . '%']);
             if ($satkerCode) $catQuery->where('kd_satker_str', $satkerCode);
 
-            $categoriesCount[] = $catQuery->count();
+            $count = $catQuery->count();
+            if ($count > 0 || !$satkerCode) {
+                // Kalau filter satker, hanya kategori dengan data; kalau semua, tampilkan semua (biar badge 0 juga kelihatan)
+                $categories[] = $category;
+                $categoriesCount[] = $count;
+            }
+        }
+
+
+    
+        // --- Total filtered & full ---
+        $total = $data->total(); // total hasil query/filter aktif
+
+        if ($satkerCode) {
+            // Kalau filter satker aktif, totalFull = total data setelah filter satker (dan filter lain jika ada)
+            $totalFullQuery = NonTenderPengumuman::where('tahun_anggaran', $year)
+                ->where('kd_klpd', 'D264')
+                ->whereIn('status_nontender', ['Selesai', 'Berlangsung']);
+            if ($satkerCode) $totalFullQuery->where('kd_satker_str', $satkerCode);
+            if ($code) $totalFullQuery->where('kd_nontender', 'like', "%$code%");
+            if ($name) $totalFullQuery->whereRaw('LOWER(nama_paket) LIKE ?', ['%' . strtolower($name) . '%']);
+            $totalFull = $totalFullQuery->count();
+        } else {
+            // Kalau tidak filter satker, tetap total keseluruhan data tahun itu
+            $totalFull = NonTenderPengumuman::where('tahun_anggaran', $year)
+                ->where('kd_klpd', 'D264')
+                ->whereIn('status_nontender', ['Selesai', 'Berlangsung'])
+                ->count();
         }
 
         $url = url()->full();

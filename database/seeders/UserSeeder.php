@@ -22,24 +22,5 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Pengguna biasa
-        User::firstOrCreate(
-            ['username' => 'user1'],
-            [
-                'name' => 'Pengguna Satu',
-                'password' => bcrypt('user1234'),
-                'role_id' => 2
-            ]
-        );
-
-        User::firstOrCreate(
-            ['username' => 'user2'],
-            [
-                'name' => 'Pengguna Dua',
-                'password' => bcrypt('user5678'),
-                'role_id' => 2
-            ]
-        );
-
     }
 }

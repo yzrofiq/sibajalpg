@@ -96,6 +96,8 @@ Route::group([
     Route::post('/delete-skill/{id}', [VendorController::class, 'removeSkill'])->name('skill.delete');
 });
 Route::get('/graph-report', [DashboardController::class, 'index'])->name('report');
+Route::get('/update-chart-data', [HomeController::class, 'updateChartData']);
+
 
 Route::group([
     'prefix' => 'report',

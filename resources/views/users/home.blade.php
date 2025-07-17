@@ -253,8 +253,8 @@
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
                 <small class="text-muted">Laporan Tender</small>
-                <h6 class="fw-bold mt-1">Rekap Tender Tahun 2025</h6>
-                <p class="desc-text">Jumlah dan nilai seluruh paket tender aktif dan selesai Tahun 2025</p>
+                <h6 class="fw-bold mt-1">Rekap Tender</h6>
+                <p class="desc-text">Jumlah dan nilai seluruh paket tender aktif dan selesai</p>
                 <div class="d-flex gap-2 mt-2">
                 <a href="{{ route('tender.view-pdf', ['year' => $today->year, 'month' => 'ALL', 'day' => 'ALL']) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100"><i class="bi bi-eye"></i> Lihat</a>
                 <a href="{{ route('tender.download-pdf', ['year' => $today->year, 'month' => 'ALL', 'day' => 'ALL']) }}" class="btn btn-sm hero-btn w-100 d-flex justify-content-center align-items-center"><i class="bi bi-download me-1"></i> Unduh</a>
@@ -268,8 +268,8 @@
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
                 <small class="text-muted">Laporan Non Tender</small>
-                <h6 class="fw-bold mt-1">Rekap Non Tender Tahun 2025</h6>
-                <p class="desc-text">Data paket non tender yang berlangsung dan selesai tahun 2025</p>
+                <h6 class="fw-bold mt-1">Rekap Non Tender</h6>
+                <p class="desc-text">Data paket non tender yang berlangsung dan selesai</p>
                 <div class="d-flex gap-2 mt-2">
                   <a href="{{ route('non-tender.viewPdf', ['year' => $today->year, 'month' => 'ALL', 'day' => 'ALL']) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
                     <i class="bi bi-eye"></i> Lihat
@@ -286,8 +286,8 @@
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
                 <small class="text-muted">Laporan RUP</small>
-                <h6 class="fw-bold mt-1">RUP Provinsi Lampung 2025</h6>
-                <p class="desc-text">Total paket RUP dan pagu belanja pengadaan untuk seluruh OPD tahun 2025</p>
+                <h6 class="fw-bold mt-1">RUP Provinsi Lampung</h6>
+                <p class="desc-text">Total paket RUP dan pagu belanja pengadaan untuk seluruh OPD</p>
                 <div class="d-flex gap-2 mt-2">
                   <a href="{{ route('report.rup.pdf', ['tahun' => 2025]) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
                     <i class="bi bi-eye"></i> Lihat
@@ -311,8 +311,8 @@
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
                 <small class="text-muted">Laporan Toko Daring</small>
-                <h6 class="fw-bold mt-1">Realisasi Toko Daring 2025</h6>
-                <p class="desc-text">Ringkasan pengadaan barang/jasa melalui sistem toko daring tahun 2025</p>
+                <h6 class="fw-bold mt-1">Realisasi Toko Daring</h6>
+                <p class="desc-text">Ringkasan pengadaan barang/jasa melalui sistem toko daring</p>
                 <div class="d-flex gap-2 mt-2">
                   <a href="{{ route('report.tokodaring.exportpdf', ['tahun' => 2025]) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
                     <i class="bi bi-eye"></i> Lihat
@@ -330,7 +330,7 @@
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
                 <small class="text-muted">Laporan E-Katalog V6</small>
-                <h6 class="fw-bold mt-1">Transaksi E-Katalog V6 Tahun 2025</h6>
+                <h6 class="fw-bold mt-1">Transaksi E-Katalog V6</h6>
                 <p class="desc-text">Total nilai dan jumlah transaksi melalui e-Katalog versi 6</p>
                 <div class="d-flex gap-2 mt-2">
                   <a href="{{ route('report.ekatalog.exportpdf', ['tahun' => 2025, 'versi' => 'V6']) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
@@ -347,7 +347,7 @@
                   <img src="{{ asset('images/pdf-icon.png') }}" width="150" alt="PDF">
                 </div>
                 <small class="text-muted">Laporan E-Katalog V5</small>
-                <h6 class="fw-bold mt-1">Transaksi E-Katalog V5 Tahun 2025</h6>
+                <h6 class="fw-bold mt-1">Transaksi E-Katalog V5</h6>
                 <p class="desc-text">Total nilai transaksi pengadaan menggunakan e-Katalog versi 5</p>
                 <div class="d-flex gap-2 mt-2">
                   <a href="{{ route('report.ekatalog.exportpdf', ['tahun' => 2025, 'versi' => 'V5']) }}" target="_blank" class="btn btn-sm btn-pdf-outline w-100">
@@ -464,7 +464,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  // CHART 1: Sumber pengadaan
+  // CHART 1: Sumber Pengadaan
   const chart1Data = {!! json_encode($chart1Data) !!};
   const chart1Labels = Object.keys(chart1Data);
   const chart1Values = Object.values(chart1Data);
@@ -475,71 +475,116 @@ document.addEventListener("DOMContentLoaded", function () {
       labels: chart1Labels,
       datasets: [{
         data: chart1Values,
-        backgroundColor: ['#569FB2', '#FF6A3F']
+        backgroundColor: ['#569FB2', '#86D7B7']
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-  legend: {
-    position: 'right', // ✅ Pindahkan ke kanan
-    align: 'center',
-    labels: {
-      usePointStyle: true,
-      pointStyle: 'circle',
-      boxWidth: 10
-    }
-  }
-}
-
+        legend: {
+          position: 'right',
+          align: 'center',
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            boxWidth: 10
+          }
+        }
+      }
     }
   });
 
-  // CHART 2: Jenis pengadaan berdasarkan kategori terpilih
-  const chart2Data = {!! json_encode($chart2Data) !!};
-  const chart2Labels = Object.keys(chart2Data);
-  const chart2Values = Object.values(chart2Data);
-  const backgroundColors = ['#27214D', '#569FB2', '#86D7B7', '#F8E08A', '#FF6A3F', '#5C8DF6'];
-  // const backgroundColors = ['#7B3F9B', '#2D6A8D', '#6CB34A', '#F0D43A', '#E88C3C', '#5C8DF6'];
-
-
-  new Chart(document.getElementById('chart2'), {
+  // CHART 2: Jenis Pengadaan Berdasarkan Kategori
+  let chart2Instance = new Chart(document.getElementById('chart2'), {
     type: 'pie',
     data: {
-      labels: chart2Labels,
+      labels: {!! json_encode($chart2Data->keys()->toArray()) !!},
       datasets: [{
-        data: chart2Values,
-        backgroundColor: backgroundColors.slice(0, chart2Labels.length)
+        data: {!! json_encode($chart2Data->values()->toArray()) !!},
+        backgroundColor: ['#7B3F9B', '#2D6A8D', '#6CB34A', '#F0D43A', '#E88C3C', '#5C8DF6']
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-  legend: {
-    position: 'right', // ✅ Pindahkan ke kanan
-    align: 'center',
-    labels: {
-      usePointStyle: true,
-      pointStyle: 'circle',
-      boxWidth: 10
+        legend: {
+          position: 'right',
+          align: 'center',
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            boxWidth: 10
+          }
+        }
+      }
     }
+  });
+
+  // Form auto-submit handlers untuk filter
+  const tahunFilter = document.getElementById('tahunFilter');
+  const kategoriFilter = document.getElementById('chart2Filter');
+  
+  if (tahunFilter) {
+    tahunFilter.addEventListener('change', function () {
+      document.getElementById('tahunForm').submit();
+    });
   }
-}
 
-    }
-  });
+  if (kategoriFilter) {
+    kategoriFilter.addEventListener('change', function () {
+      // Jika kategori filter berubah, kita akan ambil data baru melalui AJAX
+      updateChartData();
+    });
+  }
 
-  // Filter tahun (chart 1)
-  document.getElementById('tahunFilter').addEventListener('change', function () {
-    document.getElementById('tahunForm').submit();
-  });
+  // Fungsi untuk update chart2 dengan AJAX
+  function updateChartData() {
+    const kategori = kategoriFilter.value;
+    const tahun = {{ $tahun }};  // Mengambil nilai tahun dari Blade
 
-  // Filter kategori chart 2
-  document.getElementById('chart2Filter').addEventListener('change', function () {
-    document.getElementById('kategoriForm').submit();
-  });
+    // Kirim request AJAX ke backend untuk mengambil data chart baru
+    fetch(`/update-chart-data?kategori_chart2=${kategori}&tahun=${tahun}`)
+      .then(response => response.json())
+      .then(data => {
+        // Update chart2 dengan data baru
+        const chart2Data = data.chart2Data;
+        const chart2Labels = Object.keys(chart2Data);
+        const chart2Values = Object.values(chart2Data);
+
+        // Menghentikan chart sebelumnya dan membuat chart baru dengan data yang diperbarui
+        chart2Instance.destroy();
+        chart2Instance = new Chart(document.getElementById('chart2'), {
+          type: 'pie',
+          data: {
+            labels: chart2Labels,
+            datasets: [{
+              data: chart2Values,
+              backgroundColor: ['#7B3F9B', '#2D6A8D', '#6CB34A', '#F0D43A', '#E88C3C', '#5C8DF6'].slice(0, chart2Labels.length)
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'right',
+                align: 'center',
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  boxWidth: 10
+                }
+              }
+            }
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error updating chart:', error);
+      });
+  }
 });
 </script>
 
