@@ -44,7 +44,7 @@
     <div class="small-box bg-success">
       <div class="inner">
         <h3>{{ number_format(getEkatalogCount($filters), 0, ',', '.') }}</h3>
-        <p>Total e-Katalog</p>
+        <p>e-Katalog</p>
       </div>
       <div class="icon">
         <i class="ion ion-pie-graph"></i>
@@ -59,7 +59,7 @@
     <div class="small-box bg-danger">
       <div class="inner">
         <h3>{{ number_format(getBelaCount($filters), 0, ',', '.') }}</h3>
-        <p>Total Toko Daring</p>
+        <p>Toko Daring</p>
       </div>
       <div class="icon">
         <i class="ion ion-pie-graph"></i>
