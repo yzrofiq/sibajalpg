@@ -157,6 +157,51 @@
     color: #666;
     font-size: 0.95rem;
 }
+/* Tambahan Responsive */
+@media (max-width: 1024px) {
+    .left-panel h1 {
+        font-size: 2.2rem;
+    }
+
+    .left-panel p {
+        font-size: 1rem;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+
+    .left-panel,
+    .right-panel {
+        flex: none;
+        width: 100%;
+        padding: 30px;
+    }
+
+    .left-panel {
+        align-items: center;
+        text-align: center;
+    }
+
+    .left-panel h1 {
+        font-size: 2rem;
+    }
+
+    .left-panel p {
+        font-size: 0.95rem;
+    }
+
+    .left-panel .btn-learn {
+        margin: 0 auto;
+    }
+
+    .login-form {
+        max-width: 100%;
+    }
+}
 
 </style>
 

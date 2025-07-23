@@ -24,10 +24,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Download Realisasi Non Tender</h5>
-       <!-- ✅ Ganti jadi ini -->
-<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-  <span aria-hidden="true">&times;</span>
-</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 
       </div>
       <div class="modal-body">
@@ -65,10 +62,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Download Realisasi Tender</h5>
-        <!-- ✅ Ganti jadi ini -->
-<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-  <span aria-hidden="true">&times;</span>
-</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 
       </div>
       <div class="modal-body">

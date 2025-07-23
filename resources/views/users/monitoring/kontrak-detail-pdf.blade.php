@@ -2,48 +2,79 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Detail Kontrak - PDF</title>
+    <title>Rekap Tender Belum Kontrak</title>
     <style>
-        body { font-family: sans-serif; font-size: 12px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 15px; }
-        th, td { border: 1px solid #000; padding: 5px; text-align: left; }
-        th { background-color: #ddd; }
-        tfoot td { font-weight: bold; background-color: #f1f5f9; }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+        }
+
+        h4 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 4px;
+            text-align: left;
+            vertical-align: top;
+            word-break: break-word;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .mt-2 {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <h2>Detail Tender Selesai Tanpa Kontrak</h2>
-    <p><strong>Satker:</strong> {{ $satker }}</p>
+    <h4>DAFTAR TENDER BELUM INPUT KONTRAK<br>{{ $tahun }}</h4>
 
-    <table>
+    @if (!empty($namaSatker))
+        <p><strong>Satker:</strong> {{ $namaSatker }}</p>
+    @endif
+
+    <table class="mt-2">
         <thead>
             <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 20%;">Kode Tender</th>
+                <th style="width: 4%;">No</th>
+                <th style="width: 15%;">Kode Tender</th>
                 <th>Nama Paket</th>
-                <th style="width: 20%;">Pagu (Rp)</th>
+                <th style="width: 18%;">Pagu (Rp)</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($data as $i => $item)
-            <tr>
-                <td style="text-align: center;">{{ $i + 1 }}</td>
-                <td>{{ $item->kd_tender }}</td>
-                <td>{{ $item->nama_paket }}</td>
-                <td style="text-align: right;">{{ number_format($item->pagu, 0, ',', '.') }}</td>
-            </tr>
+                <tr>
+                    <td class="text-center">{{ $i + 1 }}</td>
+                    <td>{{ $item->kd_tender }}</td>
+                    <td>{{ $item->nama_paket }}</td>
+                    <td class="text-right">{{ number_format($item->pagu, 0, ',', '.') }}</td>
+                </tr>
             @empty
-            <tr>
-                <td colspan="4" style="text-align: center; font-style: italic;">Tidak ada data tender yang belum input kontrak.</td>
-            </tr>
+                <tr>
+                    <td colspan="4" class="text-center"><em>Tidak ada data tender yang belum input kontrak.</em></td>
+                </tr>
             @endforelse
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3" style="text-align: center;">Total Pagu</td>
-                <td style="text-align: center;">{{ number_format($totalPagu, 0, ',', '.') }}</td>
-            </tr>
-        </tfoot>
     </table>
 </body>
 </html>

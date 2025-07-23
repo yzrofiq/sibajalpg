@@ -4,47 +4,55 @@
     <meta charset="UTF-8">
     <title>Rekapitulasi Realisasi Pengadaan Berlangsung - Tahun {{ $tahun }}</title>
     <style>
-        @page { margin: 20px; size: A4 landscape; }
-        body { font-family: Arial, sans-serif; font-size: 10px; margin: 0; }
+    @page { margin: 10px; size: A4 landscape; }
+    body { font-family: Arial, sans-serif; font-size: 8px; margin: 0; }
 
-        h3 { text-align: center; margin-bottom: 16px; font-size: 16px; }
+    h3 {
+        text-align: center;
+        margin-bottom: 12px;
+        font-size: 13px;
+    }
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            table-layout: fixed;
-        }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+    }
 
-        th, td {
-            border: 1px solid #000;
-            padding: 5px 4px;
-            text-align: center;
-        }
+    th, td {
+        border: 1px solid #000;
+        padding: 3px 2px;
+        text-align: center;
+        font-size: 7.5px;
+    }
 
-        th {
-            background-color: #e2e8f0;
-            font-size: 10px;
-        }
+    th {
+        background-color: #e2e8f0;
+        font-size: 8px;
+    }
 
-        .text-left { text-align: left; }
-        .text-right { text-align: right; }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
 
-        th:nth-child(1), td:nth-child(1) { width: 3%; }
-        th:nth-child(2), td:nth-child(2) { width: 20%; text-align: left; }
-        th:nth-child(3), td:nth-child(3),
-        th:nth-child(5), td:nth-child(5),
-        th:nth-child(7), td:nth-child(7),
-        th:nth-child(9), td:nth-child(9) { width: 7%; }
-        th:nth-child(4), td:nth-child(4),
-        th:nth-child(6), td:nth-child(6),
-        th:nth-child(8), td:nth-child(8),
-        th:nth-child(10), td:nth-child(10) { width: 13%; text-align: right; }
+    /* Kolom width disesuaikan */
+    th:nth-child(1), td:nth-child(1) { width: 2.5%; }
+    th:nth-child(2), td:nth-child(2) { width: 19%; text-align: left; }
+    th:nth-child(3), td:nth-child(3),
+    th:nth-child(5), td:nth-child(5),
+    th:nth-child(7), td:nth-child(7),
+    th:nth-child(9), td:nth-child(9) { width: 6.5%; }
 
-        .total-row {
-            font-weight: bold;
-            background-color: #fef9c3;
-        }
-    </style>
+    th:nth-child(4), td:nth-child(4),
+    th:nth-child(6), td:nth-child(6),
+    th:nth-child(8), td:nth-child(8),
+    th:nth-child(10), td:nth-child(10) { width: 10%; text-align: right; }
+
+    .total-row {
+        font-weight: bold;
+        background-color: #fef9c3;
+    }
+</style>
+
 </head>
 <body>
 

@@ -5,26 +5,60 @@
     .table-responsive {
         overflow-x: auto;
     }
+
     table {
-        border-collapse: collapse;
-        width: 100%;
-        font-size: 13px;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border-spacing: 0 !important;
+        table-layout: fixed !important;
+        font-size: 13px !important;
     }
+
     th, td {
-        border: 1px solid #e2e8f0;
-        padding: 8px;
-        text-align: center;
+        border: 1px solid #cbd5e1 !important;
+        padding: 10px !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
     }
+
     th {
-        background-color: #f1f5f9;
-        font-weight: bold;
+        background-color: #f1f5f9 !important;
+        font-weight: bold !important;
     }
-    .bg-blue { background-color: #3b82f6; color: white; }
-    .bg-yellow { background-color: #facc15; color: #1e293b; }
-    .bg-green { background-color: #22c55e; color: white; }
-    .bg-gray { background-color: #94a3b8; color: white; }
-    .text-left { text-align: left; }
-    .text-right { text-align: right; }
+
+    tbody tr:hover {
+        background-color: #f9fafb !important;
+    }
+
+    .bg-blue {
+        background-color: #3b82f6 !important;
+        color: white !important;
+    }
+
+    .bg-yellow {
+        background-color: #facc15 !important;
+        color: #1e293b !important;
+    }
+
+    .bg-green {
+        background-color: #22c55e !important;
+        color: white !important;
+    }
+
+    .bg-gray {
+        background-color: #94a3b8 !important;
+        color: white !important;
+    }
+
+    .text-left {
+        text-align: left !important;
+    }
+
+    .text-right {
+        text-align: right !important;
+    }
+
     .filter-form {
         margin-bottom: 20px;
         display: flex;
@@ -32,11 +66,13 @@
         flex-wrap: wrap;
         align-items: center;
     }
+
     .filter-form select {
         padding: 6px 10px;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
     }
+
     h1 {
         font-size: 24px;
         font-weight: 600;
@@ -45,6 +81,7 @@
     }
 </style>
 @endpush
+
 
 @section('content')
 <div class="container py-4">
@@ -79,15 +116,16 @@
     {{-- 📊 Tabel --}}
     <div class="table-responsive">
         <table>
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th class="bg-blue">Nama Satker</th>
-                    <th class="bg-yellow">Total Tender Selesai</th>
-                    <th class="bg-green">Total Nilai Pagu</th>
-                    <th class="bg-gray">Kontrak Belum Input</th>
-                </tr>
-            </thead>
+        <thead>
+    <tr>
+        <th style="width: 50px;" class="bg-gray">No.</th>
+        <th style="width: 350px;" class="bg-blue text-left">Nama Satker</th>
+        <th style="width: 180px;" class="bg-yellow">Total Tender Selesai</th>
+        <th style="width: 200px;" class="bg-green">Total Nilai Pagu</th>
+        <th style="width: 200px;" class="bg-gray">Kontrak Belum Input</th>
+    </tr>
+</thead>
+
             <tbody>
                 @forelse ($data as $i => $item)
                     <tr>

@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View; // ✅ BENAR di sini
 use App\Models\Satker;
-
 use App\Models\SwakelolaRealisasi;
-use Barryvdh\DomPDF\Facade\Pdf; // ✅ INI yang benar   
+use Spipu\Html2Pdf\Html2Pdf;
+// use Barryvdh\DomPDF\Facade\Pdf; // ❌ Kalau kamu pakai Html2Pdf, hapus ini
+
+
 class MonitoringController extends Controller
 {
  
@@ -138,7 +141,7 @@ public function exportRealisasiToPDF(Request $request)
 {
     $tahunList = $request->get('tahun', [2024, 2025]);
     $satkerFilter = $request->get('satker');
-    $mode = $request->get('mode', 'V'); // ✅ Ambil mode dari request, default 'V' (View)
+    $mode = $request->get('mode', 'V'); // 'V' = view, 'D' = download
 
     if (!is_array($tahunList)) {
         $tahunList = [$tahunList];
@@ -199,17 +202,27 @@ public function exportRealisasiToPDF(Request $request)
         });
     }
 
-    $pdf = Pdf::loadView('exports.realisasi-presentase', [
+    // Ganti metode PDF pakai HTML2PDF
+    $html = View::make('exports.realisasi-presentase', [
         'data' => $data,
         'tahun' => implode(', ', $tahunList),
-    ])->setPaper('A4', 'landscape');
+    ])->render();
+
+    $pdf = new Html2Pdf('L', 'A4', 'en');
+    $pdf->writeHTML($html);
 
     $fileName = 'Realisasi_Pengadaan_' . implode('_', $tahunList) . '.pdf';
 
-    return $mode === 'D'
-        ? $pdf->download($fileName) // Jika mode download
-        : $pdf->stream($fileName);  // Jika mode view
+    if ($mode === 'D') {
+        return response($pdf->output($fileName, 'S'))
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+    } else {
+        $pdf->output($fileName);
+        exit;
+    }
 }
+
 
     
 public function rekapRealisasi(Request $request)
@@ -257,12 +270,11 @@ public function rekapRealisasi(Request $request)
         ]);
     }
 }
-
-
 public function exportRekapRealisasiToPDF(Request $request)
 {
     $tahun = $request->get('tahun', date('Y'));
-    $mode = $request->get('mode', 'V');
+    $mode = $request->get('mode', 'V'); // 'V' = view / stream, 'D' = download
+
     $satkerList = DB::table('struktur_anggarans')
         ->select('kd_satker', 'nama_satker')
         ->where('tahun_anggaran', $tahun)
@@ -273,14 +285,22 @@ public function exportRekapRealisasiToPDF(Request $request)
         return $this->getSatkerRealisasi($tahun, $satker->kd_satker, $satker->nama_satker);
     });
 
-    $pdf = Pdf::loadView('exports.rekap-realisasi', compact('data', 'tahun'))
-        ->setPaper('A4', 'landscape');
+    // Render Blade ke HTML biasa
+    $html = View('exports.rekap-realisasi', compact('data', 'tahun'))->render();
+
+    // Generate PDF dengan HTML2PDF
+    $html2pdf = new Html2Pdf('L', 'A4', 'en');
+    $html2pdf->writeHTML($html);
 
     $fileName = "rekap-realisasi-{$tahun}.pdf";
 
-    return $mode === 'D'
-        ? $pdf->download($fileName) // Jika download
-        : $pdf->stream($fileName);  // Jika view
+    if ($mode === 'D') {
+        $html2pdf->output($fileName, 'D'); // Download
+    } else {
+        $html2pdf->output($fileName, 'I'); // Inline / View
+    }
+
+    return; // Agar tidak ada response tambahan dari Laravel
 }
 
 protected function getSatkerRealisasi($tahun, $kdSatker, $namaSatker)
@@ -422,28 +442,33 @@ public function rekapRealisasiBerlangsung(Request $request)
         ]);
     }
 }
-
 public function exportRealisasiBerlangsungPdf(Request $request)
 {
     $tahun = $request->get('tahun', date('Y'));
-    $mode = $request->get('mode', 'V'); // ✅ Tambahkan ini untuk menangkap mode
+    $mode = $request->get('mode', 'V'); // 'V' = view, 'D' = download
 
     // Ambil data realisasi berlangsung
-    $data = $this->getRealisasiBerlangsungData($tahun); // keep Collection
+    $data = $this->getRealisasiBerlangsungData($tahun); // return Collection
 
+    // Render Blade ke HTML
+    $html = View('exports.rekap-realisasi-berlangsung', compact('data', 'tahun'))->render();
 
-    // Buat PDF
-    $pdf = Pdf::loadView('exports.rekap-realisasi-berlangsung', compact('data', 'tahun'))
-        ->setPaper('A4', 'landscape');
+    // Generate PDF pakai HTML2PDF
+    $html2pdf = new Html2Pdf('L', 'A4', 'en', true, 'UTF-8', [5, 5, 5, 5]); // kiri, atas, kanan, bawah
+
+    $html2pdf->writeHTML($html);
 
     $fileName = "rekap-realisasi-berlangsung-{$tahun}.pdf";
 
-    // Return sesuai mode
-    return $mode === 'D'
-        ? $pdf->download($fileName) // Jika download
-        : $pdf->stream($fileName);  // Jika view
-}
+    // Output sesuai mode
+    if ($mode === 'D') {
+        $html2pdf->output($fileName, 'D'); // Download
+    } else {
+        $html2pdf->output($fileName, 'I'); // Inline view
+    }
 
+    return; // Pastikan tidak return double response
+}
     protected function getRealisasiBerlangsungData($tahun)
     {
         $satkerList = DB::table('struktur_anggarans')
@@ -619,6 +644,7 @@ public function exportRealisasiBerlangsungPdf(Request $request)
             'data' => $result,
             'tahun' => $tahun,
             'tahunList' => $tahunList,
+            'satkerList' => $allSatker,
             'namaSatkerList' => $allSatker,
             'filterSatker' => $filterSatker,
             'totals' => $totals,
@@ -675,52 +701,56 @@ public function exportRealisasiBerlangsungPdf(Request $request)
     }
     
 
-    public function exportKontrakDetailPdf($satker, Request $request)
-    {
-        $tahun = $request->get('tahun', date('Y'));
-        $satker = urldecode($satker);
-        $mode = $request->get('mode', 'V'); // Tambahkan mode
     
-        // Cari tender selesai untuk satker dan tahun tertentu
-        $tenderSelesai = DB::table('tender_selesai_data')
+public function exportKontrakDetailPdf($satker, Request $request)
+{
+    $tahun = $request->get('tahun', date('Y'));
+    $satker = urldecode($satker);
+    $mode = $request->get('mode', 'V');
+
+    $tenderSelesai = DB::table('tender_selesai_data')
+        ->where('tahun', $tahun)
+        ->where('nama_satker', $satker)
+        ->pluck('kd_tender')
+        ->toArray();
+
+    if (empty($tenderSelesai)) {
+        $data = collect();
+        $totalPagu = 0;
+    } else {
+        $kontrak = DB::table('kontrak_data')
             ->where('tahun', $tahun)
             ->where('nama_satker', $satker)
+            ->whereIn('kd_tender', $tenderSelesai)
             ->pluck('kd_tender')
             ->toArray();
-    
-        if (empty($tenderSelesai)) {
-            $data = collect();
-            $totalPagu = 0;
-        } else {
-            $kontrak = DB::table('kontrak_data')
-                ->where('tahun', $tahun)
-                ->where('nama_satker', $satker)
-                ->whereIn('kd_tender', $tenderSelesai)
-                ->pluck('kd_tender')
-                ->toArray();
-    
-            $data = DB::table('tender_pengumuman_data')
-                ->select('kd_tender', 'nama_paket', 'pagu')
-                ->where('tahun', $tahun)
-                ->where('nama_satker', $satker)
-                ->whereIn('kd_tender', $tenderSelesai)
-                ->whereNotIn('kd_tender', $kontrak)
-                ->orderBy('nama_paket')
-                ->get();
-    
-            $totalPagu = $data->sum('pagu');
-        }
-    
-        $pdf = Pdf::loadView('monitoring.kontrak-detail-pdf', compact('data', 'satker', 'tahun', 'totalPagu'))
-            ->setPaper('A4', 'landscape');
-    
-        $fileName = "detail_kontrak_{$satker}_{$tahun}.pdf";
-    
-        return $mode === 'D'
-            ? $pdf->download($fileName)
-            : $pdf->stream($fileName);
+
+        $data = DB::table('tender_pengumuman_data')
+            ->select('kd_tender', 'nama_paket', 'pagu')
+            ->where('tahun', $tahun)
+            ->where('nama_satker', $satker)
+            ->whereIn('kd_tender', $tenderSelesai)
+            ->whereNotIn('kd_tender', $kontrak)
+            ->orderBy('nama_paket')
+            ->get();
+
+        $totalPagu = $data->sum('pagu');
     }
-    
+
+    // Render HTML dari view Blade
+    $html = View::make('monitoring.kontrak-detail-pdf', compact('data', 'satker', 'tahun', 'totalPagu'))->render();
+
+    // Generate PDF dengan HTML2PDF
+    $pdf = new Html2Pdf('L', 'A3', 'en');
+
+    $pdf->writeHTML($html);
+
+    $fileName = "detail_kontrak_{$satker}_{$tahun}.pdf";
+
+    return $mode === 'D'
+        ? $pdf->output($fileName, 'D') // Download
+        : $pdf->output($fileName, 'I'); // Inline / View
+}
     
 public function kontrakNonTender(Request $request)
 {
@@ -854,6 +884,7 @@ public function exportNonTenderDetailPdf($satker, Request $request)
 {
     $tahun = $request->get('tahun_anggaran', date('Y'));
     $satker = urldecode($satker);
+    $mode = $request->get('mode', 'V'); // ✅ Tambahkan ini
 
     // Ambil semua kd_nontender yang sudah selesai
     $nonTenderSelesai = DB::table('non_tender_selesai')
@@ -884,14 +915,17 @@ public function exportNonTenderDetailPdf($satker, Request $request)
             ->orderBy('nama_paket')
             ->get();
 
-        // Hitung total pagu
         $totalPagu = $data->sum('pagu');
     }
 
-    // Generate PDF menggunakan view yang sesuai
     $pdf = Pdf::loadView('monitoring.non-tender-detail-pdf', compact('data', 'satker', 'tahun', 'totalPagu'));
+    $pdf = new Html2Pdf('L', 'A3', 'en', true, 'UTF-8', [5, 5, 5, 5]);
+    $fileName = "detail_non_tender_{$satker}_{$tahun}.pdf";
 
-    return $pdf->stream("detail_non_tender_{$satker}_{$tahun}.pdf");
+    // ✅ Tambahkan logika mode
+    return $mode === 'D'
+        ? $pdf->download($fileName)
+        : $pdf->stream($fileName);
 }
 
 public function summaryRealisasi(Request $request)
