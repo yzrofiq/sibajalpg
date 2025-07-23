@@ -3,9 +3,15 @@
     <td><p class="text-sm">{{ $item->kd_nontender }}</p></td>
     <td><p class="text-sm" style="color: #3B82F6;">{{ $item->nama_paket }}</p></td>
     <td><p class="text-sm">{{ $item->status_nontender ?? '-' }}</p></td>
-    <td><p class="text-sm">{{ \App\Services\HelperService::moneyFormat($item->hps) }}</p></td>
-    <td><p class="text-sm">{{ isset($item->nilai_pdn_kontrak) ? \App\Services\HelperService::moneyFormat($item->nilai_pdn_kontrak) : '-' }}</p></td>
-    <td><p class="text-sm">{{ isset($item->nilai_umk_kontrak) ? \App\Services\HelperService::moneyFormat($item->nilai_umk_kontrak) : '-' }}</p></td>
+    <td><p class="text-sm">
+      {{ isset($item->hps) ? format_hps_pagu($item->hps) : '-' }}
+    </p></td>
+    <td><p class="text-sm">
+      {{ isset($item->nilai_pdn_kontrak) ? \App\Services\HelperService::moneyFormat($item->nilai_pdn_kontrak) : '-' }}
+    </p></td>
+    <td><p class="text-sm">
+      {{ isset($item->nilai_umk_kontrak) ? \App\Services\HelperService::moneyFormat($item->nilai_umk_kontrak) : '-' }}
+    </p></td>
   </tr>
 @empty
   <tr>

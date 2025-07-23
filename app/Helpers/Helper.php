@@ -258,3 +258,14 @@ if (!function_exists('getCategory')) {
         return 'others';
     }
 }
+
+if (!function_exists('format_hps_pagu')) {
+
+    function format_hps_pagu($number)
+    {
+        if ($number === null || $number === '' || $number === false) {
+            return '-';
+        }
+        return number_format($number, 2, ',', '.');
+    }
+}

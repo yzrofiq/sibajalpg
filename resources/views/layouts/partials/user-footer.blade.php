@@ -38,7 +38,7 @@
       <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> Telepon: (0721) 481107</p>
       <p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> Email: biropbj@lampungprov.go.id</p>
       <div class="d-flex gap-3 mt-3">
-        <a href="https://www.instagram.com/naaurasls/?utm_source=ig_web_button_share_sheet" class="text-white fs-4"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="text-white fs-4"><i class="bi bi-facebook"></i></a>
         <a href="#" class="text-white fs-4"><i class="bi bi-youtube"></i></a>
         <a href="https://www.instagram.com/biropbj?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="text-white fs-4"><i class="bi bi-instagram"></i></a>
 

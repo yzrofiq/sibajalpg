@@ -262,7 +262,7 @@ class SatkerController extends Controller
 
     // View sesuai role
     if (auth()->user()->role_id == 2) {
-        return view('users.Satker.rup', compact('rekap', 'grandTotal', 'tahun', 'kdSatkerFilter', 'allSatker', 'tahunTersedia'));
+        return view('users.satker.rup', compact('rekap', 'grandTotal', 'tahun', 'kdSatkerFilter', 'allSatker', 'tahunTersedia'));
     }
     return view('satker.rup', compact('rekap', 'grandTotal', 'tahun', 'kdSatkerFilter', 'allSatker', 'tahunTersedia'));
 }

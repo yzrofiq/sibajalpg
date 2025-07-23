@@ -52,8 +52,8 @@
         <td style="text-align: center;">{{ $item['consultations'] }}</td>
         <td style="text-align: center;">{{ $item['goods'] }}</td>
         <td style="text-align: center;">{{ $item['services'] }}</td>
-        <td style="text-align: right;">{{ moneyFormat($item['pagu']) }}</td>
-        <td style="text-align: right;">{{ moneyFormat($item['hps']) }}</td>
+        <td style="text-align: right;">{{ format_hps_pagu($item['pagu']) }}</td>     
+        <td style="text-align: right;">{{ format_hps_pagu($item['hps']) }}</td>      
         <td style="text-align: right;">{{ moneyFormat($item['nilai_terkontrak']) }}</td>
         <td style="text-align: right;">{{ moneyFormat($item['efficiency']) }}</td>
       </tr>
@@ -65,8 +65,8 @@
         <td style="text-align: center;">{{ $total['consultations'] }}</td>
         <td style="text-align: center;">{{ $total['goods'] }}</td>
         <td style="text-align: center;">{{ $total['services'] }}</td>
-        <td style="text-align: right;">{{ moneyFormat($total['pagu']) }}</td>
-        <td style="text-align: right;">{{ moneyFormat($total['hps']) }}</td>
+        <td style="text-align: right;">{{ format_hps_pagu($total['pagu']) }}</td>      
+        <td style="text-align: right;">{{ format_hps_pagu($total['hps']) }}</td>        
         <td style="text-align: right;">{{ moneyFormat($total['nilai_terkontrak']) }}</td>
         <td style="text-align: right;">{{ moneyFormat($total['efficiency']) }}</td>
       </tr>
