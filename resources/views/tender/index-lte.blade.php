@@ -19,13 +19,13 @@
     <div class="row">
       <div class="col-md-2">
         <label for="filter-kode">Kode</label>
-        <input id="filter-kode" type="text" placeholder="Kode" class="form-control">
+        <input id="filter-kode" type="text" placeholder="Kode" class="form-control" value="{{ request('code') }}">
       </div>
       <div class="col-md-3">
         <label for="filter-nama">Nama Paket</label>
-        <input id="filter-nama" type="text" placeholder="Nama Paket" class="form-control">
+        <input id="filter-nama" type="text" placeholder="Nama Paket" class="form-control" value="{{ request('name') }}">
       </div>
-      <div class="col-md-5">
+      <div class="col-md-3">
         <label for="kd_satker">Satuan Kerja</label>
         <select name="kd_satker" id="kd_satker" class="form-control select2" onchange="filterBySatker()">
           <option value="">--Semua Satuan Kerja---</option>
@@ -45,6 +45,14 @@
           @endforeach
         </select>
       </div>
+      <div class="col-md-2">
+        <label for="status_tender">Status</label>
+        <select name="status_tender" id="status_tender" class="form-control" onchange="filterBySatker()">
+          @foreach ($statusList as $key => $val)
+            <option value="{{ $key }}" {{ $status == $key ? 'selected' : '' }}>{{ $val }}</option>
+          @endforeach
+        </select>
+      </div>
     </div>
 
     @php
@@ -52,7 +60,8 @@
         . '?year=' . urlencode($year)
         . '&kd_satker=' . urlencode($satkerCode)
         . '&code=' . urlencode($code)
-        . '&name=' . urlencode($name);
+        . '&name=' . urlencode($name)
+        . '&status_tender=' . urlencode($status);
     @endphp
 
     <div class="row mt-3">
@@ -87,7 +96,7 @@
             </table>
           </div>
           <div class="card-footer clearfix">
-            @if ($data->count() > 10)
+            @if ($data->lastPage() > 1)
               <div class="pagination-container">
                 {{ $data->links('pagination::bootstrap-4') }}
               </div>
@@ -105,15 +114,21 @@
 <script src="{{ url('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ url('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script>
-let initialData = null;
-
 $(function () {
-  initialData = $('#tenderTable tbody').html();
-
   $('.select2').select2();
 
+  let categoryParam = @json($categoryParam);
+
+  // Always reset to page 1 when search box changed
   $('#filter-kode, #filter-nama').on('keyup', function () {
-    searchTender();
+    searchTender(1);
+  });
+
+  $(document).on('click', '.pagination-container a', function(e) {
+    e.preventDefault();
+    let url = new URL($(this).attr('href'), window.location.origin);
+    let page = url.searchParams.get('page') || 1;
+    searchTender(page);
   });
 
   function searchTender(page = 1) {
@@ -121,15 +136,19 @@ $(function () {
     const name = $('#filter-nama').val().trim();
     const kd_satker = $('#kd_satker').val();
     const year = $('#year').val();
-    const category = '{{ $categoryParam }}';
+    const status_tender = $('#status_tender').val();
 
     $.ajax({
       url: "{{ route('tender.search') }}",
-      data: { code, name, kd_satker, year, category, page },
+      data: {
+        code, name, kd_satker, year,
+        category: categoryParam,
+        status_tender,
+        page
+      },
       success: function (response) {
         $('#tenderTable tbody').html(response.html);
-        
-        if(response.lastPage > 1){
+        if (response.lastPage > 1) {
           $('.pagination-container').html(response.pagination).show();
         } else {
           $('.pagination-container').hide();
@@ -142,21 +161,17 @@ $(function () {
     });
   }
 
-  $(document).on('click', '.pagination-container a', function(e) {
-    e.preventDefault();
-    let page = $(this).attr('href').split('page=')[1];
-    searchTender(page);
-  });
-
   window.filterBySatker = function() {
-  const satker = document.getElementById('kd_satker').value;
-  const year = document.getElementById('year').value;
-  const url = new URL(window.location.href.split('?')[0]);
-  if (satker) url.searchParams.set('kd_satker', satker);
-  if (year) url.searchParams.set('year', year);
-  window.location.href = url.toString();
-}
-
+    const satker = $('#kd_satker').val();
+    const year = $('#year').val();
+    const status = $('#status_tender').val();
+    const url = new URL(window.location.href.split('?')[0]);
+    if (satker) url.searchParams.set('kd_satker', satker);
+    if (year) url.searchParams.set('year', year);
+    if (status) url.searchParams.set('status_tender', status);
+    else url.searchParams.delete('status_tender');
+    window.location.href = url.toString();
+  }
 });
 </script>
 @endpush

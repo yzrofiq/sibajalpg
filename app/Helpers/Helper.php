@@ -132,6 +132,7 @@ function getBelaCount($filters = [])
     $tahun = $filters['year'] ?? date('Y');
     $kd_satker = null;
 
+    // Cek filter kd_satker (cari di tabel Satker berdasarkan kd_satker_str)
     if (!empty($filters['kd_satker'])) {
         $satker = \App\Models\Satker::where('kd_satker_str', $filters['kd_satker'])->first();
         if ($satker) {
@@ -139,7 +140,9 @@ function getBelaCount($filters = [])
         }
     }
 
-    $query = \App\Models\TokoDaring::where('tahun', $tahun);
+    // Query hanya status verif "verified"
+    $query = \App\Models\TokoDaring::where('tahun', $tahun)
+        ->where('status_verif', 'verified');
 
     if (!empty($filters['code'])) {
         $query->where('kode', 'like', '%' . $filters['code'] . '%');

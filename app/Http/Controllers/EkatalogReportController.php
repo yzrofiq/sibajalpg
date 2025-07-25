@@ -31,7 +31,11 @@ class EkatalogReportController extends Controller
             if ($versi === 'V5') {
                 $query->where('paket_status_str', 'Paket ' . $status);
             } else {
-                $query->where('status_pkt', strtoupper($status) === 'PROSES' ? 'ON_PROCESS' : 'COMPLETED');
+                if (strtoupper($status) === 'PROSES') {
+                    $query->where('status_pkt', 'ON_PROCESS');
+                } elseif (strtoupper($status) === 'SELESAI' || strtoupper($status) === 'COMPLETED') {
+                    $query->whereIn('status_pkt', ['COMPLETED', 'PAYMENT_OUTSIDE_SYSTEM']);
+                }
             }
         }
 
@@ -54,10 +58,18 @@ class EkatalogReportController extends Controller
 
             $status_raw = $versi === 'V6' ? $item->status_pkt : $item->paket_status_str;
 
-            $status_label = $versi === 'V6'
-                ? (strtoupper($status_raw) === 'ON_PROCESS' ? 'Paket Proses' :
-                   (strtoupper($status_raw) === 'COMPLETED' ? 'Paket Selesai' : $status_raw))
-                : $status_raw;
+            $status_label = '';
+            if ($versi === 'V6') {
+                if (strtoupper($status_raw) === 'ON_PROCESS') {
+                    $status_label = 'Paket Proses';
+                } elseif (in_array(strtoupper($status_raw), ['COMPLETED', 'PAYMENT_OUTSIDE_SYSTEM'])) {
+                    $status_label = 'Paket Selesai';
+                } else {
+                    $status_label = $status_raw;
+                }
+            } else {
+                $status_label = $status_raw;
+            }
 
             return [
                 'id_rup'        => $item->kd_rup ?? '-',
@@ -117,7 +129,11 @@ class EkatalogReportController extends Controller
             if ($versi === 'V5') {
                 $query->where('paket_status_str', 'Paket ' . $status);
             } else {
-                $query->where('status_pkt', strtoupper($status) === 'PROSES' ? 'ON_PROCESS' : 'COMPLETED');
+                if (strtoupper($status) === 'PROSES') {
+                    $query->where('status_pkt', 'ON_PROCESS');
+                } elseif (strtoupper($status) === 'SELESAI' || strtoupper($status) === 'COMPLETED') {
+                    $query->whereIn('status_pkt', ['COMPLETED', 'PAYMENT_OUTSIDE_SYSTEM']);
+                }
             }
         }
 

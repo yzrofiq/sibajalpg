@@ -16,7 +16,9 @@ class TokoDaringReportController extends Controller
     $satker = $request->input('satker', 'Semua');
     $kdSatkerSkip = ['350504']; // Semua kode yang ingin di-skip
 
-    $data = TokoDaring::where('tahun', $tahun)->get();
+    $data = TokoDaring::where('tahun', $tahun)
+    ->where('status_verif', 'verified')
+    ->get();
 
     // Data satker dari master satker
     $satkerFromData = Satker::where('tahun_anggaran', $tahun)
@@ -100,7 +102,9 @@ public function exportPdf(Request $request)
     $mode  = $request->input('mode', 'I');
 
     // Ambil data transaksi tahun terkait
-    $data = TokoDaring::where('tahun', $tahun)->get();
+    $data = TokoDaring::where('tahun', $tahun)
+    ->where('status_verif', 'verified')
+    ->get();
 
     // Ambil data struktur satker (dari tabel Satker, bukan StrukturAnggaran)
     $satkerFromData = Satker::where('tahun_anggaran', $tahun)

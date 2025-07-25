@@ -1,12 +1,12 @@
-
 @php
-  // Ambil filter dari query string request (pastikan kd_satker ambil dari param)
   $filters = [
     'year' => request('year'),
-    'kd_satker' => request('kd_satker'), // Selalu kirim kode dari dropdown master satker
+    'kd_satker' => request('kd_satker'),
     'code' => request('code'),
     'name' => request('name'),
     'category' => request('category'),
+    'status_tender' => request('status_tender'),
+    'status_nontender' => request('status_nontender'),
   ];
 @endphp
 
@@ -15,7 +15,7 @@
   <div class="col-lg-3 col-md-6">
     <div class="small-box bg-info">
       <div class="inner">
-        <h3>{{ moneyFormat(getTenderCount($filters), 0, ',', '.') }}</h3>
+        <h3>{{ number_format(getTenderCount($filters), 0, ',', '.') }}</h3>
         <p>Tender</p>
       </div>
       <div class="icon">
@@ -53,8 +53,7 @@
     </div>
   </div>
 
-  {{-- Toko Daring (Bela Pengadaan) --}}
-
+  {{-- Toko Daring --}}
   <div class="col-lg-3 col-md-6">
     <div class="small-box bg-danger">
       <div class="inner">
@@ -75,4 +74,3 @@
     </div>
   </div>
 </div>
-
