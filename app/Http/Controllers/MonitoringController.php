@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\View; // ✅ BENAR di sini
 use App\Models\Satker;
 use App\Models\SwakelolaRealisasi;
 use Spipu\Html2Pdf\Html2Pdf;
+
 // use Barryvdh\DomPDF\Facade\Pdf; // ❌ Kalau kamu pakai Html2Pdf, hapus ini
 
 
@@ -16,127 +17,121 @@ class MonitoringController extends Controller
  
 
     public function presentaseRealisasi(Request $request)
-{
-    $tahunParam = $request->get('tahun');
-
-    // Tangani kondisi jika hanya satker dipilih, tahun kosong → ambil semua tahun yang tersedia
-    if (empty($tahunParam) && $request->filled('satker')) {
-        $tahunList = DB::table('struktur_anggarans')
-            ->select('tahun_anggaran')
+    {
+        $tahunParam = $request->get('tahun');
+    
+        if (empty($tahunParam) && $request->filled('satker')) {
+            $tahunList = DB::table('struktur_anggarans')
+                ->select('tahun_anggaran')
+                ->distinct()
+                ->orderBy('tahun_anggaran')
+                ->pluck('tahun_anggaran')
+                ->toArray();
+        } elseif (!empty($tahunParam)) {
+            $tahunList = is_array($tahunParam) ? $tahunParam : [$tahunParam];
+        } else {
+            $tahunList = [2024, 2025];
+        }
+    
+        $tahunAkhir = end($tahunList);
+    
+        // Ambil daftar satker dari struktur_anggarans
+        $satkers = DB::table('struktur_anggarans')
+            ->select('kd_satker', 'nama_satker')
+            ->whereIn('tahun_anggaran', $tahunList)
+            ->where('kd_klpd', 'D264')
             ->distinct()
-            ->orderBy('tahun_anggaran')
-            ->pluck('tahun_anggaran')
-            ->toArray();
-    } elseif (!empty($tahunParam)) {
-        $tahunList = is_array($tahunParam) ? $tahunParam : [$tahunParam];
-    } else {
-        $tahunList = [2024, 2025]; // Default
-    }
-
-    $tahunAkhir = end($tahunList);
-
-    // Ambil seluruh satker dari model Satker
-    $satkers = Satker::select('kd_satker', 'nama_satker')
-        ->where('kd_klpd', 'D264')
-        ->orderBy('nama_satker')
-        ->get();
-
-    // Hitung belanja_pengadaan dan realisasi per satker
-    $data = $satkers->map(function ($satker) use ($tahunList) {
-        // Ambil belanja_pengadaan dari struktur_anggarans
-        if (count($tahunList) > 1) {
+            ->orderBy('nama_satker')
+            ->get();
+    
+        $data = $satkers->map(function ($satker) use ($tahunList) {
             $belanja = DB::table('struktur_anggarans')
                 ->where('kd_satker', $satker->kd_satker)
                 ->whereIn('tahun_anggaran', $tahunList)
                 ->sum('belanja_pengadaan');
-        } else {
-            $belanja = DB::table('struktur_anggarans')
+    
+            $nilaiTender = DB::table('tender_pengumuman_data')
+                ->select('kd_tender', 'pagu')
                 ->where('kd_satker', $satker->kd_satker)
-                ->where('tahun_anggaran', $tahunList[0])
-                ->value('belanja_pengadaan') ?? 0;
-        }
-
-        // Tender
-        $nilaiTender = DB::table('tender_pengumuman_data')
-            ->where('kd_satker', $satker->kd_satker)
-            ->whereIn('tahun', $tahunList)
-            ->whereNotNull('pagu')
-            ->where('pagu', '>', 0)
-            ->sum('pagu');
-
-        // Non Tender
-        $nilaiNonTender = DB::table('non_tender_pengumuman')
-            ->where('kd_satker', $satker->kd_satker)
-            ->whereIn('tahun_anggaran', $tahunList)
-            ->whereNotNull('pagu')
-            ->where('pagu', '>', 0)
-            ->sum('pagu');
-
-        // E-Katalog V5
-        $nilaiV5 = DB::table('ekatalog_v5_pakets as v5')
-            ->join('struktur_anggarans as s', DB::raw('CAST(v5.satker_id AS TEXT)'), '=', 's.kd_satker')
-            ->where('s.kd_satker', $satker->kd_satker)
-            ->whereIn('v5.tahun_anggaran', $tahunList)
-            ->whereNotNull('v5.total_harga')
-            ->where('v5.total_harga', '>', 0)
-            ->sum('v5.total_harga');
-
-        // E-Katalog V6
-        $nilaiV6 = DB::table('ekatalog_v6_pakets')
-            ->where('nama_satker', $satker->nama_satker)
-            ->whereIn('tahun_anggaran', $tahunList)
-            ->whereNotNull('total_harga')
-            ->where('total_harga', '>', 0)
-            ->sum('total_harga');
-
-        // Toko Daring
-        $nilaiToko = DB::table('toko_darings')
-            ->where('kd_satker', $satker->kd_satker)
-            ->whereIn('tahun', $tahunList)
-            ->whereNotNull('valuasi')
-            ->where('valuasi', '>', 0)
-            ->sum('valuasi');
-
-        // Total
-        $totalTransaksi = $nilaiTender + $nilaiNonTender + $nilaiV5 + $nilaiV6 + $nilaiToko;
-
-        // Hitung persen
-        $presentaseRealisasi = $belanja > 0
-            ? round(($totalTransaksi / $belanja) * 100, 2)
-            : 0;
-
-        return (object)[
-            'nama_satker' => $satker->nama_satker,
-            'belanja_pengadaan' => $belanja,
-            'total_transaksi' => $totalTransaksi,
-            'presentase_realisasi' => $presentaseRealisasi,
-        ];
-    });
-
-    // Dropdown list dari model Satker (bukan dari struktur_anggaran)
-    $listSatker = $satkers->pluck('nama_satker')->unique()->sort()->values();
-
-    // Filter satker jika dipilih
-    $data = $data->filter(function ($item) use ($request) {
-        if ($request->filled('satker')) {
-            return $item->nama_satker === $request->get('satker');
-        }
-        return true;
-    });
-
-    // Return ke view
-    $viewData = [
+                ->whereIn('tahun', $tahunList)
+                ->whereNotNull('pagu')
+                ->where('pagu', '>', 0)
+                ->groupBy('kd_tender', 'pagu') // Hindari duplikat
+                ->get()
+                ->sum('pagu');
+    
+            $nilaiNonTender = DB::table('non_tender_pengumuman')
+                ->select('kd_nontender', 'pagu')
+                ->where('kd_satker', $satker->kd_satker)
+                ->whereIn('tahun_anggaran', $tahunList)
+                ->whereNotNull('pagu')
+                ->where('pagu', '>', 0)
+                ->groupBy('kd_nontender', 'pagu')
+                ->get()
+                ->sum('pagu');
+    
+            $nilaiV5 = DB::table('ekatalog_v5_pakets as v5')
+                ->join('struktur_anggarans as s', DB::raw('CAST(v5.satker_id AS TEXT)'), '=', 's.kd_satker')
+                ->where('s.kd_satker', $satker->kd_satker)
+                ->whereIn('v5.tahun_anggaran', $tahunList)
+                ->whereNotNull('v5.total_harga')
+                ->where('v5.total_harga', '>', 0)
+                ->distinct()
+                ->sum('v5.total_harga');
+    
+            $nilaiV6 = DB::table('ekatalog_v6_pakets')
+                ->where('nama_satker', $satker->nama_satker)
+                ->whereIn('tahun_anggaran', $tahunList)
+                ->whereNotNull('total_harga')
+                ->where('total_harga', '>', 0)
+                ->distinct()
+                ->sum('total_harga');
+    
+            $nilaiToko = DB::table('toko_darings')
+                ->where('kd_satker', $satker->kd_satker)
+                ->whereIn('tahun', $tahunList)
+                ->whereNotNull('valuasi')
+                ->where('valuasi', '>', 0)
+                ->distinct()
+                ->sum('valuasi');
+    
+            $totalTransaksi = $nilaiTender + $nilaiNonTender + $nilaiV5 + $nilaiV6 + $nilaiToko;
+    
+            $presentaseRealisasi = $belanja > 0
+                ? round(($totalTransaksi / $belanja) * 100, 2)
+                : 0;
+    
+            return (object)[
+                'nama_satker' => $satker->nama_satker,
+                'belanja_pengadaan' => $belanja,
+                'total_transaksi' => $totalTransaksi,
+                'presentase_realisasi' => $presentaseRealisasi,
+            ];
+        });
+    
+        // Ambil list nama satker dari struktur_anggarans (bukan dari tabel satkers lagi)
+        $listSatker = $satkers->pluck('nama_satker')->unique()->sort()->values();
+    
+        // Filter data jika satker dipilih
+        $data = $data->filter(function ($item) use ($request) {
+            if ($request->filled('satker')) {
+                return $item->nama_satker === $request->get('satker');
+            }
+            return true;
+        });
+        $view = (auth()->user()->role_id == 2)
+        ? 'users.monitoring.presentase-realisasi'
+        : 'monitoring.presentase-realisasi';
+    
+    return view($view, [
         'data' => $data,
         'tahun' => implode(', ', $tahunList),
         'listSatker' => $listSatker,
-    ];
-
-    return view(auth()->user()->role === 'admin'
-        ? 'monitoring.presentase-realisasi'
-        : 'users.monitoring.presentase-realisasi', $viewData);
-}
-
-
+    ]);
+    
+    
+    }
+    
 public function exportRealisasiToPDF(Request $request)
 {
     $tahunList = $request->get('tahun', [2024, 2025]);
@@ -255,20 +250,16 @@ public function rekapRealisasi(Request $request)
         return $this->getSatkerRealisasi($tahun, $kdSatker, $namaSatker);
     });
 
-    // Pilih view berdasarkan role user
-    if (auth()->user()->role === 'admin') {
-        return view('monitoring.rekap-realisasi', [
-            'data' => $data,
-            'tahun' => $tahun,
-            'listSatker' => $listSatker,
-        ]);
-    } else {
-        return view('users.monitoring.rekap-realisasi', [
-            'data' => $data,
-            'tahun' => $tahun,
-            'listSatker' => $listSatker,
-        ]);
-    }
+    $view = (auth()->user()->role_id == 2)
+    ? 'users.monitoring.rekap-realisasi'
+    : 'monitoring.rekap-realisasi';
+
+return view($view, [
+    'data' => $data,
+    'tahun' => $tahun,
+    'listSatker' => $listSatker,
+]);
+
 }
 public function exportRekapRealisasiToPDF(Request $request)
 {
@@ -427,20 +418,16 @@ public function rekapRealisasiBerlangsung(Request $request)
         ];
     });
 
-    // Pilih view berdasarkan role user
-    if (auth()->user()->role === 'admin') {
-        return view('monitoring.rekap-realisasi-berlangsung', [
-            'data' => $data,
-            'tahun' => $tahun,
-            'listSatker' => $listSatker,
-        ]);
-    } else {
-        return view('users.monitoring.rekap-realisasi-berlangsung', [
-            'data' => $data,
-            'tahun' => $tahun,
-            'listSatker' => $listSatker,
-        ]);
-    }
+    $view = (auth()->user()->role_id == 2)
+    ? 'users.monitoring.rekap-realisasi-berlangsung'
+    : 'monitoring.rekap-realisasi-berlangsung';
+
+return view($view, [
+    'data' => $data,
+    'tahun' => $tahun,
+    'listSatker' => $listSatker,
+]);
+
 }
 public function exportRealisasiBerlangsungPdf(Request $request)
 {
@@ -454,7 +441,7 @@ public function exportRealisasiBerlangsungPdf(Request $request)
     $html = View('exports.rekap-realisasi-berlangsung', compact('data', 'tahun'))->render();
 
     // Generate PDF pakai HTML2PDF
-    $html2pdf = new Html2Pdf('L', 'A4', 'en', true, 'UTF-8', [5, 5, 5, 5]); // kiri, atas, kanan, bawah
+    $html2pdf = new Html2Pdf('L', 'A3', 'en', true, 'UTF-8', [5, 5, 5, 5]); // kiri, atas, kanan, bawah
 
     $html2pdf->writeHTML($html);
 
@@ -564,7 +551,7 @@ public function exportRealisasiBerlangsungPdf(Request $request)
         $tahun = $request->get('tahun', date('Y'));
         $filterSatker = $request->get('nama_satker', '');
     
-        // Daftar tahun
+        // Daftar tahun (misal 2024 dan 2025)
         $tahunList = range(date('Y') - 1, date('Y'));
     
         // Ambil semua Satker dari struktur anggaran & tender
@@ -600,8 +587,8 @@ public function exportRealisasiBerlangsungPdf(Request $request)
             ->groupBy('nama_satker')
             ->pluck('total_pagu', 'nama_satker');
     
-        // Hitung kontrak (bapbast) per satker
-        $bapbastPerSatker = DB::table('bapbast_data')
+        // Hitung kontrak dari kontrak_data per satker
+        $kontrakPerSatker = DB::table('kontrak_data')
             ->select('nama_satker', DB::raw('count(*) as total_kontrak'))
             ->where('tahun', $tahun)
             ->whereIn('nama_satker', $targetSatker)
@@ -613,13 +600,13 @@ public function exportRealisasiBerlangsungPdf(Request $request)
         foreach ($targetSatker as $satker) {
             $paket = $tenderCount[$satker] ?? 0;
             $pagu = $paguPerSatker[$satker] ?? 0;
-            $kontrak = $bapbastPerSatker[$satker] ?? 0;
+            $kontrak = $kontrakPerSatker[$satker] ?? 0;
     
             $result[] = [
                 'nama_satker' => $satker,
                 'total_paket' => $paket,
                 'total_pagu' => $pagu,
-                'total_kontrak' => $paket - $kontrak,
+                'total_kontrak' => $paket - $kontrak, // jumlah paket belum dikontrak
             ];
         }
     
@@ -632,13 +619,13 @@ public function exportRealisasiBerlangsungPdf(Request $request)
     
         // Total global
         $totalTenderSelesai = DB::table('tender_selesai_nilai_data')->where('tahun', $tahun)->count();
-        $totalBapbast = DB::table('bapbast_data')->where('tahun', $tahun)->count();
-        $selisih = $totalTenderSelesai - $totalBapbast;
+        $totalKontrak = DB::table('kontrak_data')->where('tahun', $tahun)->count();
+        $selisih = $totalTenderSelesai - $totalKontrak;
     
-        // Tentukan view berdasarkan role
-        $view = auth()->user()->role === 'admin'
-            ? 'monitoring.kontrak'
-            : 'users.monitoring.kontrak';
+        $view = auth()->user()->role_id == 2
+        ? 'users.monitoring.kontrak'
+        : 'monitoring.kontrak';
+    
     
         return view($view, [
             'data' => $result,
@@ -649,65 +636,42 @@ public function exportRealisasiBerlangsungPdf(Request $request)
             'filterSatker' => $filterSatker,
             'totals' => $totals,
             'totalTenderSelesai' => $totalTenderSelesai,
-            'totalBapbast' => $totalBapbast,
+            'totalKontrak' => $totalKontrak,
             'selisih' => $selisih,
         ]);
     }
-    
     public function kontrakDetail($satker, Request $request)
     {
         $tahun = $request->get('tahun', date('Y'));
-        $satker = urldecode($satker); // decode nama satker dari URL
+        $satker = urldecode($satker);
     
-        // Cari tender selesai untuk satker dan tahun tertentu
-        $tenderSelesai = DB::table('tender_selesai_data')
-            ->where('tahun', $tahun)
-            ->where('nama_satker', $satker)
-            ->pluck('kd_tender')
-            ->toArray();
+        $data = DB::table('tender_selesai_nilai_data as ts')
+            ->join('tender_pengumuman_data as tp', 'ts.kd_tender', '=', 'tp.kd_tender')
+            ->leftJoin('kontrak_data as k', 'ts.kd_tender', '=', 'k.kd_tender')
+            ->select('tp.kd_tender', 'tp.nama_paket', 'tp.pagu', 'tp.nama_satker')
+            ->where('ts.tahun', $tahun)
+            ->where('ts.nama_satker', $satker)
+            ->whereNull('k.kd_tender')
+            ->orderBy('tp.nama_paket')
+            ->get();
     
-        if (empty($tenderSelesai)) {
-            $data = collect();
-            $totalPagu = 0;
-        } else {
-            // Cari kontrak yang sudah ada untuk tender tersebut
-            $kontrak = DB::table('kontrak_data')
-                ->where('tahun', $tahun)
-                ->where('nama_satker', $satker)
-                ->whereIn('kd_tender', $tenderSelesai)
-                ->pluck('kd_tender')
-                ->toArray();
+        $totalPagu = $data->sum('pagu');
     
-            // Ambil data tender pengumuman yang belum ada kontraknya
-            $data = DB::table('tender_pengumuman_data')
-                ->select('kd_tender', 'nama_paket', 'pagu')
-                ->where('tahun', $tahun)
-                ->where('nama_satker', $satker)
-                ->whereIn('kd_tender', $tenderSelesai)
-                ->whereNotIn('kd_tender', $kontrak)
-                ->orderBy('nama_paket')
-                ->get();
+        $view = auth()->user()->role_id == 2
+            ? 'users.monitoring.kontrak-detail'
+            : 'monitoring.kontrak-detail';
     
-            // Hitung total pagu
-            $totalPagu = $data->sum('pagu');
-        }
-    
-        // Tampilkan view sesuai role user
-        if (auth()->user()->role === 'admin') {
-            return view('monitoring.kontrak-detail', compact('data', 'satker', 'tahun', 'totalPagu'));
-        } else {
-            return view('users.monitoring.kontrak-detail', compact('data', 'satker', 'tahun', 'totalPagu'));
-        }
+        return view($view, compact('data', 'satker', 'tahun', 'totalPagu'));
     }
     
-
     
-public function exportKontrakDetailPdf($satker, Request $request)
+    public function exportKontrakDetailPdf($satker, Request $request)
 {
     $tahun = $request->get('tahun', date('Y'));
     $satker = urldecode($satker);
     $mode = $request->get('mode', 'V');
 
+    // Ambil daftar kd_tender yang sudah selesai
     $tenderSelesai = DB::table('tender_selesai_data')
         ->where('tahun', $tahun)
         ->where('nama_satker', $satker)
@@ -718,6 +682,7 @@ public function exportKontrakDetailPdf($satker, Request $request)
         $data = collect();
         $totalPagu = 0;
     } else {
+        // Ambil daftar kd_tender yang sudah punya kontrak
         $kontrak = DB::table('kontrak_data')
             ->where('tahun', $tahun)
             ->where('nama_satker', $satker)
@@ -725,6 +690,7 @@ public function exportKontrakDetailPdf($satker, Request $request)
             ->pluck('kd_tender')
             ->toArray();
 
+        // Ambil data tender selesai tapi belum ada kontraknya
         $data = DB::table('tender_pengumuman_data')
             ->select('kd_tender', 'nama_paket', 'pagu')
             ->where('tahun', $tahun)
@@ -737,29 +703,33 @@ public function exportKontrakDetailPdf($satker, Request $request)
         $totalPagu = $data->sum('pagu');
     }
 
-    // Render HTML dari view Blade
-    $html = View::make('monitoring.kontrak-detail-pdf', compact('data', 'satker', 'tahun', 'totalPagu'))->render();
+    // Pilih view berdasarkan role (admin atau user biasa)
+    $view = auth()->user()->role_id == 2
+        ? 'monitoring.kontrak-detail-pdf'
+        : 'users.monitoring.kontrak-detail-pdf';
 
-    // Generate PDF dengan HTML2PDF
+    // Render HTML ke PDF
+    $html = View::make($view, compact('data', 'satker', 'tahun', 'totalPagu'))->render();
+
     $pdf = new Html2Pdf('L', 'A3', 'en');
-
     $pdf->writeHTML($html);
 
     $fileName = "detail_kontrak_{$satker}_{$tahun}.pdf";
 
     return $mode === 'D'
         ? $pdf->output($fileName, 'D') // Download
-        : $pdf->output($fileName, 'I'); // Inline / View
+        : $pdf->output($fileName, 'I'); // Inline/View
 }
-    
+
 public function kontrakNonTender(Request $request)
 {
     $tahun = $request->get('tahun_anggaran', date('Y'));
     $filterSatker = $request->get('nama_satker', '');
 
+    // List tahun: 1 tahun sebelumnya + tahun sekarang
     $tahunList = range(date('Y') - 1, date('Y'));
 
-    // Ambil semua satker (struktur anggaran + non tender selesai)
+    // Ambil semua Satker dari struktur anggaran dan non-tender selesai
     $allSatker = DB::table('struktur_anggarans')
         ->select('nama_satker')
         ->where('tahun_anggaran', $tahun)
@@ -773,17 +743,18 @@ public function kontrakNonTender(Request $request)
         ->unique()
         ->toArray();
 
-    // Kalau filter kosong, pakai semua satker
+    // Jika filter kosong, ambil semua Satker
     $targetSatker = empty($filterSatker) ? $allSatker : [$filterSatker];
 
-    // Hitung data per satker
-    $totalNonTender = DB::table('non_tender_selesai')
+    // Jumlah paket non-tender selesai per satker
+    $paketSelesai = DB::table('non_tender_selesai')
         ->select('nama_satker', DB::raw('count(*) as total_non_tender_selesai'))
         ->where('tahun_anggaran', $tahun)
         ->whereIn('nama_satker', $targetSatker)
         ->groupBy('nama_satker')
         ->pluck('total_non_tender_selesai', 'nama_satker');
 
+    // Total pagu per satker
     $paguPerSatker = DB::table('non_tender_pengumuman')
         ->select('nama_satker', DB::raw('sum(pagu) as total_pagu'))
         ->where('tahun_anggaran', $tahun)
@@ -791,54 +762,98 @@ public function kontrakNonTender(Request $request)
         ->groupBy('nama_satker')
         ->pluck('total_pagu', 'nama_satker');
 
-    $totalKontrak = DB::table('non_tender_bapbast')
+    // Jumlah kontrak non-tender per satker
+    $kontrakPerSatker = DB::table('non_tender_contract')
         ->select('nama_satker', DB::raw('count(*) as total_kontrak'))
         ->where('tahun_anggaran', $tahun)
         ->whereIn('nama_satker', $targetSatker)
         ->groupBy('nama_satker')
         ->pluck('total_kontrak', 'nama_satker');
 
-    // Bangun hasil per satker
+    // Susun data per satker
     $result = [];
-    foreach ($targetSatker as $satker) {
-        $totalSelesai = $totalNonTender[$satker] ?? 0;
-        $totalPagu = $paguPerSatker[$satker] ?? 0;
-        $totalKontr = $totalKontrak[$satker] ?? 0;
+    foreach ($targetSatker as $namaSatker) {
+        $totalSelesai = $paketSelesai[$namaSatker] ?? 0;
+        $totalPagu = $paguPerSatker[$namaSatker] ?? 0;
+        $jumlahKontrak = $kontrakPerSatker[$namaSatker] ?? 0;
 
         $result[] = [
-            'nama_satker' => $satker,
+            'nama_satker' => $namaSatker,
             'total_non_tender_selesai' => $totalSelesai,
             'total_pagu' => $totalPagu,
-            'kontrak_belum_input' => $totalSelesai - $totalKontr,
+            'kontrak_belum_input' => $totalSelesai - $jumlahKontrak,
         ];
     }
 
-    // Hitung total keseluruhan
+    // Hitung total agregat
     $totals = [
         'total_non_tender_selesai' => array_sum(array_column($result, 'total_non_tender_selesai')),
         'total_pagu' => array_sum(array_column($result, 'total_pagu')),
         'kontrak_belum_input' => array_sum(array_column($result, 'kontrak_belum_input')),
     ];
 
-    // Pilih view sesuai role
-    $view = auth()->user()->role === 'admin'
-        ? 'monitoring.non-tender'
-        : 'users.monitoring.non-tender';
+    // Total keseluruhan (ringkasan global)
+    $totalNonTenderSelesai = DB::table('non_tender_selesai')
+        ->where('tahun_anggaran', $tahun)
+        ->count();
 
+    $totalKontrak = DB::table('non_tender_contract')
+        ->where('tahun_anggaran', $tahun)
+        ->count();
+
+    $selisih = $totalNonTenderSelesai - $totalKontrak;
+
+    // Pilih view berdasarkan role
+$view = auth()->user()->role_id == 2
+? 'users.monitoring.non-tender'
+: 'monitoring.non-tender';
+
+
+    // Kirim ke view
     return view($view, [
         'data' => $result,
         'tahun' => $tahun,
         'tahunList' => $tahunList,
         'satkerList' => $allSatker,
+        'namaSatkerList' => $allSatker,
         'filterSatker' => $filterSatker,
         'totals' => $totals,
+        'totalNonTenderSelesai' => $totalNonTenderSelesai,
+        'totalKontrak' => $totalKontrak,
+        'selisih' => $selisih,
     ]);
 }
-
 public function kontrakNonTenderDetail($satker, Request $request)
+{
+    $tahun = $request->get('tahun', date('Y'));
+    $satker = urldecode($satker);
+
+    $data = DB::table('non_tender_selesai as nts')
+        ->join('non_tender_pengumuman as ntp', 'nts.kd_nontender', '=', 'ntp.kd_nontender')
+        ->leftJoin('non_tender_contract as nk', function ($join) {
+            $join->on('nts.kd_nontender', '=', 'nk.kd_nontender')
+                 ->on('nts.tahun_anggaran', '=', 'nk.tahun_anggaran');
+        })
+        ->select('ntp.kd_nontender', 'ntp.nama_paket', 'ntp.pagu', 'ntp.nama_satker')
+        ->where('nts.tahun_anggaran', $tahun)
+        ->where('nts.nama_satker', $satker)
+        ->whereNull('nk.kd_nontender') // hanya yang belum input kontrak
+        ->orderBy('ntp.nama_paket')
+        ->get();
+
+    $totalPagu = $data->sum('pagu');
+
+    $view = auth()->user()->role_id == 2
+        ? 'users.monitoring.non-tender-detail'
+        : 'monitoring.non-tender-detail';
+
+    return view($view, compact('data', 'satker', 'tahun', 'totalPagu'));
+}
+public function exportNonTenderDetailPdf($satker, Request $request)
 {
     $tahun = $request->get('tahun_anggaran', date('Y'));
     $satker = urldecode($satker);
+    $mode = $request->get('mode', 'V'); // V = View (stream), D = Download
 
     // Ambil semua kd_nontender yang selesai
     $nonTenderSelesai = DB::table('non_tender_selesai')
@@ -851,63 +866,17 @@ public function kontrakNonTenderDetail($satker, Request $request)
         $data = collect();
         $totalPagu = 0;
     } else {
-        // Cari kd_nontender yang sudah dikontrak
-        $kontrak = DB::table('kontrak_data')
-            ->where('tahun', $tahun)
-            ->where('nama_satker', $satker)
-            ->whereIn('kd_tender', $nonTenderSelesai)
-            ->pluck('kd_tender')
-            ->toArray();
-
-        // Ambil data non-tender pengumuman yang belum dikontrak
-        $data = DB::table('non_tender_pengumuman')
-            ->select('kd_nontender', 'nama_paket', 'pagu')
+        // Ambil semua yang sudah dikontrak
+        $kontrak = DB::table('non_tender_contract')
             ->where('tahun_anggaran', $tahun)
             ->where('nama_satker', $satker)
             ->whereIn('kd_nontender', $nonTenderSelesai)
-            ->whereNotIn('kd_nontender', $kontrak)
-            ->orderBy('nama_paket')
-            ->get();
-
-        // Hitung total pagu
-        $totalPagu = $data->sum('pagu');
-    }
-
-    // Tampilkan view sesuai role user
-    if (auth()->user()->role === 'admin') {
-        return view('monitoring.non-tender-detail', compact('data', 'satker', 'tahun', 'totalPagu'));
-    } else {
-        return view('users.monitoring.non-tender-detail', compact('data', 'satker', 'tahun', 'totalPagu'));
-    }
-}
-public function exportNonTenderDetailPdf($satker, Request $request)
-{
-    $tahun = $request->get('tahun_anggaran', date('Y'));
-    $satker = urldecode($satker);
-    $mode = $request->get('mode', 'V'); // ✅ Tambahkan ini
-
-    // Ambil semua kd_nontender yang sudah selesai
-    $nonTenderSelesai = DB::table('non_tender_selesai')
-        ->where('tahun_anggaran', $tahun)
-        ->where('nama_satker', $satker)
-        ->pluck('kd_nontender')
-        ->toArray();
-
-    if (empty($nonTenderSelesai)) {
-        $data = collect();
-        $totalPagu = 0;
-    } else {
-        // Ambil semua kd_tender (kontrak) yang sudah ada
-        $kontrak = DB::table('kontrak_data')
-            ->where('tahun', $tahun)
-            ->where('nama_satker', $satker)
-            ->whereIn('kd_tender', $nonTenderSelesai)
-            ->pluck('kd_tender')
+            ->pluck('kd_nontender')
             ->toArray();
 
-        // Ambil semua data non-tender pengumuman yang belum dikontrak
+        // Ambil paket selesai tapi belum kontrak
         $data = DB::table('non_tender_pengumuman')
-            ->select('kd_nontender', 'nama_paket', 'pagu')
+            ->select('kd_nontender', 'nama_paket', 'pagu', 'nama_satker')
             ->where('tahun_anggaran', $tahun)
             ->where('nama_satker', $satker)
             ->whereIn('kd_nontender', $nonTenderSelesai)
@@ -918,14 +887,14 @@ public function exportNonTenderDetailPdf($satker, Request $request)
         $totalPagu = $data->sum('pagu');
     }
 
-    $pdf = Pdf::loadView('monitoring.non-tender-detail-pdf', compact('data', 'satker', 'tahun', 'totalPagu'));
+    // Generate PDF
     $pdf = new Html2Pdf('L', 'A3', 'en', true, 'UTF-8', [5, 5, 5, 5]);
+    $pdf->writeHTML(view('monitoring.non-tender-detail-pdf', compact('data', 'satker', 'tahun', 'totalPagu'))->render());
     $fileName = "detail_non_tender_{$satker}_{$tahun}.pdf";
 
-    // ✅ Tambahkan logika mode
     return $mode === 'D'
-        ? $pdf->download($fileName)
-        : $pdf->stream($fileName);
+        ? $pdf->output($fileName, 'D')
+        : $pdf->output($fileName, 'I');
 }
 
 public function summaryRealisasi(Request $request)
@@ -946,11 +915,3 @@ public function summaryRealisasi(Request $request)
 }
 
 }    
-    
-
-
-
-    
-    
-
- 
