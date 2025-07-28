@@ -278,6 +278,7 @@ class TenderController extends Controller
                 }
             }
         
+            
             $startDate = Carbon::create($year, 1, 1)->startOfDay();
         
             // Ambil data dari DB
@@ -289,6 +290,7 @@ class TenderController extends Controller
                     'p.jenis_pengadaan',
                     'p.pagu',
                     'p.hps',
+                    'p.status_tender',
                     DB::raw('COALESCE(c.nilai_kontrak, s.nilai_kontrak, 0) as nilai_terkontrak')
                 )
                 ->where('p.kd_klpd', 'D264')
@@ -350,6 +352,21 @@ class TenderController extends Controller
                 $efficiency = $value->pagu - $value->nilai_terkontrak;
                 $data[$satker]['efficiency'] += $efficiency;
                 $total['efficiency'] += $efficiency;
+
+                $status = $value->status_tender;
+                $data[$satker]['status_list'][] = $status;
+                
+                // Inisialisasi array count jika belum ada
+                if (!isset($data[$satker]['status_count'])) {
+                    $data[$satker]['status_count'] = [];
+                }
+                if (!isset($data[$satker]['status_count'][$status])) {
+                    $data[$satker]['status_count'][$status] = 0;
+                }
+                $data[$satker]['status_count'][$status]++;
+                
+                
+
             }
         
             $finalData = array_values($data);
@@ -358,7 +375,9 @@ class TenderController extends Controller
             $title = "REALISASI PAKET TENDER\nOPD PROVINSI LAMPUNG\nTAHUN ANGGARAN {$year} S.D TANGGAL " . strtoupper($endDate->translatedFormat('d F Y'));
         
             // Generate PDF
-            $html2pdf = new Html2Pdf('L', 'A3', 'en', true, 'UTF-8', [10, 10, 10, 10]);
+            $html2pdf = new Html2Pdf('L', 'A2', 'en', true, 'UTF-8', [10, 10, 10, 10]);
+
+
             $view = auth()->user()->role_id == 1 ? 'tender.realization' : 'users.tender.realization';
         
             $render = view($view, [
@@ -368,6 +387,7 @@ class TenderController extends Controller
                 'month' => $month,
                 'day' => $day,
                 'year' => $year,
+                
             ]);
         
             $html2pdf->pdf->SetAutoPageBreak(true, 10);

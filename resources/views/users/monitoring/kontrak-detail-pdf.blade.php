@@ -6,59 +6,62 @@
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 10px;
+            font-size: 12px;
+            margin: 30px;
         }
 
-        h4 {
+        h4, p.summary {
             text-align: center;
-            margin-bottom: 5px;
+            margin: 5px 0;
+        }
+
+        p {
+            text-align: center;
+            margin-top: 0;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: auto;
+            margin-top: 15px;
         }
 
         th, td {
             border: 1px solid #000;
-            padding: 4px;
-            text-align: left;
+            padding: 6px 8px;
             vertical-align: top;
             word-break: break-word;
         }
 
         th {
             background-color: #f2f2f2;
-        }
-
-        .text-center {
             text-align: center;
         }
 
-        .text-right {
+        td.text-center {
+            text-align: center;
+        }
+
+        td.text-right {
             text-align: right;
         }
 
-        .mt-2 {
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
-    <h4>DAFTAR TENDER BELUM INPUT KONTRAK<br>{{ $tahun }}</h4>
+<h2>DAFTAR TENDER BELUM INPUT KONTRAK</h2>
+    <div class="info">
+        <strong>Satker:</strong> {{ $satker }}<br>
+        <strong>Tahun:</strong> {{ $tahun }}
+    </div>
 
-    @if (!empty($namaSatker))
-        <p><strong>Satker:</strong> {{ $namaSatker }}</p>
-    @endif
-
-    <table class="mt-2">
+    <table>
         <thead>
             <tr>
-                <th style="width: 4%;">No</th>
-                <th style="width: 15%;">Kode Tender</th>
-                <th>Nama Paket</th>
-                <th style="width: 18%;">Pagu (Rp)</th>
+                <th style="width: 5%;">No</th>
+                <th style="width: 20%;">Kode Tender</th>
+                <th style="width: 55%;">Nama Paket</th>
+                <th style="width: 20%;">Pagu (Rp)</th>
             </tr>
         </thead>
         <tbody>
@@ -76,5 +79,7 @@
             @endforelse
         </tbody>
     </table>
+
+   
 </body>
 </html>
