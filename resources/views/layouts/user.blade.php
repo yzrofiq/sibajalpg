@@ -11,7 +11,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Font Awesome CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/sibaja.css') }}" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url('32x32.png') }}"/>
@@ -24,29 +23,36 @@
             font-family: 'Public Sans', sans-serif;
             background-color: #ffffff;
         }
-        /* Submenu turun ke bawah */
-          .dropdown-submenu .dropdown-menu {
+
+        /* Submenu dropdown - Adjust for mobile view */
+        .dropdown-submenu .dropdown-menu {
             top: 100% !important;
             left: 0 !important;
             margin-top: 0.2rem;
-          }
+        }
 
-          /* Konsistensi ukuran dan background */
-          .dropdown-menu {
+        .dropdown-menu {
             background-color: #ffffff;
             min-width: 220px;
             border: 1px solid #ddd;
-          }
+        }
 
-          /* Rounded item & hover style */
-          .dropdown-item {
+        .dropdown-item {
             border-radius: 0.375rem;
             transition: background-color 0.2s ease;
-          }
-          .dropdown-item:hover {
+        }
+
+        .dropdown-item:hover {
             background-color: #f1f1f1;
-          }
+        }
+
+        @media (max-width: 991px) {
+            .dropdown-submenu .dropdown-menu {
+                display: block !important; /* Always show submenu on mobile */
+            }
+        }
     </style>
+
     @stack('head')
 </head>
 <body>
@@ -76,19 +82,17 @@
     <!-- Navbar Menu -->
     <div class="collapse navbar-collapse" id="mainNavbar">
       <ul class="navbar-nav ms-4 me-auto">
-
         <li class="nav-item">
           <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
         </li>
-
         <li class="nav-item">
           <a class="nav-link {{ request()->routeIs('tender.list') ? 'active' : '' }}" href="{{ route('tender.list') }}">Tender</a>
         </li>
-
         <li class="nav-item">
           <a class="nav-link {{ request()->routeIs('non-tender.list') ? 'active' : '' }}" href="{{ route('non-tender.list') }}">Non Tender</a>
         </li>
 
+        <!-- E-Purchasing Dropdown -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle {{ request()->is('report/ekatalog*') || request()->is('report/tokodaring*') ? 'active' : '' }}" href="#" data-bs-toggle="dropdown">E-Purchasing</a>
           <ul class="dropdown-menu">
@@ -101,65 +105,35 @@
           <a class="nav-link {{ request()->routeIs('report.rup') ? 'active' : '' }}" href="{{ route('report.rup') }}">RUP</a>
         </li>
 
+        <!-- Summary Report Dropdown -->
         <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Summary Report</a>
-    <ul class="dropdown-menu">
-        <li>
-            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#filterModal">
-                Realisasi Non Tender
-            </a>
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Summary Report</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#filterModal">Realisasi Non Tender</a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#filterTenderModal">Realisasi Tender</a></li>
+          </ul>
         </li>
-        <li>
-            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#filterTenderModal">
-                Realisasi Tender
-            </a>
-        </li>
-    </ul>
-</li>
 
-       <!-- Dropdown: Monitoring -->
-<li class="nav-item dropdown position-relative">
-  <a class="nav-link dropdown-toggle {{ request()->is('monitoring*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Monitoring
-  </a>
-  <ul class="dropdown-menu shadow rounded-3 p-1 bg-white">
-    <li>
-      <a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.realisasi.satker') }}">
-        Realisasi Pengadaan
-      </a>
-    </li>
-    <li>
-      <a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.rekap.realisasi-berlangsung') }}">
-        Realisasi Berlangsung
-      </a>
-    </li>
-    <li>
-      <a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.rekap.realisasi') }}">
-        Realisasi Selesai
-      </a>
-    </li>
-
-    <!-- Sub-menu: Monitoring Belum Input -->
-    <li class="dropdown-submenu position-relative">
-      <a class="dropdown-item dropdown-toggle px-3 py-2 rounded-2" href="#" data-bs-toggle="dropdown">
-        Monitoring Belum Input
-      </a>
-      <ul class="dropdown-menu shadow rounded-3 mt-1 bg-white">
-        <li>
-          <a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.kontrak') }}">
-            Kontrak Belum Input - Tender
+        <!-- Monitoring Dropdown -->
+        <li class="nav-item dropdown position-relative">
+          <a class="nav-link dropdown-toggle {{ request()->is('monitoring*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Monitoring
           </a>
-        </li>
-        <li>
-          <a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.kontrak.non_tender') }}">
-            Kontrak Belum Input - Non Tender
-          </a>
-        </li>
-      </ul>
-    </li>
-  </ul>
-</li>
+          <ul class="dropdown-menu shadow rounded-3 p-1 bg-white">
+            <li><a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.realisasi.satker') }}">Realisasi Pengadaan</a></li>
+            <li><a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.rekap.realisasi-berlangsung') }}">Realisasi Berlangsung</a></li>
+            <li><a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.rekap.realisasi') }}">Realisasi Selesai</a></li>
 
+            <!-- Sub-menu: Monitoring Belum Input -->
+            <li class="dropdown-submenu position-relative">
+              <a class="dropdown-item dropdown-toggle px-3 py-2 rounded-2" href="#" data-bs-toggle="dropdown">Monitoring Belum Input</a>
+              <ul class="dropdown-menu shadow rounded-3 mt-1 bg-white">
+                <li><a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.kontrak') }}">Kontrak Tender</a></li>
+                <li><a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.kontrak.non_tender') }}">Kontrak Tender</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
       </ul>
 
       <!-- User Icon -->
@@ -174,7 +148,6 @@
         </li>
       </ul>
     </div>
-
   </div>
 </nav>
 
@@ -434,6 +407,20 @@ document.addEventListener('DOMContentLoaded', function () {
     parentMenu.addEventListener('mouseleave', () => {
       const toggle = submenu.querySelector('[data-bs-toggle="dropdown"]');
       bootstrap.Dropdown.getOrCreateInstance(toggle).hide();
+    });
+  }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const submenu = document.querySelector('.dropdown-submenu');
+  if (submenu) {
+    const parentMenu = submenu.closest('.dropdown');
+    submenu.addEventListener('click', () => {
+      const toggle = submenu.querySelector('[data-bs-toggle="dropdown"]');
+      const dropdown = bootstrap.Dropdown.getOrCreateInstance(toggle);
+      dropdown.toggle();
     });
   }
 });
