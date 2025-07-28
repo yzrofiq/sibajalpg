@@ -56,6 +56,7 @@
     }
 
     .table-wrapper {
+        width: 100%;
         overflow-x: auto;
         background-color: #ffffff;
         border-radius: 10px;
@@ -68,6 +69,7 @@
         border-collapse: collapse;
         font-size: 13px;
         color: #334155;
+        table-layout: auto;
     }
 
     thead th {
@@ -110,16 +112,35 @@
         background-color: #f8fafc;
     }
 
-    .total-row {
-        background-color: #fef9c3;
-        font-weight: bold;
-    }
-
     .no-data {
         text-align: center;
         font-style: italic;
         color: #64748b;
         padding: 20px;
+    }
+
+    @media (max-width: 768px) {
+        form {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        select, .export-btn {
+            width: 100%;
+        }
+
+        .export-btn {
+            margin-left: 0;
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        table {
+            font-size: 12px;
+            min-width: unset;
+        }
     }
 </style>
 @endpush
@@ -137,7 +158,7 @@
             @endforeach
         </select>
 
-        <label for="satker" style="margin-left: 20px;">Nama Satker:</label>
+        <label for="satker">Nama Satker:</label>
         <select name="satker" id="satker" onchange="document.getElementById('filter-form').submit()">
             <option value="">-- Semua Satker --</option>
             @foreach($listSatker as $satker)
@@ -147,7 +168,7 @@
 
         <a href="{{ route('monitoring.rekap.realisasi-berlangsung.pdf', ['tahun' => $tahun]) }}"
            target="_blank"
-           style="margin-left: 20px; padding: 6px 14px; background-color: #1e40af; color: white; border-radius: 6px; text-decoration: none;">
+           class="export-btn">
             📄 Export PDF
         </a>
     </form>
@@ -214,8 +235,8 @@
                 @endforelse
 
                 @if(count($data) > 0)
-                    <tr style="background-color: #fef9c3; font-weight: bold;">
-                        <td colspan="2" class="text-justif">TOTAL</td>
+                    <tr class="total-row">
+                        <td colspan="2">TOTAL</td>
                         <td>{{ $total['tender_paket'] }}</td>
                         <td class="text-right">{{ number_format($total['tender_nilai'], 0, ',', '.') }}</td>
                         <td>{{ $total['nontender_paket'] }}</td>
@@ -231,4 +252,3 @@
     </div>
 </div>
 @endsection
-

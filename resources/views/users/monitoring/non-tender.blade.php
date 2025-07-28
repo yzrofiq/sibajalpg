@@ -330,6 +330,97 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+  
+    @media (max-width: 767px) {
+        .container {
+            padding: 0.75rem;
+        }
+        
+        .header-title {
+            font-size: 1.25rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .filter-card {
+            padding: 1rem;
+        }
+        
+        .filter-grid {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        
+        .table-responsive {
+            border-radius: 0.375rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        table {
+            min-width: 600px; /* Allow horizontal scrolling */
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.8125rem;
+        }
+        
+        .pagination-container {
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Tablet styles */
+    @media (min-width: 768px) and (max-width: 1023px) {
+        .filter-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        table {
+            min-width: 700px;
+        }
+    }
+
+    /* Desktop styles */
+    @media (min-width: 1024px) {
+        .filter-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .summary-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        table {
+            width: 100%;
+            min-width: auto;
+        }
+    }
+
+    /* Common responsive table styles */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Ensure table headers are visible when scrolling */
+    thead th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
 </style>
 @endpush
 

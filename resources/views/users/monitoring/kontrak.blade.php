@@ -90,6 +90,7 @@
     
     .table-responsive {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     table {
@@ -184,10 +185,18 @@
     /* Pagination Styles */
     .pagination-container {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
+        gap: 1rem;
         align-items: center;
         padding: 1rem;
         border-top: 1px solid #f1f5f9;
+    }
+    
+    @media (min-width: 768px) {
+        .pagination-container {
+            flex-direction: row;
+            justify-content: space-between;
+        }
     }
     
     .pagination-info {
@@ -205,8 +214,20 @@
     
     .summary-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: 1fr;
         gap: 1rem;
+    }
+    
+    @media (min-width: 640px) {
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .summary-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
     
     .summary-item {
@@ -331,6 +352,35 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+    
+    /* Mobile-specific styles */
+    @media (max-width: 767px) {
+        .header-title {
+            font-size: 1.25rem;
+        }
+        
+        .filter-card {
+            padding: 1rem;
+        }
+        
+        .filter-grid {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.8125rem;
+        }
+        
+        .summary-item {
+            padding: 0.75rem;
+        }
+        
+        .summary-value {
+            font-size: 1rem;
+        }
+    }
 </style>
 @endpush
 
@@ -420,42 +470,41 @@
                 </thead>
 
                 <tbody id="tableBody">
-                @if(count($data) > 0)
-    @foreach ($data as $i => $item)
-        <tr>
-            <td class="text-center">
-                @if(is_object($data) && method_exists($data, 'currentPage'))
-                    {{ ($data->currentPage() - 1) * $data->perPage() + $i + 1 }}
-                @else
-                    {{ $i + 1 }}
-                @endif
-            </td>
-            <td>
-                <a href="{{ route('monitoring.kontrak.detail', ['satker' => urlencode($item['nama_satker'])]) }}?tahun={{ request('tahun_anggaran', $tahun) }}" 
-                   class="link-primary">
-                    {{ $item['nama_satker'] }}
-                </a>
-            </td>
-            <td class="text-center">{{ $item['total_paket'] }}</td>
-<td class="text-right amount-cell">{{ number_format($item['total_pagu'], 0, ',', '.') }}</td>
-<td class="text-right">{{ $item['total_kontrak'] }}</td>
-        </tr>
-    @endforeach
-@else
-    <tr>
-        <td colspan="5">
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <p class="empty-text">Tidak ada data yang ditemukan</p>
-            </div>
-        </td>
-    </tr>
-@endif
-
+                    @if(count($data) > 0)
+                        @foreach ($data as $i => $item)
+                            <tr>
+                                <td class="text-center">
+                                    @if(is_object($data) && method_exists($data, 'currentPage'))
+                                        {{ ($data->currentPage() - 1) * $data->perPage() + $i + 1 }}
+                                    @else
+                                        {{ $i + 1 }}
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('monitoring.kontrak.detail', ['satker' => urlencode($item['nama_satker'])]) }}?tahun={{ request('tahun_anggaran', $tahun) }}" 
+                                       class="link-primary">
+                                        {{ $item['nama_satker'] }}
+                                    </a>
+                                </td>
+                                <td class="text-center">{{ $item['total_paket'] }}</td>
+                                <td class="text-right amount-cell">{{ number_format($item['total_pagu'], 0, ',', '.') }}</td>
+                                <td class="text-right">{{ $item['total_kontrak'] }}</td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <p class="empty-text">Tidak ada data yang ditemukan</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
         </div>

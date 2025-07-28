@@ -118,7 +118,7 @@
 </li>
 
        <!-- Dropdown: Monitoring -->
-<li class="nav-item dropdown position-relative">
+       <li class="nav-item dropdown position-relative">
   <a class="nav-link dropdown-toggle {{ request()->is('monitoring*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Monitoring
   </a>
@@ -159,7 +159,6 @@
     </li>
   </ul>
 </li>
-
       </ul>
 
       <!-- User Icon -->
@@ -438,7 +437,61 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 </script>
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle submenu toggle on mobile
+  const dropdownSubmenus = document.querySelectorAll('.dropdown-submenu');
+  
+  dropdownSubmenus.forEach(function(submenu) {
+    const link = submenu.querySelector('.dropdown-toggle');
+    
+    // Prevent default behavior on mobile
+    link.addEventListener('click', function(e) {
+      if (window.innerWidth < 992) { // lg breakpoint
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const submenuDropdown = this.nextElementSibling;
+        const isOpen = submenuDropdown.classList.contains('show');
+        
+        // Close all other open submenus first
+        document.querySelectorAll('.dropdown-submenu .dropdown-menu').forEach(function(menu) {
+          if (menu !== submenuDropdown) {
+            menu.classList.remove('show');
+          }
+        });
+        
+        // Toggle current submenu
+        submenuDropdown.classList.toggle('show');
+      }
+    });
+    
+    // Close when clicking outside on mobile
+    document.addEventListener('click', function(e) {
+      if (window.innerWidth < 992 && !e.target.closest('.dropdown-submenu')) {
+        document.querySelectorAll('.dropdown-submenu .dropdown-menu').forEach(function(menu) {
+          menu.classList.remove('show');
+        });
+      }
+    });
+  });
+  
+  // Handle hover on desktop
+  if (window.innerWidth >= 992) {
+    const dropdownSubmenus = document.querySelectorAll('.dropdown-submenu');
+    
+    dropdownSubmenus.forEach(function(submenu) {
+      submenu.addEventListener('mouseenter', function() {
+        this.querySelector('.dropdown-menu').classList.add('show');
+      });
+      
+      submenu.addEventListener('mouseleave', function() {
+        this.querySelector('.dropdown-menu').classList.remove('show');
+      });
+    });
+  }
+});
+</script>
 @stack('scripts')
 </body>
 </html>
