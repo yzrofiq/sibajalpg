@@ -813,7 +813,7 @@ body {
 /* ===================== NAVBAR RESPONSIF RAPAT + BURGER <=1100px ==================== */
 
 /* Desktop, menu rapat, tetap satu baris (1382px sampai 1101px) */
-@media (max-width: 1382px) and (min-width: 1156px) {
+@media (max-width: 1382px) and (min-width: 1159px) {
   .navbar-collapse {
     justify-content: space-between !important;
   }
@@ -837,7 +837,7 @@ body {
 }
 
 /* Lebih rapat lagi <=1200px (tapi >1100px), font-size tetap */
-@media (max-width: 1200px) and (min-width: 1156px) {
+@media (max-width: 1200px) and (min-width: 115px) {
   .navbar-nav .nav-link {
     margin: 0 2px;
     padding-left: 4px;
@@ -846,7 +846,7 @@ body {
 }
 
 /* ===================== FIX RESPONSIVE HAMBURGER 1155px - 992px ==================== */
-@media (max-width: 1155px) and (min-width: 992px) {
+@media (max-width: 1156px) and (min-width: 992px) {
   .navbar-expand-lg .navbar-collapse {
     position: absolute;
     top: 100%;
@@ -961,7 +961,7 @@ body {
 
 
 /* ===================== HAMBURGER MUNCUL <=1100px (tetap butuh block ini) ==================== */
-@media (max-width: 1155px) {
+@media (max-width: 1156px) {
   .navbar-expand-lg .navbar-collapse {
     display: none !important;
   }
@@ -971,7 +971,7 @@ body {
 }
 
 /* Kembalikan hamburger ke desktop di atas 1100px */
-@media (min-width: 1156px) {
+@media (min-width: 1157px) {
   .navbar-expand-lg .navbar-collapse {
     display: flex !important;
     position: static !important;
