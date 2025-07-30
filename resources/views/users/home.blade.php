@@ -183,14 +183,14 @@
             <!-- Gambar Kantor 1 -->
             <div class="kantor-carousel-item active"> <!-- Ganti .carousel-item jadi .kantor-carousel-item -->
                 <div class="carousel-image-wrapper">
-                    <img src="{{ asset('images/kantor1.png') }}" class="d-block kantor-carousel-img" alt="Kantor 1">
+                    <img src="{{ asset('images/Kantor1.png') }}" class="d-block kantor-carousel-img" alt="Kantor 1">
                     <div class="overlay"></div>
                 </div>
             </div>          
             <!-- Gambar Kantor 2 -->
             <div class="kantor-carousel-item"> <!-- Ganti .carousel-item jadi .kantor-carousel-item -->
                 <div class="carousel-image-wrapper">
-                    <img src="{{ asset('images/kantor2.png') }}" class="d-block kantor-carousel-img" alt="Kantor 2">
+                    <img src="{{ asset('images/Kantor2.png') }}" class="d-block kantor-carousel-img" alt="Kantor 2">
                     <div class="overlay"></div>
                 </div>
             </div>

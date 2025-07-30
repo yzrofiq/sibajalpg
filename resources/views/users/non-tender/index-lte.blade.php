@@ -12,6 +12,80 @@
   .small-box.bg-success { background-color: #28a745 !important; color: #fff !important; }
   .small-box.bg-danger { background-color: #dc3545 !important; color: #fff !important; }
   .small-box .inner h3, .small-box .inner p { color: inherit !important; }
+
+  /* === FILTER BAR: SERAGAM, RESPONSIF, SELECT2 JUGA BUNDAR === */
+.filter-bar .form-control,
+.filter-bar select.form-control,
+.filter-bar input.form-control {
+  border-radius: 8px !important;
+  border: 1.5px solid #d5d7e4 !important;
+  box-shadow: none !important;
+  background: #fff !important;
+  font-size: 1rem;
+  height: 38px;
+  transition: border-color 0.2s;
+}
+.filter-bar .form-control:focus {
+  border-color: #2b529a !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(43,82,154,0.10);
+}
+.filter-bar label {
+  font-weight: 500;
+  color: #1d3c77;
+  font-size: 0.97rem;
+  margin-bottom: 4px;
+}
+.select2-container--default .select2-selection--single {
+  border-radius: 8px !important;
+  border: 1.5px solid #d5d7e4 !important;
+  height: 38px !important;
+  padding: 4px 12px !important;
+  font-size: 1rem;
+  background: #fff !important;
+  transition: border-color 0.2s;
+  display: flex;
+  align-items: center;
+}
+.select2-container--default .select2-selection--single:focus {
+  border-color: #2b529a !important;
+  box-shadow: 0 0 0 2px rgba(43,82,154,0.12);
+}
+/* Agar select2 full width */
+.select2-container {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Responsive: kolom filter jadi satu baris per filter di mobile */
+@media (max-width: 991px) {
+  .filter-bar .col-md-2,
+  .filter-bar .col-md-3 {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+    margin-bottom: 16px;
+  }
+}
+
+/* Jaga agar label/input tidak ketumpuk di layar kecil */
+@media (max-width: 768px) {
+  .filter-bar label {
+    font-size: 1rem;
+  }
+  .filter-bar .form-control,
+  .select2-container--default .select2-selection--single {
+    font-size: 0.97rem;
+    height: 38px !important;
+  }
+  .filter-bar .col-md-2,
+  .filter-bar .col-md-3 {
+    margin-bottom: 12px;
+  }
+}
+
 </style>
 @endpush
 
@@ -31,44 +105,45 @@
   <div class="container-fluid">
     @include('components.summary')
 
-    <div class="row">
-      <div class="col-md-2">
-        <label for="filter-kode">Kode</label>
-        <input id="filter-kode" type="text" placeholder="Kode" class="form-control" value="{{ request('code') }}">
-      </div>
-      <div class="col-md-3">
-        <label for="filter-nama">Nama Paket</label>
-        <input id="filter-nama" type="text" placeholder="Nama Paket" class="form-control" value="{{ request('name') }}">
-      </div>
-      <div class="col-md-3">
-        <label for="kd_satker">Satuan Kerja</label>
-        <select name="kd_satker" id="kd_satker" class="form-control select2" onchange="filterBySatker()">
-          <option value="">--Semua Satuan Kerja---</option>
-          @foreach ($satkers as $item)
-            <option value="{{ $item->kd_satker_str }}" {{ $satkerCode == $item->kd_satker_str ? 'selected' : '' }}>
-              {{ $item->nama_satker }}
-            </option>
-          @endforeach
-        </select>
-      </div>
-      <div class="col-md-2">
-        <label for="year">Tahun</label>
-        <select name="year" id="year" class="form-control" onchange="filterBySatker()">
-          <option value="">--Pilih---</option>
-          @foreach ($years as $item)
-            <option value="{{ $item }}" {{ $year == $item ? 'selected' : '' }}>{{ $item }}</option>
-          @endforeach
-        </select>
-      </div>
-      <div class="col-md-2">
-        <label for="status_nontender">Status</label>
-        <select name="status_nontender" id="status_nontender" class="form-control" onchange="filterBySatker()">
-          @foreach ($statusList as $key => $val)
-            <option value="{{ $key }}" {{ $status == $key ? 'selected' : '' }}>{{ $val }}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
+    <div class="row filter-bar">
+  <div class="col-md-2">
+    <label for="filter-kode">Kode</label>
+    <input id="filter-kode" type="text" placeholder="Kode" class="form-control" value="{{ request('code') }}">
+  </div>
+  <div class="col-md-3">
+    <label for="filter-nama">Nama Paket</label>
+    <input id="filter-nama" type="text" placeholder="Nama Paket" class="form-control" value="{{ request('name') }}">
+  </div>
+  <div class="col-md-3">
+    <label for="kd_satker">Satuan Kerja</label>
+    <select name="kd_satker" id="kd_satker" class="form-control select2" onchange="filterBySatker()">
+      <option value="">--Semua Satuan Kerja---</option>
+      @foreach ($satkers as $item)
+        <option value="{{ $item->kd_satker_str }}" {{ $satkerCode == $item->kd_satker_str ? 'selected' : '' }}>
+          {{ $item->nama_satker }}
+        </option>
+      @endforeach
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label for="year">Tahun</label>
+    <select name="year" id="year" class="form-control" onchange="filterBySatker()">
+      <option value="">--Pilih---</option>
+      @foreach ($years as $item)
+        <option value="{{ $item }}" {{ $year == $item ? 'selected' : '' }}>{{ $item }}</option>
+      @endforeach
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label for="status_nontender">Status</label>
+    <select name="status_nontender" id="status_nontender" class="form-control" onchange="filterBySatker()">
+      @foreach ($statusList as $key => $val)
+        <option value="{{ $key }}" {{ $status == $key ? 'selected' : '' }}>{{ $val }}</option>
+      @endforeach
+    </select>
+  </div>
+</div>
+
 
     @php
       $urlBase = url()->current()
