@@ -89,18 +89,7 @@
     display: none; /* default: hidden */
 }
 
-/* Tambahan khusus layar antara 1155px sampai 992px */
-@media (max-width: 1155px) and (min-width: 992px) {
-    .dropdown-menu {
-        width: 100vw;
-        left: 0 !important;
-        right: 0 !important;
-        margin: 0 !important;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        border-radius: 0;
-        box-shadow: none;
-    }
+
 
     .dropdown-submenu .dropdown-menu {
         position: relative !important;
@@ -189,6 +178,7 @@
 .dropdown-submenu > .dropdown-item::after {
   content: none !important;
 }
+
 </style>
 
     @stack('head')

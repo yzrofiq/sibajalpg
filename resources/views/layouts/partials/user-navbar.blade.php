@@ -355,17 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (toggle) bootstrap.Dropdown.getOrCreateInstance(toggle).show();
   }
 
-  function handleMouseLeave() {
-    const toggle = this.querySelector('.dropdown-toggle');
-    if (toggle) {
-      setTimeout(() => {
-        if (!this.matches(':hover')) {
-          const dropdown = bootstrap.Dropdown.getInstance(toggle);
-          if (dropdown) dropdown.hide();
-        }
-      }, 200);
-    }
-  }
+
 
   setupDesktopHover();
   window.addEventListener('resize', setupDesktopHover);
@@ -434,4 +424,86 @@ document.addEventListener('DOMContentLoaded', function () {
     monitoringDropdown?.classList.add('monitoring-active');
   }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+  // === Hapus semua kode hover support ===
+  
+  // === Monitoring Belum Input Submenu Toggle ===
+  const submenuToggle = document.getElementById('submenuToggle');
+  const submenu = document.getElementById('submenuBelumInput');
+  const arrowIcon = document.getElementById('arrowBelumInput');
+  const monitoringDropdown = document.querySelector('#monitoringDropdown');
+
+  if (submenuToggle && submenu && arrowIcon) {
+    const collapse = new bootstrap.Collapse(submenu, { toggle: false });
+
+    submenuToggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const isShown = submenu.classList.contains('show');
+
+      // Tutup submenu lain jika terbuka
+      document.querySelectorAll('.collapse.show').forEach(el => {
+        if (el !== submenu) {
+          bootstrap.Collapse.getInstance(el)?.hide();
+          el.closest('.dropdown-submenu')?.querySelector('.bi-caret-right-fill')?.classList.remove('rotate-90');
+        }
+      });
+
+      // Toggle submenu
+      if (isShown) {
+        collapse.hide();
+        arrowIcon.classList.remove('rotate-90');
+      } else {
+        collapse.show();
+        arrowIcon.classList.add('rotate-90');
+      }
+    });
+
+    // Tutup submenu jika dropdown utama ditutup
+    monitoringDropdown?.addEventListener('hide.bs.dropdown', function () {
+      if (submenu.classList.contains('show')) {
+        collapse.hide();
+        arrowIcon.classList.remove('rotate-90');
+      }
+    });
+
+    // Tutup submenu jika klik di luar
+    document.addEventListener('click', function (e) {
+      const clickedInside = e.target.closest('.dropdown-submenu') || e.target.closest('.dropdown-menu');
+      if (!clickedInside && submenu.classList.contains('show')) {
+        collapse.hide();
+        arrowIcon.classList.remove('rotate-90');
+      }
+    });
+  }
+
+  // === Nonaktifkan hover behavior untuk semua dropdown ===
+  const allDropdownToggles = document.querySelectorAll('.dropdown-toggle');
+  allDropdownToggles.forEach(toggle => {
+    // Hapus event hover jika ada
+    toggle.parentElement.onmouseenter = null;
+    toggle.parentElement.onmouseleave = null;
+    
+    // Pastikan hanya bekerja dengan click
+    toggle.addEventListener('click', function(e) {
+      // Biarkan Bootstrap handle toggle-nya
+    });
+  });
+
+  // === Active Menu Class
+  const monitoringRoutes = [
+    'monitoring.realisasi.satker',
+    'monitoring.rekap.realisasi-berlangsung',
+    'monitoring.rekap.realisasi',
+    'monitoring.kontrak',
+    'monitoring.kontrak.non_tender'
+  ];
+  const currentRoute = '{{ request()->route()->getName() }}';
+  if (monitoringRoutes.includes(currentRoute)) {
+    monitoringDropdown?.classList.add('monitoring-active');
+  }
+});
+
 </script>
