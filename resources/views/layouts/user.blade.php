@@ -11,42 +11,186 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Font Awesome CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/sibaja.css') }}" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url('32x32.png') }}"/>
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url('16x16.png') }}"/>
     
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Public Sans', sans-serif;
-            background-color: #ffffff;
-        }
-        /* Submenu turun ke bawah */
-          .dropdown-submenu .dropdown-menu {
-            top: 100% !important;
-            left: 0 !important;
-            margin-top: 0.2rem;
-          }
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Public Sans', sans-serif;
+        background-color: #ffffff;
+    }
+    .dropdown-menu {
+    background-color: #ffffff !important;
+    min-width: 220px;
+    border: 1px solid #ddd;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
 
-          /* Konsistensi ukuran dan background */
-          .dropdown-menu {
-            background-color: #ffffff;
-            min-width: 220px;
-            border: 1px solid #ddd;
-          }
+.dropdown-item {
+    border-radius: 0.375rem;
+    transition: background-color 0.2s ease;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.15rem 0;
+}
 
-          /* Rounded item & hover style */
-          .dropdown-item {
-            border-radius: 0.375rem;
-            transition: background-color 0.2s ease;
-          }
-          .dropdown-item:hover {
-            background-color: #f1f1f1;
-          }
-    </style>
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
+
+/* Toggle caret */
+.dropdown-toggle::after {
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    border-top: 0.4em solid;
+    border-right: 0.4em solid transparent;
+    border-left: 0.4em solid transparent;
+    transition: transform 0.2s ease;
+}
+
+.show > .dropdown-toggle::after {
+    transform: rotate(-180deg);
+}
+
+/* Submenu styling */
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu > .dropdown-item::after {
+    content: "";
+    display: inline-block;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    border-left: 0.4em solid transparent;
+    border-right: 0.4em solid transparent;
+    border-top: 0.4em solid;
+    transition: transform 0.2s ease;
+}
+
+/* Rotate caret on open */
+.dropdown-submenu.show > .dropdown-item::after {
+    transform: rotate(90deg);
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 100% !important;
+    left: 0 !important;
+    margin-top: 0;
+    background-color: #ffffff !important;
+    display: none; /* default: hidden */
+}
+
+/* Tambahan khusus layar antara 1155px sampai 992px */
+@media (max-width: 1155px) and (min-width: 992px) {
+    .dropdown-menu {
+        width: 100vw;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .dropdown-submenu .dropdown-menu {
+        position: relative !important;
+        left: 0 !important;
+        top: auto !important;
+        margin-left: 0 !important;
+        width: 100%;
+        box-shadow: none;
+    }
+
+    .dropdown-submenu > .dropdown-item {
+        padding-left: 1.25rem;
+    }
+
+    .dropdown-item {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .dropdown-submenu > .dropdown-item i {
+        margin-left: auto;
+    }
+}
+
+
+/* Tampilkan submenu sebagai dropdown biasa di mobile */
+@media (max-width: 991.98px) {
+    .dropdown-menu {
+        margin-left: 1rem;
+        border: none;
+        box-shadow: none;
+    }
+
+    .dropdown-submenu > .dropdown-menu {
+        display: block !important;
+        position: relative;
+        top: auto;
+        left: auto;
+        margin-left: 1.5rem;
+    }
+
+    .dropdown-submenu > .dropdown-item::after {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .dropdown-submenu.show > .dropdown-item::after {
+        transform: translateY(-50%) rotate(90deg);
+    }
+
+    .dropdown-item {
+        padding-left: 0.5rem;
+    }
+}
+.dropdown-item.active {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+.dropdown-submenu > .dropdown-item i {
+  margin-left: auto;
+  font-size: 0.75rem;
+}
+
+.dropdown-toggle > i {
+  font-size: 0.75rem;
+}
+
+  /* Ikon panah rotate saat submenu aktif */
+  .dropdown-submenu .dropdown-toggle[aria-expanded="true"] i {
+    transform: rotate(90deg); /* dari kanan ke bawah */
+  }
+
+  .dropdown-submenu .dropdown-toggle i {
+    transition: transform 0.3s ease;
+  }
+  .transition {
+  transition: transform 0.3s ease;
+}
+
+.rotate-90 {
+  transform: rotate(90deg);
+}
+/* Pastikan panah default tidak muncul */
+.dropdown-submenu > .dropdown-item::after {
+  content: none !important;
+}
+</style>
+
     @stack('head')
 </head>
 <body>
@@ -76,19 +220,17 @@
     <!-- Navbar Menu -->
     <div class="collapse navbar-collapse" id="mainNavbar">
       <ul class="navbar-nav ms-4 me-auto">
-
         <li class="nav-item">
           <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
         </li>
-
         <li class="nav-item">
           <a class="nav-link {{ request()->routeIs('tender.list') ? 'active' : '' }}" href="{{ route('tender.list') }}">Tender</a>
         </li>
-
         <li class="nav-item">
           <a class="nav-link {{ request()->routeIs('non-tender.list') ? 'active' : '' }}" href="{{ route('non-tender.list') }}">Non Tender</a>
         </li>
 
+        <!-- E-Purchasing Dropdown -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle {{ request()->is('report/ekatalog*') || request()->is('report/tokodaring*') ? 'active' : '' }}" href="#" data-bs-toggle="dropdown">E-Purchasing</a>
           <ul class="dropdown-menu">
@@ -101,27 +243,22 @@
           <a class="nav-link {{ request()->routeIs('report.rup') ? 'active' : '' }}" href="{{ route('report.rup') }}">RUP</a>
         </li>
 
+        <!-- Summary Report Dropdown -->
         <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Summary Report</a>
-    <ul class="dropdown-menu">
-        <li>
-            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#filterModal">
-                Realisasi Non Tender
-            </a>
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Summary Report</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#filterModal">Realisasi Non Tender</a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#filterTenderModal">Realisasi Tender</a></li>
+          </ul>
         </li>
-        <li>
-            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#filterTenderModal">
-                Realisasi Tender
-            </a>
-        </li>
-    </ul>
-</li>
 
-       <!-- Dropdown: Monitoring -->
-       <li class="nav-item dropdown position-relative">
-  <a class="nav-link dropdown-toggle {{ request()->is('monitoring*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+   <!-- Monitoring Dropdown -->
+<li class="nav-item dropdown position-relative">
+  <a class="nav-link dropdown-toggle {{ request()->is('monitoring*') ? 'active' : '' }}"
+     href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Monitoring
   </a>
+
   <ul class="dropdown-menu shadow rounded-3 p-1 bg-white">
     <li>
       <a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.realisasi.satker') }}">
@@ -139,26 +276,35 @@
       </a>
     </li>
 
-    <!-- Sub-menu: Monitoring Belum Input -->
     <li class="dropdown-submenu position-relative">
-      <a class="dropdown-item dropdown-toggle px-3 py-2 rounded-2" href="#" data-bs-toggle="dropdown">
-        Monitoring Belum Input
+  <a class="dropdown-item d-flex justify-content-between align-items-center px-3 py-2"
+     href="#" aria-expanded="false" id="submenuToggle">
+    <span class="d-flex align-items-center">
+      Monitoring Belum Input
+      <i class="bi bi-caret-down-fill ms-1 transition" id="arrowBelumInput"></i>
+    </span>
+  </a>
+
+  <ul class="collapse list-unstyled bg-white" id="submenuBelumInput">
+    <li>
+      <a class="dropdown-item px-3 py-2 {{ request()->routeIs('monitoring.kontrak') ? 'active' : '' }}" 
+         href="{{ route('monitoring.kontrak') }}">
+        Kontrak Tender
       </a>
-      <ul class="dropdown-menu shadow rounded-3 mt-1 bg-white">
-        <li>
-          <a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.kontrak') }}">
-            Kontrak Belum Input - Tender
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item px-3 py-2 rounded-2" href="{{ route('monitoring.kontrak.non_tender') }}">
-            Kontrak Belum Input - Non Tender
-          </a>
-        </li>
-      </ul>
+    </li>
+    <li>
+      <a class="dropdown-item px-3 py-2 {{ request()->routeIs('monitoring.kontrak.non_tender') ? 'active' : '' }}" 
+         href="{{ route('monitoring.kontrak.non_tender') }}">
+        Kontrak Non Tender
+      </a>
     </li>
   </ul>
 </li>
+
+
+
+          </ul>
+        </li>
       </ul>
 
       <!-- User Icon -->
@@ -173,7 +319,6 @@
         </li>
       </ul>
     </div>
-
   </div>
 </nav>
 
@@ -415,83 +560,80 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const submenu = document.querySelector('.dropdown-submenu');
-  if (submenu) {
-    const parentMenu = submenu.closest('.dropdown');
+  // Hover behavior untuk submenu
+  document.querySelectorAll('.dropdown-submenu').forEach(function (submenu) {
+    const toggle = submenu.querySelector('[data-bs-toggle="dropdown"]');
+
     submenu.addEventListener('mouseenter', () => {
-      const toggle = submenu.querySelector('[data-bs-toggle="dropdown"]');
-      bootstrap.Dropdown.getOrCreateInstance(toggle).show();
+      if (toggle) {
+        bootstrap.Dropdown.getOrCreateInstance(toggle).show();
+      }
     });
+
     submenu.addEventListener('mouseleave', () => {
       setTimeout(() => {
         if (!submenu.matches(':hover')) {
-          const toggle = submenu.querySelector('[data-bs-toggle="dropdown"]');
-          bootstrap.Dropdown.getOrCreateInstance(toggle).hide();
+          if (toggle) {
+            bootstrap.Dropdown.getOrCreateInstance(toggle).hide();
+          }
         }
       }, 300);
     });
-    parentMenu.addEventListener('mouseleave', () => {
-      const toggle = submenu.querySelector('[data-bs-toggle="dropdown"]');
-      bootstrap.Dropdown.getOrCreateInstance(toggle).hide();
+
+    const parentMenu = submenu.closest('.dropdown');
+    if (parentMenu) {
+      parentMenu.addEventListener('mouseleave', () => {
+        if (toggle) {
+          bootstrap.Dropdown.getOrCreateInstance(toggle).hide();
+        }
+      });
+    }
+  });
+
+  // Klik toggle submenu di mobile/desktop
+  document.querySelectorAll('.dropdown-submenu > a').forEach(function (submenuToggle) {
+    submenuToggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const submenu = this.nextElementSibling;
+
+      // Tutup semua submenu lain
+      const openSubmenus = this.closest('.dropdown-menu')?.querySelectorAll('.dropdown-menu.show') || [];
+      openSubmenus.forEach(function (el) {
+        if (el !== submenu) el.classList.remove('show');
+      });
+
+      // Toggle submenu
+      if (submenu) submenu.classList.toggle('show');
     });
-  }
-});
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Handle submenu toggle on mobile
-  const dropdownSubmenus = document.querySelectorAll('.dropdown-submenu');
-  
-  dropdownSubmenus.forEach(function(submenu) {
-    const link = submenu.querySelector('.dropdown-toggle');
-    
-    // Prevent default behavior on mobile
-    link.addEventListener('click', function(e) {
-      if (window.innerWidth < 992) { // lg breakpoint
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const submenuDropdown = this.nextElementSibling;
-        const isOpen = submenuDropdown.classList.contains('show');
-        
-        // Close all other open submenus first
-        document.querySelectorAll('.dropdown-submenu .dropdown-menu').forEach(function(menu) {
-          if (menu !== submenuDropdown) {
-            menu.classList.remove('show');
-          }
-        });
-        
-        // Toggle current submenu
-        submenuDropdown.classList.toggle('show');
-      }
-    });
-    
-    // Close when clicking outside on mobile
-    document.addEventListener('click', function(e) {
-      if (window.innerWidth < 992 && !e.target.closest('.dropdown-submenu')) {
-        document.querySelectorAll('.dropdown-submenu .dropdown-menu').forEach(function(menu) {
-          menu.classList.remove('show');
-        });
+  });
+
+  // Klik di luar => tutup submenu
+  window.addEventListener('click', function (e) {
+    document.querySelectorAll('.dropdown-submenu .dropdown-menu.show').forEach(function (submenu) {
+      if (!submenu.contains(e.target)) {
+        submenu.classList.remove('show');
       }
     });
   });
-  
-  // Handle hover on desktop
-  if (window.innerWidth >= 992) {
-    const dropdownSubmenus = document.querySelectorAll('.dropdown-submenu');
-    
-    dropdownSubmenus.forEach(function(submenu) {
-      submenu.addEventListener('mouseenter', function() {
-        this.querySelector('.dropdown-menu').classList.add('show');
-      });
-      
-      submenu.addEventListener('mouseleave', function() {
-        this.querySelector('.dropdown-menu').classList.remove('show');
-      });
-    });
-  }
 });
+
+  function closeSubmenu(button) {
+    // Menutup dropdown terdekat (parent <ul>)
+    const dropdownMenu = button.closest('.dropdown-menu');
+    if (dropdownMenu) {
+      dropdownMenu.classList.remove('show');
+      // Menutup menu utama jika perlu
+      const parentToggle = dropdownMenu.parentElement.querySelector('[data-bs-toggle="dropdown"]');
+      if (parentToggle) {
+        parentToggle.setAttribute('aria-expanded', 'false');
+      }
+    }
+  }
+
 </script>
+
 @stack('scripts')
 </body>
 </html>

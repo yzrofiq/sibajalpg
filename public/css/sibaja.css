@@ -810,235 +810,268 @@ body {
     color: white;
   }
   
-  
-  @media (max-width: 768px) {
-    .hero-container {
-      padding: 40px 16px;
-    }
-  
-    .hero-text h1 {
-      font-size: 1.5rem;
-    }
-  
-    .hero-text p {
-      font-size: 0.95rem;
-    }
-  
-    .hero-box {
-      padding: 2rem 1rem;
-      max-width: 100%;
-    }
-  
-    .navbar-nav .nav-link {
-      font-size: 0.85rem;
-      margin: 0 10px;
-    }
-    
-  
-    .sibaja-logo-box {
-      flex-direction: column;
-      align-items: flex-start;
-      min-width: 100%;
-      padding: 10px;
-    }
-  
-    .sibaja-logo-box img {
-      height: 40px;
-      margin-bottom: 5px;
-    }
-  
-    .sibaja-header-title {
-      font-size: 1rem;
-    }
-  
-    .tentang-box {
-      position: static;
-      transform: none;
-      max-width: 100%;
-      margin: 20px auto;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: none;
-    }
-  
-    .kantor-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 0; /* Mengurangi margin bawah agar gambar lebih rapat */
-    }
+/* ===================== NAVBAR RESPONSIF RAPAT + BURGER <=1100px ==================== */
 
-    .kantor-carousel {
-        max-height: 300px;  /* Menurunkan tinggi carousel untuk membuatnya lebih compact */
-        overflow: hidden;
-    }
+/* Desktop, menu rapat, tetap satu baris (1382px sampai 1101px) */
+@media (max-width: 1382px) and (min-width: 1156px) {
+  .navbar-collapse {
+    justify-content: space-between !important;
+  }
+  .navbar-nav {
+    flex-wrap: nowrap !important;
+    align-items: center;
+  }
+  .navbar-nav .nav-link {
+    margin: 0 6px;
+    padding-left: 7px;
+    padding-right: 7px;
+    white-space: nowrap;
+  }
+  .navbar-nav:last-child {
+    margin-right: 8px !important;
+  }
+  .navbar-nav.ms-4.me-auto {
+    margin-left: 10px !important;
+    margin-right: 10px !important;
+  }
+}
 
-    .kantor-carousel-img {
-        width: 100%;  /* Mengatur lebar gambar agar sesuai dengan container */
-        height: auto;
-        object-fit: cover; /* Menjaga gambar tetap penuh tanpa merusak proporsi */
-    }
+/* Lebih rapat lagi <=1200px (tapi >1100px), font-size tetap */
+@media (max-width: 1200px) and (min-width: 1156px) {
+  .navbar-nav .nav-link {
+    margin: 0 2px;
+    padding-left: 4px;
+    padding-right: 3px;
+  }
+}
 
-    .tentang-box h4 {
-      font-size: 1.3rem;
-    }
-  
-    .tentang-box h6 {
-      font-size: 1rem;
-    }
-  
-    .tentang-box p {
-      font-size: 0.95rem;
-    }
-  
-
-  
-    .info-box {
-      width: 100%;
-      height: auto;
-      margin-bottom: 20px;
-    }
-  
-    .summary-box {
-      min-width: 100px;
-      font-size: 14px;
-    }
-  
-    .report-card {
-      padding: 16px;
-    }
-  
-    .pdf-card {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-  
-    .carousel-control-prev,
-    .carousel-control-next {
-      display: none;
-    }
-  
-    .chart-box {
-      padding: 16px;
-    }
-  
-    .footer {
-      padding: 30px 16px;
-    }
-  
-    .footer h5 {
-      font-size: 1rem;
-    }
-  
-    .footer a {
-      font-size: 1.2rem;
-    }
-  
-    .footer .footer-bottom {
-      font-size: 12px;
-    }
-  
-    .vertical-blue-strip,
-    .background-abu-kanan,
-    .transparansi-abu,
-    .strip-wrapper .vertical-blue-strip {
-      display: none;
-    }
-  
-    .transparency-wrapper {
-      width: 100%;
-      margin-left: 0;
-      margin-right: 0;
-      left: 0;
-      right: 0;
-    }
-  
-  }
-
-  .dropdown-submenu {
-    position: relative;
-  }
-  
-  .dropdown-submenu > .dropdown-menu {
-    top: 0;
-    left: 100%;
-  }
-
-  .dropdown-submenu:hover > .dropdown-menu {
-    display: block;
-  }
-  
-  .dropdown-submenu > .dropdown-menu {
-    top: 0;
-    left: 100%;
-    margin-left: 0;
-    margin-top: -1px;
-  }
-  
-  .navbar-blue {
-    background-color: #2b529a !important;
-  }
-  
-  .navbar-blue .nav-link {
-    color: #ffffff !important;
-    font-weight: 500;
-    position: relative;
-    padding-bottom: 6px;
-    transition: color 0.2s ease-in-out;
-  }
-  
-  .navbar-blue .nav-link:hover {
-    color: #d1dffd !important;
-  }
-  
-  .navbar-blue .nav-link.active {
-    font-weight: 700;
-    color: #ffffff !important;
-  }
-
-  /* Tambahkan ruang kanan agar panah muat */
-.navbar-blue .dropdown-submenu > .dropdown-toggle {
-    padding-right: 1.5rem;  /* ruang agar panah bisa ke kanan */
-    line-height: 1.2;
-
-  }
-  
-  .navbar-blue .dropdown-submenu > .dropdown-toggle::after {
+/* ===================== FIX RESPONSIVE HAMBURGER 1155px - 992px ==================== */
+@media (max-width: 1155px) and (min-width: 992px) {
+  .navbar-expand-lg .navbar-collapse {
     position: absolute;
-    right: 0.5rem;           /* posisi ke kanan */
-    top: 30%;                /* sedikit lebih tinggi */
-    transform: translateY(-50%);
+    top: 100%;
+    left: 0;
+    background: #fff;
+    z-index: 1000;
+    width: 100%;
+    display: none !important;
+    box-shadow: 0 4px 12px rgba(44,44,63,.05);
+    padding-right: 3.2rem; /* Angka ini bikin garis indikator ga nempel kanan! */
+
   }
-  
-  
-  
-  
-  /* Garis bawah putih: rapi dan seragam */
-  .navbar-blue .nav-link.active::after {
+  .navbar-expand-lg .navbar-collapse.show {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100%;
+    padding-top: 0.7rem;
+    padding-bottom: 1rem;
+    background: #fff;
+  }
+  .navbar-expand-lg .navbar-nav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100%;
+    margin: 0 !important;
+  }
+  .navbar-expand-lg .navbar-nav .nav-link {
+    margin: 0;
+    padding: 0.7rem 1.2rem 0.7rem 2.5rem; /* padding kiri diperlebar */
+    width: 100%;
+    text-align: left;
+    font-size: inherit;
+    color: #666 !important;
+    background: none;
+    border-radius: 0;
+    position: relative;
+    transition: color 0.15s, background 0.15s;
+  }
+  .navbar-expand-lg .navbar-nav .nav-link:hover,
+  .navbar-expand-lg .navbar-nav .nav-link:focus {
+    color: #203e86 !important;    /* HANYA text color! */
+    background: none;
+  }
+  .navbar-expand-lg .navbar-nav .nav-link.active {
+    color: #203e86 !important;
+    font-weight: 700;
+    background: none;
+  }
+  .navbar-expand-lg .navbar-nav .nav-link.active::after {
+    left: 1.5rem;      /* sejajar box biru logo */
+    right: 15rem;   /* sejajar hamburger (atau atur sesuai jarak hamburger dari kanan layar) */
+    bottom: -5.5px;   /* turunin sedikit dari menu */
     content: "";
     position: absolute;
-    bottom: -5px;           /* sama seperti versi default */
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #ffffff;
+    height: 3.5px;
+    background-color: #203e86; /* warna biru lebih gelap */
     border-radius: 2px;
+    z-index: 2;
+    display: block;
+  }
+
+  /* Navbar blue khusus */
+  .navbar-blue .navbar-collapse {
+    background: #2b529a !important;
   }
   
-  @media (max-width: 991.98px) {
-    .navbar-blue .nav-link.active {
-      background-color: #131d6a !important; /* biru lebih tua */
-      border-radius: 4px;
-      padding-left: 12px;
-      padding-right: 12px;
-    }
-  
-    .navbar-blue .nav-link.active::after {
-      display: none !important; /* sembunyikan garis bawah */
-    }
+  .navbar-blue .navbar-nav .nav-link {
+    color: #fff !important;
+    background: none;
+    border-radius: 0;
+    transition: color 0.15s, background 0.15s;
+    /* tambah jarak kiri default, tapi nanti menu aktif tambah lebih lebar */
+  }
+  .navbar-blue .navbar-nav .nav-link:hover,
+  .navbar-blue .navbar-nav .nav-link:focus {
+    color: #d1dffd !important;
+    background: none !important;
+  }
+  .navbar-blue .navbar-nav .nav-link.active {
+    color: #fff !important;
+    font-weight: 700;
+    position: relative;
+    background: none !important;     /* Hilangkan background langsung */
+    border-radius: 0 !important;     /* Radius diindikator saja */
+    z-index: 1;
+  }
+  .navbar-blue .navbar-nav .nav-link.active::before {
+    content: "";
+    position: absolute;
+    left: 1.5rem;      /* sejajar box biru logo */
+    right: -1.5rem;   /* sejajar hamburger (atau atur sesuai jarak hamburger dari kanan layar) */
+    top: 0;
+    bottom: 0;
+    background: #131d6a;    /* Indikator biru tua */
+    border-radius: 4px;     /* Sama seperti sebelumnya */
+    z-index: -1;
+    display: block;
+  }
+  .navbar-blue .navbar-nav .nav-link.active::after {
+    display: none !important; /* Pastikan garis putih bawah hilang */
   }
   
-  
-  
-  
-  
+
+  .navbar-expand-lg .navbar-toggler {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    z-index: 1100;
+    display: block !important;
+  }
+}
+
+
+/* ===================== HAMBURGER MUNCUL <=1100px (tetap butuh block ini) ==================== */
+@media (max-width: 1160px) {
+  .navbar-expand-lg .navbar-collapse {
+    display: none !important;
+  }
+  .navbar-expand-lg .navbar-toggler {
+    display: block !important;
+  }
+}
+
+/* Kembalikan hamburger ke desktop di atas 1100px */
+@media (min-width: 1156px) {
+  .navbar-expand-lg .navbar-collapse {
+    display: flex !important;
+    position: static !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+  .navbar-expand-lg .navbar-toggler {
+    display: none !important;
+    position: static !important;
+  }
+}
+
+/* ===================== BOOTSTRAP DEFAULT DI BAWAH 992PX ==================== */
+@media (max-width: 991.98px) {
+  .navbar-blue .nav-link.active {
+    background-color: #131d6a !important;
+    border-radius: 4px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .navbar-blue .nav-link.active::after {
+    display: none !important;
+  }
+  .navbar-expand-lg .navbar-collapse.show {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  .navbar-expand-lg .navbar-nav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100%;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .navbar-expand-lg .navbar-nav .nav-link {
+    margin: 0;
+    padding: 0.7rem 1rem;
+    width: 100%;
+    text-align: left;
+    font-size: inherit;
+  }
+}
+
+/* ===================== MEDIA QUERY MOBILE ==================== */
+@media (max-width: 768px) {
+  .hero-container { padding: 40px 16px; }
+  .hero-text h1 { font-size: 1.5rem; }
+  .hero-text p { font-size: 0.95rem; }
+  .hero-box { padding: 2rem 1rem; max-width: 100%; }
+  .navbar-nav .nav-link { font-size: 0.85rem; margin: 0 6px; }
+  .sibaja-logo-box { flex-direction: column; align-items: flex-start; min-width: 100%; padding: 10px; }
+  .sibaja-logo-box img { height: 40px; margin-bottom: 5px; }
+  .sibaja-header-title { font-size: 1rem; }
+  .tentang-box { position: static; transform: none; max-width: 100%; margin: 20px auto; padding: 20px; border-radius: 12px; box-shadow: none; }
+  .kantor-wrapper { display: flex; justify-content: center; align-items: center; margin-bottom: 0; }
+  .kantor-carousel { max-height: 300px; overflow: hidden; }
+  .kantor-carousel-img { width: 100%; height: auto; object-fit: cover; }
+  .tentang-box h4 { font-size: 1.3rem; }
+  .tentang-box h6 { font-size: 1rem; }
+  .tentang-box p { font-size: 0.95rem; }
+  .info-box { width: 100%; height: auto; margin-bottom: 20px; }
+  .summary-box { min-width: 100px; font-size: 14px; }
+  .report-card { padding: 16px; }
+  .pdf-card { width: 100%; margin-bottom: 20px; }
+  .carousel-control-prev, .carousel-control-next { display: none; }
+  .chart-box { padding: 16px; }
+  .footer { padding: 30px 16px; }
+  .footer h5 { font-size: 1rem; }
+  .footer a { font-size: 1.2rem; }
+  .footer .footer-bottom { font-size: 12px; }
+  .vertical-blue-strip,
+  .background-abu-kanan,
+  .transparansi-abu,
+  .strip-wrapper .vertical-blue-strip { display: none; }
+  .transparency-wrapper { width: 100%; margin-left: 0; margin-right: 0; left: 0; right: 0; }
+}
+
+/* ===================== NAVBAR BLUE & DROPDOWN ==================== */
+.navbar-blue { background-color: #2b529a !important; }
+.navbar-blue .nav-link { color: #ffffff !important; font-weight: 500; position: relative; padding-bottom: 6px; transition: color 0.2s ease-in-out; }
+.navbar-blue .nav-link:hover { color: #d1dffd !important; }
+.navbar-blue .nav-link.active { font-weight: 700; color: #ffffff !important; }
+.navbar-blue .dropdown-submenu > .dropdown-toggle { padding-right: 1.5rem; line-height: 1.2; }
+.navbar-blue .dropdown-submenu > .dropdown-toggle::after { position: absolute; right: 0.5rem; top: 30%; transform: translateY(-50%); }
+.navbar-blue .nav-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 2px;
+}
+
+/* ===================== DROPDOWN SUBMENU ==================== */
+.dropdown-submenu { position: relative; }
+.dropdown-submenu > .dropdown-menu { top: 0; left: 100%; }
+.dropdown-submenu:hover > .dropdown-menu { display: block; }
+.dropdown-submenu > .dropdown-menu { top: 0; left: 100%; margin-left: 0; margin-top: -1px; }
