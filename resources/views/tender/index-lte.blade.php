@@ -16,17 +16,17 @@
   <div class="container-fluid">
     @include('components.summary')
 
-    <div class="row">
-      <div class="col-md-2">
-        <label for="filter-kode">Kode</label>
+    <div class="row filter-row">
+      <div class="col-md-2 col-sm-6">
+        <label for="filter-kode" class="filter-label">Kode</label>
         <input id="filter-kode" type="text" placeholder="Kode" class="form-control" value="{{ request('code') }}">
       </div>
-      <div class="col-md-3">
-        <label for="filter-nama">Nama Paket</label>
+      <div class="col-md-3 col-sm-6">
+        <label for="filter-nama" class="filter-label">Nama Paket</label>
         <input id="filter-nama" type="text" placeholder="Nama Paket" class="form-control" value="{{ request('name') }}">
       </div>
-      <div class="col-md-3">
-        <label for="kd_satker">Satuan Kerja</label>
+      <div class="col-md-3 col-sm-6">
+        <label for="kd_satker" class="filter-label">Satuan Kerja</label>
         <select name="kd_satker" id="kd_satker" class="form-control select2" onchange="filterBySatker()">
           <option value="">--Semua Satuan Kerja---</option>
           @foreach ($satkers as $item)
@@ -36,8 +36,8 @@
           @endforeach
         </select>
       </div>
-      <div class="col-md-2">
-        <label for="year">Tahun</label>
+      <div class="col-md-2 col-sm-6">
+        <label for="year" class="filter-label">Tahun</label>
         <select name="year" id="year" class="form-control" onchange="filterBySatker()">
           <option value="">--Pilih---</option>
           @foreach ($years as $item)
@@ -45,8 +45,8 @@
           @endforeach
         </select>
       </div>
-      <div class="col-md-2">
-        <label for="status_tender">Status</label>
+      <div class="col-md-2 col-sm-6">
+        <label for="status_tender" class="filter-label">Status</label>
         <select name="status_tender" id="status_tender" class="form-control" onchange="filterBySatker()">
           @foreach ($statusList as $key => $val)
             <option value="{{ $key }}" {{ $status == $key ? 'selected' : '' }}>{{ $val }}</option>
@@ -109,6 +109,87 @@
   </div>
 </section>
 @endsection
+
+@push('style')
+<style>
+  /* Responsive filter row */
+  .filter-row > [class^="col-"] {
+    margin-bottom: 12px;
+  }
+  @media (max-width: 767.98px) {
+    .filter-row > [class^="col-"] {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .filter-row > [class^="col-"] {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+  }
+  /* Filter label: lebih kecil, bold, agak naik */
+  .filter-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 1px;
+    margin-top: -3px;
+    display: inline-block;
+    letter-spacing: 0.2px;
+  }
+  /* Select2 - Full width always, text turun, padding top sedikit lebih kecil */
+  .select2-container {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .select2-selection--single {
+    height: 38px !important;
+    padding: 6px 12px 2px 12px !important; /* padding top lebih kecil, bottom sedikit, biar isi turun */
+    font-size: 1rem;
+    display: flex;
+    align-items: flex-end; /* text isi lebih turun */
+  }
+  .select2-selection__rendered {
+    line-height: 32px !important;
+    padding-left: 6px !important;
+    color: #222 !important;
+  }
+  .select2-selection__arrow {
+    height: 34px !important;
+    right: 8px !important;
+  }
+  /* Table responsiveness */
+  .table-responsive {
+    overflow-x: auto;
+  }
+  /* Pagination mobile scroll */
+  @media (max-width: 576px) {
+    .pagination-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      padding-bottom: 8px;
+    }
+    .pagination {
+      flex-wrap: nowrap !important;
+      white-space: nowrap;
+    }
+    .pagination li.page-item {
+      display: inline-block;
+    }
+    .pagination li.page-item a, .pagination li.page-item span {
+      font-size: 13px;
+      padding: 6px 8px;
+      min-width: 36px;
+      text-align: center;
+    }
+    .pagination li.page-item.active a {
+      font-weight: bold;
+    }
+  }
+</style>
+@endpush
 
 @push('script')
 <script src="{{ url('plugins/datatables/jquery.dataTables.min.js') }}"></script>
