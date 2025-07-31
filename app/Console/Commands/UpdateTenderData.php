@@ -108,36 +108,7 @@ class UpdateTenderData extends Command
                             Log::error("❗ Gagal simpan ke model $sumber: " . $e->getMessage(), $data);
                         }
 
-                        // Simpan ke tender_data (gabungan)
-                        try {
-                            \App\Models\TenderData::updateOrCreate(
-                                ['kd_tender' => $kdTender],
-                                [
-                                    'nama_paket'         => $item['nama_paket'] ?? null,
-                                    'status_tender'      => $item['status_tender'] ?? null,
-                                    'nama_satker'        => $item['nama_satker'] ?? null,
-                                    'kd_satker'          => $item['kd_satker'] ?? null,
-                                    'kd_klpd'            => $item['kd_klpd'] ?? null,
-                                    'nama_klpd'          => $item['nama_klpd'] ?? null,
-                                    'pagu'               => $item['pagu'] ?? null,
-                                    'hps'                => $item['hps'] ?? null,
-                                    'nilai_kontrak'      => $item['nilai_kontrak'] ?? null,
-                                    'nilai_pdn_kontrak'  => $item['nilai_pdn_kontrak'] ?? null,
-                                    'nilai_umk_kontrak'  => $item['nilai_umk_kontrak'] ?? null,
-                                    'besar_pembayaran'   => $item['besar_pembayaran'] ?? null,
-                                    'tahun'              => $item['tahun_anggaran'] ?? $tahun,
-                                    'sumber_api'         => $sumber,
-                                    'jenis_pengadaan'    => $item['jenis_pengadaan'] ?? null,
-                                    'kualifikasi_paket'  => $item['kualifikasi_paket'] ?? null,
-                                    'mtd_pemilihan'      => $item['mtd_pemilihan'] ?? null,
-                                    'mtd_evaluasi'       => $item['mtd_evaluasi'] ?? null,
-                                    'nip_ppk'            => $item['nip_ppk'] ?? null,
-                                    'nama_ppk'           => $item['nama_ppk'] ?? null,
-                                ]
-                            );
-                        } catch (\Exception $e) {
-                            Log::warning("❗ Gagal simpan ke TenderData: " . $e->getMessage(), ['kd_tender' => $kdTender]);
-                        }
+                       
                     }
 
                     $this->info("✔️ Batch offset $start: $saved data disimpan.");
