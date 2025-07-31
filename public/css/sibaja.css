@@ -837,7 +837,7 @@ body {
 }
 
 /* Lebih rapat lagi <=1200px (tapi >1100px), font-size tetap */
-@media (max-width: 1200px) and (min-width: 115px) {
+@media (max-width: 1230px) and (min-width: 115px) {
   .navbar-nav .nav-link {
     margin: 0 2px;
     padding-left: 4px;

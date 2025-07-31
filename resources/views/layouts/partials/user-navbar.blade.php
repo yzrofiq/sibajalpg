@@ -331,35 +331,10 @@
   </div>
 </nav>
 
-<!-- Bootstrap Bundle + Icons (sudah di <head> atau sebelum </body>) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  // === Desktop Hover Support ===
-  function setupDesktopHover() {
-    const dropdowns = document.querySelectorAll('.dropdown, .dropdown-submenu');
-    dropdowns.forEach(dropdown => {
-      dropdown.removeEventListener('mouseenter', handleMouseEnter);
-      dropdown.removeEventListener('mouseleave', handleMouseLeave);
-
-      if (window.innerWidth > 991.98) {
-        dropdown.addEventListener('mouseenter', handleMouseEnter);
-        dropdown.addEventListener('mouseleave', handleMouseLeave);
-      }
-    });
-  }
-
-  function handleMouseEnter() {
-    const toggle = this.querySelector('.dropdown-toggle');
-    if (toggle) bootstrap.Dropdown.getOrCreateInstance(toggle).show();
-  }
-
-
-
-  setupDesktopHover();
-  window.addEventListener('resize', setupDesktopHover);
-
   // === Monitoring Belum Input Submenu Toggle ===
   const submenuToggle = document.getElementById('submenuToggle');
   const submenu = document.getElementById('submenuBelumInput');
@@ -411,85 +386,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // === Active Menu Class
-  const monitoringRoutes = [
-    'monitoring.realisasi.satker',
-    'monitoring.rekap.realisasi-berlangsung',
-    'monitoring.rekap.realisasi',
-    'monitoring.kontrak',
-    'monitoring.kontrak.non_tender'
-  ];
-  const currentRoute = '{{ request()->route()->getName() }}';
-  if (monitoringRoutes.includes(currentRoute)) {
-    monitoringDropdown?.classList.add('monitoring-active');
-  }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-  // === Hapus semua kode hover support ===
-  
-  // === Monitoring Belum Input Submenu Toggle ===
-  const submenuToggle = document.getElementById('submenuToggle');
-  const submenu = document.getElementById('submenuBelumInput');
-  const arrowIcon = document.getElementById('arrowBelumInput');
-  const monitoringDropdown = document.querySelector('#monitoringDropdown');
-
-  if (submenuToggle && submenu && arrowIcon) {
-    const collapse = new bootstrap.Collapse(submenu, { toggle: false });
-
-    submenuToggle.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const isShown = submenu.classList.contains('show');
-
-      // Tutup submenu lain jika terbuka
-      document.querySelectorAll('.collapse.show').forEach(el => {
-        if (el !== submenu) {
-          bootstrap.Collapse.getInstance(el)?.hide();
-          el.closest('.dropdown-submenu')?.querySelector('.bi-caret-right-fill')?.classList.remove('rotate-90');
-        }
-      });
-
-      // Toggle submenu
-      if (isShown) {
-        collapse.hide();
-        arrowIcon.classList.remove('rotate-90');
-      } else {
-        collapse.show();
-        arrowIcon.classList.add('rotate-90');
-      }
-    });
-
-    // Tutup submenu jika dropdown utama ditutup
-    monitoringDropdown?.addEventListener('hide.bs.dropdown', function () {
-      if (submenu.classList.contains('show')) {
-        collapse.hide();
-        arrowIcon.classList.remove('rotate-90');
-      }
-    });
-
-    // Tutup submenu jika klik di luar
-    document.addEventListener('click', function (e) {
-      const clickedInside = e.target.closest('.dropdown-submenu') || e.target.closest('.dropdown-menu');
-      if (!clickedInside && submenu.classList.contains('show')) {
-        collapse.hide();
-        arrowIcon.classList.remove('rotate-90');
-      }
-    });
-  }
-
-  // === Nonaktifkan hover behavior untuk semua dropdown ===
+  // Nonaktifkan hover behavior untuk semua dropdown (jaga-jaga)
   const allDropdownToggles = document.querySelectorAll('.dropdown-toggle');
   allDropdownToggles.forEach(toggle => {
-    // Hapus event hover jika ada
     toggle.parentElement.onmouseenter = null;
     toggle.parentElement.onmouseleave = null;
-    
-    // Pastikan hanya bekerja dengan click
-    toggle.addEventListener('click', function(e) {
-      // Biarkan Bootstrap handle toggle-nya
-    });
+    // Hanya klik, tidak hover
   });
 
   // === Active Menu Class
@@ -505,5 +407,5 @@ document.addEventListener('DOMContentLoaded', function () {
     monitoringDropdown?.classList.add('monitoring-active');
   }
 });
-
 </script>
+
