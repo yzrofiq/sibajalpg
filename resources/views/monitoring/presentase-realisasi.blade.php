@@ -261,6 +261,37 @@
         background-color: var(--accent);
         border-left-color: #f59e0b;
     }
+    /* Atur layout form filter grid */
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+/* Atur tampilan untuk form-actions agar tidak lepas dari grid */
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Responsive untuk layar kecil */
+@media (max-width: 768px) {
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    justify-content: center;
+  }
+
+  .export-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 </style>
 
 @endpush
