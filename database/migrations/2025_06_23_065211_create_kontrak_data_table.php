@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
 
             $table->string('kd_tender')->nullable();
-            $table->string('nama_paket')->nullable();
+            $table->text('nama_paket')->nullable(); // ⬅ ubah ke text
 
             $table->string('kd_klpd')->nullable();
             $table->string('nama_klpd')->nullable();
@@ -19,9 +19,9 @@ return new class extends Migration {
 
             $table->string('kd_satker')->nullable();
             $table->string('kd_satker_str')->nullable();
-            $table->string('nama_satker')->nullable();
+            $table->text('nama_satker')->nullable(); // ⬅ ubah ke text
             $table->text('alamat_satker')->nullable();
-            $table->string('jenis_pengadaan')->nullable(); // Tambahkan ini
+            $table->string('jenis_pengadaan')->nullable();
 
             $table->unsignedBigInteger('kd_lpse')->nullable();
 
@@ -38,19 +38,19 @@ return new class extends Migration {
 
             $table->string('nip_ppk')->nullable();
             $table->string('nama_ppk')->nullable();
-            $table->string('jabatan_ppk')->nullable();
+            $table->text('jabatan_ppk')->nullable(); // ⬅ ubah ke text
             $table->string('no_sk_ppk')->nullable();
 
-            $table->string('nama_penyedia')->nullable();
+            $table->text('nama_penyedia')->nullable(); // ⬅ aman jadi text
             $table->unsignedBigInteger('kd_penyedia')->nullable();
             $table->string('npwp_penyedia')->nullable();
             $table->string('npwp_16_penyedia')->nullable();
             $table->string('bentuk_usaha_penyedia')->nullable();
             $table->string('tipe_penyedia')->nullable();
-            $table->string('anggota_kso')->nullable();
+            $table->text('anggota_kso')->nullable(); // ⬅ ubah ke text
 
             $table->string('wakil_sah_penyedia')->nullable();
-            $table->string('jabatan_wakil_penyedia')->nullable();
+            $table->text('jabatan_wakil_penyedia')->nullable(); // ⬅ ubah ke text
 
             $table->string('nama_rek_bank')->nullable();
             $table->string('no_rek_bank')->nullable();
