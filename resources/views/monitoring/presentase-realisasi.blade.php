@@ -41,35 +41,13 @@
         margin-bottom: 20px;
     }
 
-    /* Filter Form Styles */
-    #filter-form {
+    /* Filter Grid */
+    .filter-grid {
         display: grid;
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin-bottom: 20px;
-        background-color: var(--white);
-        border-radius: 10px;
-        box-shadow: 0 2px 8px var(--shadow);
-        padding: 16px;
-    }
-
-    @media (min-width: 280px) {
-        #filter-form {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (min-width: 768px) {
-        #filter-form {
-            grid-template-columns: repeat(3, 1fr);
-            align-items: end;
-        }
-    }
-
-    @media (min-width: 992px) {
-        #filter-form {
-            grid-template-columns: repeat(4, 1fr);
-        }
+        grid-template-columns: 1fr 2fr auto; /* Tahun | Satker | Tombol */
+        gap: 16px;
+        align-items: end;
+        margin-bottom: 16px;
     }
 
     .form-group {
@@ -77,23 +55,25 @@
         flex-direction: column;
     }
 
-    label {
+    .form-group label {
         font-weight: 600;
         margin-bottom: 6px;
         font-size: 14px;
     }
 
-    select {
+    .form-group .form-control,
+    .form-group select {
+        width: 100%;
+        min-width: 180px;
         padding: 10px 12px;
-        font-size: 14px;
+        font-size: 15px;
         border: 1px solid var(--border);
         border-radius: 6px;
         background-color: var(--white);
-        width: 100%;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
         background-repeat: no-repeat;
         background-position: right 12px center;
         background-size: 18px;
@@ -103,6 +83,7 @@
         display: flex;
         justify-content: flex-end;
         align-items: center;
+        height: 100%;
     }
 
     .export-btn {
@@ -116,13 +97,14 @@
         align-items: center;
         gap: 8px;
         transition: transform 0.1s ease;
+        white-space: nowrap;
     }
 
     .export-btn:active {
         transform: scale(0.98);
     }
 
-    /* Table Styles */
+    /* Table */
     .table-wrapper {
         overflow-x: auto;
         background-color: var(--white);
@@ -187,10 +169,11 @@
         .table-wrapper {
             display: none;
         }
+
         .card-view {
             display: flex;
         }
-        
+
         .table-wrapper.active {
             display: block;
             position: fixed;
@@ -279,6 +262,7 @@
         border-left-color: #f59e0b;
     }
 </style>
+
 @endpush
 
 @push('scripts')
@@ -406,36 +390,39 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="container">
     <h1>Presentase Realisasi Pengadaan terhadap RUP</h1>
 
-    {{-- Filter Form --}}
     <form method="GET" id="filter-form">
-        <div class="form-group">
-            <label for="tahun">Pilih Tahun:</label>
-            <select name="tahun" id="tahun" onchange="document.getElementById('filter-form').submit()">
-                <option value="">-- Pilih Tahun --</option>
-                @foreach([2024, 2025] as $th)
-                    <option value="{{ $th }}" {{ request('tahun') == $th ? 'selected' : '' }}>{{ $th }}</option>
-                @endforeach
-            </select>
-        </div>
+  <div class="filter-grid">
+    <div class="form-group">
+      <label for="tahun">Pilih Tahun:</label>
+      <select name="tahun" id="tahun" class="form-control" onchange="document.getElementById('filter-form').submit()">
+        <option value="">-- Pilih Tahun --</option>
+        @foreach([2024, 2025] as $th)
+          <option value="{{ $th }}" {{ request('tahun') == $th ? 'selected' : '' }}>{{ $th }}</option>
+        @endforeach
+      </select>
+    </div>
 
-        <div class="form-group">
-            <label for="satker">Nama Satker:</label>
-            <select name="satker" id="satker" onchange="document.getElementById('filter-form').submit()">
-                <option value="">-- Semua Satker --</option>
-                @foreach($listSatker as $satker)
-                    <option value="{{ $satker }}" {{ request('satker') == $satker ? 'selected' : '' }}>{{ $satker }}</option>
-                @endforeach
-            </select>
-        </div>
+    <div class="form-group">
+      <label for="satker">Nama Satker:</label>
+      <select name="satker" id="satker" class="form-control" onchange="document.getElementById('filter-form').submit()">
+        <option value="">-- Semua Satker --</option>
+        @foreach($listSatker as $satker)
+          <option value="{{ $satker }}" {{ request('satker') == $satker ? 'selected' : '' }}>{{ $satker }}</option>
+        @endforeach
+      </select>
+    </div>
 
-        <div class="form-actions">
-            <a href="{{ route('monitoring.realisasi.pdf', ['tahun' => request('tahun'), 'satker' => request('satker')]) }}"
-               target="_blank"
-               class="export-btn">
-                📄 Export PDF
-            </a>
-        </div>
-    </form>
+    <div class="form-actions">
+      <a href="{{ route('monitoring.realisasi.pdf', ['tahun' => request('tahun'), 'satker' => request('satker')]) }}"
+         target="_blank"
+         class="export-btn">
+        📄 Export PDF
+      </a>
+    </div>
+  </div>
+</form>
+
+
 
     <div class="table-wrapper">
         <table>
